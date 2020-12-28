@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>TITLE</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta charset="utf-8">
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
+		
+		<!-- Insert this line above script imports  -->
+		<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+		
+		<script src="jquery.js"></script>
+		<script src="three.min.js"></script>
+		<script src="panolens.min.js"></script>
+		
+		<!-- Insert this line after script imports -->
+		<script>if (window.module) module = window.module;</script>
+		
+		<style>
+			html, body {
+				margin: 0;
+				width: 100%;
+				height: 100%;
+				overflow: hidden;
+				background-color: #000;
+			}
+
+			a:link, a:visited{
+				color: #bdc3c7;	
+			}
+
+			.fullwrapper{
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background-color: black;
+			}
+			
+			#container {
+                width: 100%;
+                height: 100%;
+            }
+		</style>
+	</head>
+	<body id="body">
+	    <div id="container"></div>
+    	<div id="loading" class="fullwrapper" style="display: table; width: 100%; height: 100%;">
+    		<div style="display: table-cell; vertical-align: middle; text-align: center; color: white; font-size: 30px; padding: 50px;">
+    			<p>Mohon tunggu sejenak...</p>
+    		</div>
+    	</div>
+    	<script>
+            var panorama;
+            container = document.querySelector( '#container' );
+            panorama = new PANOLENS.ImagePanorama( "panoramas/testpanorama.jpg" );
+            viewer = new PANOLENS.Viewer( { 
+                container: container ,
+                controlBar: false,  
+                output: 'console' ,
+                autoHideInfospot: false,
+            } );
+			
+            viewer.add( panorama );
+            viewer.addUpdateCallback(function(){});
+            
+            panorama.addEventListener('progress', function(e){
+                $("#loading").show();
+            });
+            panorama.addEventListener('load', function(e){
+                $("#loading").fadeOut();
+            });
+            
+            panorama.addEventListener('click', function(e){
+            })
+            
+        </script>
+	</body>
+</html>

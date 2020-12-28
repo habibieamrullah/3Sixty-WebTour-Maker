@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>360 Web Tour Maker</title>
+		<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+		<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap" rel="stylesheet">
+		<style>
+		
+			body{
+				font-family: 'Quicksand', sans-serif;
+				background-color: #3d4855;
+				color: #cccccc;
+				user-select: none;
+			}
+			
+			h1, h2, h3, h4, h5, p{
+				margin-top: 10px;
+				margin-bottom: 10px;
+			}
+			
+			input{
+				box-sizing: border-box;
+				width: 100%;
+				background-color: inherit;
+				border: none;
+				outline: none;
+				border-bottom: 1px solid #cccccc;
+				color: #eba576;
+				padding: 10px;
+			}
+			
+			input:focus{
+				border-bottom: 1px solid white;
+			}
+			
+			button{
+				background-color: #eba576;
+				color: #3d4855;
+				padding: 10px;
+				border: none;
+				outline: none;
+				border-radius: 20px;
+				min-width: 100px;
+			}
+			
+			button:hover{
+				background-color: #ff6600;
+			}
+			
+		</style>
+		<link rel="stylesheet" type="text/css" href="css/font-awesome.css">
+		
+		<!-- Insert this line above script imports  -->
+		<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+				
+		<script src="jquery.js"></script>
+		
+		<!-- Insert this line after script imports -->
+		<script>if (window.module) module = window.module;</script>
+		
+		<script>
+			var projectext = ".wtm";
+			const { dialog, BrowserWindow } = require('electron').remote;
+			const fs = require('fs');
+		</script>
+		
+	</head>
+	
+	<body>
+		
+		<!-- Projects -->
+		<div class="page" id="projects">
+			<div style="display: table; width: 100%; table-layout: fixed;">
+				<div style="display: table-cell; vertical-align: top; width: 30%; overflow-x: hidden;">
+					<h2><i class="fa fa-pencil"></i> Create New Project</h2>
+					<div>
+						<p>1. Project Name</p>
+						<p>Enter New Project Name:</p>
+						<input id="newprojectname">
+					</div>
+					<div>
+						<p>2. Project Directory</p>
+						<p id="newprojectdir">Browse Project Directory:</p>
+						<br>
+						<button onclick="chooseprojectdir()">Browse</button>
+					</div>
+					<div>
+						<p>3. Hit Create Button!</p>
+						<button onclick="createproject()">Create</button>
+					</div>
+					
+					<script>
+						var newprojectname = "";
+						var newprojectdir = "";
+						function chooseprojectdir(){
+							newprojectname = $("#newprojectname").val();
+							if(newprojectname != ""){
+								dialog.showOpenDialog({
+									properties: ['openDirectory']
+								}).then(result => {
+									newprojectdir = result.filePaths[0];
+									if(newprojectdir != undefined){
+										$("#newprojectdir").html(newprojectdir + "\\" + newprojectname + projectext);
+									}
+								});
+							}else{
+								dialog.showMessageBox(null, { 
+									"type" : "error",
+									"title" : "Project Name required",
+									"message" : "Enter your Project Name first, then specify the directory."
+								});
+								$("#newprojectname").focus();
+								
+							}
+							
+						}
+						function createproject(){
+						
+							if(newprojectname == "" && newprojectdir == ""){
+								dialog.showMessageBox(null, { 
+									"type" : "error",
+									"title" : "Project Name and Directory required",
+									"message" : "Both Project Name and Project Directory must be set."
+								});
+								$("#newprojectname").focus();
+							}else{
+								fs.writeFile(newprojectdir + "/WTMProject" + projectext, newprojectname, function (err) {
+									if (err) return console.log(err);
+									console.log('Tadaaaa! New project is created!');
+									
+									const fse = require("fs-extra");
+									const srcDir = "./resources/panotemplate";
+									const destDir = newprojectdir;
+									fse.copySync(srcDir, destDir);
+									
+								});
+								
+								//Renaming project title
+								setTimeout(function(){
+									fs.readFile(newprojectdir + "/index.html", 'utf8', function (err, data) {
+										if (err) { return console.log(err); }
+										newhtml = data;
+										var newhtml = data.replace("<title>TITLE</title>", "<title>" +newprojectname+ "</title>");
+										fs.writeFile(newprojectdir + "/index.html", newhtml, function (err) {
+											if (err) return console.log(err);
+											console.log('Project title is set!');		
+
+											//Preview the Project
+											previewProject(newprojectdir.replace(/\\/g, "/") + "/index.html");
+											
+											wtmdata.projects.push({ 
+												projectdir : newprojectdir.replace(/\\/g, "/"),
+												projectname : newprojectname
+											});
+											saveWtmdata();
+											loadRecentProjects();
+										});
+									});
+								}, 3000);
+							}
+						}
+					</script>
+				</div>
+				
+				<div style="display: table-cell; vertical-align: top; padding-left: 20px;">
+					<h2><i class="fa fa-list"></i> Recent Projects</h2>
+					<div id="recentprojects"></div>
+				</div>
+			</div>
+		</div>
+		
+		
+		<script>
+
+			var wtmdata = {
+				projects : [],
+			};
+			
+			if(localStorage.getItem("wtmdata") === null){
+				saveWtmdata();
+			}else{
+				loadWtmdata();
+			}
+			
+			function saveWtmdata(){
+				localStorage.setItem("wtmdata", JSON.stringify(wtmdata));
+			}
+			
+			function loadWtmdata(){
+				wtmdata = JSON.parse(localStorage.getItem("wtmdata"));
+			}
+			
+			function loadRecentProjects(){
+				if(wtmdata.projects.length > 0){
+					$("#recentprojects").html("");
+					for(var i = 0; i < wtmdata.projects.length; i++){
+						$("#recentprojects").prepend("<div onclick=previewProject('" + wtmdata.projects[i].projectdir + "/index.html')>Project Name: " +wtmdata.projects[i].projectname+ ", Project Directory: " +wtmdata.projects[i].projectdir+ "</div>");
+					}
+				}
+			}
+			
+			loadRecentProjects();
+			
+			function previewProject(ppath){
+				const newwin = new BrowserWindow({ width: 1280, height : 720 });
+				newwin.loadFile(ppath);
+				newwin.removeMenu();
+				newwin.webContents.openDevTools();
+			}
+			
+		</script>
+		
+	</body>
+</html>
