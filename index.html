@@ -12,10 +12,14 @@
 				background-color: #3d4855;
 				color: #cccccc;
 				user-select: none;
+				font-size: 14px;
+				margin: 0px;
+				padding: 0px;
+				overflow: hidden;
 			}
 			
 			h1, h2, h3, h4, h5, p{
-				margin-top: 10px;
+				margin: 0px;
 				margin-bottom: 10px;
 			}
 			
@@ -28,10 +32,13 @@
 				border-bottom: 1px solid #cccccc;
 				color: #eba576;
 				padding: 10px;
+				margin-bottom: 20px;
+				font-size: 20px;
+				transition: border-bottom .5s;
 			}
 			
 			input:focus{
-				border-bottom: 1px solid white;
+				border-bottom: 1px solid #eba576;
 			}
 			
 			button{
@@ -40,13 +47,119 @@
 				padding: 10px;
 				border: none;
 				outline: none;
-				border-radius: 20px;
 				min-width: 100px;
+				margin-bottom: 20px;
+				transition: background-color .5s, color .5s;
+				font-weight: bold;
 			}
 			
 			button:hover{
 				background-color: #ff6600;
+				color: white;
 			}
+			
+			.button{
+				display: inline-block;
+				background-color: #eba576;
+				color: #3d4855;
+				padding: 5px;
+				border: none;
+				outline: none;
+				margin-bottom: 10px;
+				margin-top: 10px;
+				margin-right: 10px;
+				transition: background-color .5s, color .5s;
+			}
+			
+			.button:hover{
+				background-color: #ff6600;
+				color: white;
+			}
+			
+			#newprojectdir{
+				font-size: 10px;
+				color: #eba576;
+			}
+			
+			#dim{
+				background-color: rgba(0,0,0,.75);
+				backdrop-filter: blur(10px);
+				color: white;
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				display: table;
+				width: 100%;
+				height: 100%;
+				text-align: center;
+			}
+			
+			.projectlist{
+				border: 1px solid gray;
+				padding: 20px;
+				margin-bottom: 10px;
+				margin-right: 20px;
+				transition: color .5s, background-color .5s;
+			}
+			
+			.projectlist:hover{
+				color: #eba576;
+				background-color: #505a6c;
+			}
+			
+			.lds-hourglass {
+			  display: inline-block;
+			  position: relative;
+			  width: 80px;
+			  height: 80px;
+			}
+			.lds-hourglass:after {
+			  content: " ";
+			  display: block;
+			  border-radius: 50%;
+			  width: 0;
+			  height: 0;
+			  margin: 8px;
+			  box-sizing: border-box;
+			  border: 32px solid #fff;
+			  border-color: #fff transparent #fff transparent;
+			  animation: lds-hourglass 1.2s infinite;
+			}
+			@keyframes lds-hourglass {
+			  0% {
+				transform: rotate(0);
+				animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+			  }
+			  50% {
+				transform: rotate(900deg);
+				animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+			  }
+			  100% {
+				transform: rotate(1800deg);
+			  }
+			}
+			
+			/* SCROLLBAR STYLING */
+			/* width */
+			::-webkit-scrollbar {
+				width: 6px;
+				height: 3px;
+			}
+			/* Track */
+			::-webkit-scrollbar-track {
+				background: inherit; 
+			}
+			/* Handle */
+			::-webkit-scrollbar-thumb {
+				background: #eba576; 
+			}
+			/* Handle on hover */
+			::-webkit-scrollbar-thumb:hover {
+				background: #eba576; 
+			}
+
 			
 		</style>
 		<link rel="stylesheet" type="text/css" href="css/font-awesome.css">
@@ -72,21 +185,19 @@
 		<!-- Projects -->
 		<div class="page" id="projects">
 			<div style="display: table; width: 100%; table-layout: fixed;">
-				<div style="display: table-cell; vertical-align: top; width: 30%; overflow-x: hidden;">
+				<div style="display: table-cell; vertical-align: top; width: 30%; overflow-x: hidden; padding: 20px;">
 					<h2><i class="fa fa-pencil"></i> Create New Project</h2>
 					<div>
-						<p>1. Project Name</p>
-						<p>Enter New Project Name:</p>
+						<p style="font-size: 12px; font-style: italic;">1. Project Name</p>
 						<input id="newprojectname">
 					</div>
 					<div>
-						<p>2. Project Directory</p>
-						<p id="newprojectdir">Browse Project Directory:</p>
-						<br>
+						<p style="font-size: 12px; font-style: italic;">2. Project Directory</p>
+						<p id="newprojectdir"></p>
 						<button onclick="chooseprojectdir()">Browse</button>
 					</div>
 					<div>
-						<p>3. Hit Create Button!</p>
+						<p style="font-size: 12px; font-style: italic;">3. Hit Create Button!</p>
 						<button onclick="createproject()">Create</button>
 					</div>
 					
@@ -101,75 +212,91 @@
 								}).then(result => {
 									newprojectdir = result.filePaths[0];
 									if(newprojectdir != undefined){
-										$("#newprojectdir").html(newprojectdir + "\\" + newprojectname + projectext);
+										$("#newprojectdir").html(newprojectdir);
 									}
 								});
 							}else{
-								dialog.showMessageBox(null, { 
-									"type" : "error",
-									"title" : "Project Name required",
-									"message" : "Enter your Project Name first, then specify the directory."
-								});
+								showAlert("Incomplete Information", "Enter your Project Name first, then specify the directory.");
 								$("#newprojectname").focus();
 								
 							}
 							
 						}
+						
 						function createproject(){
 						
 							if(newprojectname == "" && newprojectdir == ""){
-								dialog.showMessageBox(null, { 
-									"type" : "error",
-									"title" : "Project Name and Directory required",
-									"message" : "Both Project Name and Project Directory must be set."
-								});
+								showAlert("Incomplete Information", "Both Project Name and Project Directory must be set.");
 								$("#newprojectname").focus();
 							}else{
-								fs.writeFile(newprojectdir + "/WTMProject" + projectext, newprojectname, function (err) {
-									if (err) return console.log(err);
-									console.log('Tadaaaa! New project is created!');
-									
-									const fse = require("fs-extra");
-									const srcDir = "./resources/panotemplate";
-									const destDir = newprojectdir;
-									fse.copySync(srcDir, destDir);
-									
-								});
 								
-								//Renaming project title
+								showDim("Please Wait...");
+								
 								setTimeout(function(){
-									fs.readFile(newprojectdir + "/index.html", 'utf8', function (err, data) {
-										if (err) { return console.log(err); }
-										newhtml = data;
-										var newhtml = data.replace("<title>TITLE</title>", "<title>" +newprojectname+ "</title>");
-										fs.writeFile(newprojectdir + "/index.html", newhtml, function (err) {
-											if (err) return console.log(err);
-											console.log('Project title is set!');		
-
-											//Preview the Project
-											previewProject(newprojectdir.replace(/\\/g, "/") + "/index.html");
-											
-											wtmdata.projects.push({ 
-												projectdir : newprojectdir.replace(/\\/g, "/"),
-												projectname : newprojectname
-											});
-											saveWtmdata();
-											loadRecentProjects();
-										});
+									fs.writeFile(newprojectdir + "/WTMProject" + projectext, newprojectname, function (err) {
+										if (err) return console.log(err);
+										console.log('Tadaaaa! New project is created!');
+										
+										const fse = require("fs-extra");
+										const srcDir = "./resources/panotemplate";
+										const destDir = newprojectdir;
+										fse.copySync(srcDir, destDir);
+										
 									});
-								}, 3000);
+									
+									//Renaming project title
+									setTimeout(function(){
+										fs.readFile(newprojectdir + "/index.html", 'utf8', function (err, data) {
+											if (err) { return console.log(err); }
+											newhtml = data;
+											var newhtml = data.replace("<title>TITLE</title>", "<title>" +newprojectname+ "</title>");
+											fs.writeFile(newprojectdir + "/index.html", newhtml, function (err) {
+												if (err) return console.log(err);
+												console.log('Project title is set!');		
+
+												//Preview the Project
+												previewProject(newprojectdir.replace(/\\/g, "/") + "/index.html");
+												
+												wtmdata.projects.push({ 
+													projectdir : newprojectdir.replace(/\\/g, "/"),
+													projectname : newprojectname
+												});
+												saveWtmdata();
+												loadRecentProjects();
+												
+												hideDim();
+												
+												$("#newprojectname").val("").focus();
+												$("#newprojectdir").html("");
+												newprojectname = "";
+												newprojectdir = "";
+												
+											});
+										});
+									}, 3000);
+								}, 1000);
+								
 							}
 						}
 					</script>
 				</div>
 				
-				<div style="display: table-cell; vertical-align: top; padding-left: 20px;">
+				<div style="display: table-cell; vertical-align: top; padding: 20px;">
 					<h2><i class="fa fa-list"></i> Recent Projects</h2>
 					<div id="recentprojects"></div>
 				</div>
+				
 			</div>
+			
 		</div>
 		
+		
+		<div id="dim">
+			<div style="display: table-cell; vertical-align: middle; text-align: center;">
+				<div class="lds-hourglass" id="loading"></div>
+				<h3 id="dimmessage"></h3>
+			</div>
+		</div>
 		
 		<script>
 
@@ -192,12 +319,29 @@
 			}
 			
 			function loadRecentProjects(){
+				$("#recentprojects").html("");
 				if(wtmdata.projects.length > 0){
-					$("#recentprojects").html("");
 					for(var i = 0; i < wtmdata.projects.length; i++){
-						$("#recentprojects").prepend("<div onclick=previewProject('" + wtmdata.projects[i].projectdir + "/index.html')>Project Name: " +wtmdata.projects[i].projectname+ ", Project Directory: " +wtmdata.projects[i].projectdir+ "</div>");
+						if (fs.existsSync(wtmdata.projects[i].projectdir)) {
+							$("#recentprojects").prepend("<div class='projectlist'><div onclick=previewProject('" + wtmdata.projects[i].projectdir + "/index.html') style='cursor: pointer;'><div style='font-size: 20px;'>" +wtmdata.projects[i].projectname+ "</div><div style='font-size: 12px; color: #eba576;'>" +wtmdata.projects[i].projectdir+ "</div></div><div class='button' style='margin-bottom: 0px; font-size: 10px;' onclick=removeFromProjectList(" +i+ ")><i class='fa fa-trash'></i> Remove from list</div><div class='button' style='margin-bottom: 0px; font-size: 10px;' onclick=showInExplorer('" +wtmdata.projects[i].projectdir+ "')><i class='fa fa-folder'></i> Show in Explorer</div></div>");
+						}else{
+							$("#recentprojects").prepend("<div class='projectlist'><div style='color: #e76d6d; font-style: italic;'><div style='font-size: 20px;'><i class='fa fa-warning'></i> " +wtmdata.projects[i].projectname+ "</div><div style='font-size: 12px; color: #e76d6d;'>" +wtmdata.projects[i].projectdir+ " (Directory not found)</div></div><div class='button' style='margin-bottom: 0px; font-size: 10px;' onclick=removeFromProjectList(" +i+ ")><i class='fa fa-trash'></i> Remove from list</div></div>");
+						}
 					}
+					$("#recentprojects").css({ "height" : (innerHeight - 75) + "px", "overflow" : "auto" });
+				}else{
+					$("#recentprojects").html("No project found.");
 				}
+			}
+			
+			function removeFromProjectList(index){
+				wtmdata.projects.splice(index, 1);
+				saveWtmdata();
+				loadRecentProjects();
+			}
+			
+			function showInExplorer(dir){
+				require('child_process').exec('start "" ' + dir);
 			}
 			
 			loadRecentProjects();
@@ -209,6 +353,23 @@
 				newwin.webContents.openDevTools();
 			}
 			
+			function hideDim(){
+				$("#dim").fadeOut();
+			}
+			
+			function showDim(message){
+				$("#dimmessage").html(message);
+				$("#dim").fadeIn();
+				$("#loading").show();
+			}
+			
+			function showAlert(title, message){
+				$("#dimmessage").html("<div style='width: 100%; max-width: 600px; margin: 0 auto;'><div style='background-color: #eba576; color: #3d4855; padding: 10px;'><i class='fa fa-info'></i> " +title+ "</div><div style='padding: 30px; background-color: #3d4855; font-size: 14px;'><div>" +message+ "</div><button onclick='hideDim()' style='margin-top: 20px; margin-bottom: 0px;'>Close</button></div></div>");
+				$("#dim").fadeIn();
+				$("#loading").hide();
+			}
+			
+			hideDim();
 		</script>
 		
 	</body>
