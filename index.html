@@ -29,16 +29,16 @@
 				background-color: inherit;
 				border: none;
 				outline: none;
-				border-bottom: 1px solid #cccccc;
+				border: 1px solid gray;
 				color: #eba576;
 				padding: 10px;
 				margin-bottom: 20px;
 				font-size: 20px;
-				transition: border-bottom .5s;
+				transition: background-color .5s;
 			}
 			
 			input:focus{
-				border-bottom: 1px solid #eba576;
+				background-color: #505a6c;
 			}
 			
 			button{
@@ -189,7 +189,7 @@
 					<h2><i class="fa fa-pencil"></i> Create New Project</h2>
 					<div>
 						<p style="font-size: 12px; font-style: italic;">1. Project Name</p>
-						<input id="newprojectname">
+						<input id="newprojectname" placeholder="Give it a name">
 					</div>
 					<div>
 						<p style="font-size: 12px; font-style: italic;">2. Project Directory</p>
@@ -201,6 +201,11 @@
 						<button onclick="createproject()">Create</button>
 					</div>
 					
+					<h2><i class="fa fa-folder"></i> Or Open Existing Project</h2>
+					<div>
+						<p style="font-size: 12px; font-style: italic;">Click to browse</p>
+						<button onclick="openproject()">Browse</button>
+					</div>
 					<script>
 						var newprojectname = "";
 						var newprojectdir = "";
@@ -213,6 +218,8 @@
 									newprojectdir = result.filePaths[0];
 									if(newprojectdir != undefined){
 										$("#newprojectdir").html(newprojectdir);
+									}else{
+										$("#newprojectdir").html("");
 									}
 								});
 							}else{
@@ -223,58 +230,102 @@
 							
 						}
 						
+						function openproject(){
+							var openedprojectdir = "";
+							dialog.showOpenDialog({
+								properties: ['openDirectory']
+							}).then(result => {
+								openedprojectdir = result.filePaths[0];
+								if(openedprojectdir != undefined){
+									//showAlert("Open Project", "Is this correct: " + openedprojectdir + " ?");
+									//Try to get the WTMProject.wtm file
+									if(fs.existsSync(openedprojectdir + "\\WTMProject.wtm")){
+										fs.readFile(openedprojectdir + "\\WTMProject.wtm", 'utf8', function (err,data) {
+											if (err) {
+												showAlert("Open Project", "This is NOT a valid project.");
+												return console.log(err);
+											}
+											var openedprojecttitle = JSON.parse(data).title;
+											openedprojectdir = openedprojectdir.replace(/\\/g, "/");
+											
+											if(isProjectExist(openedprojecttitle, openedprojectdir)){
+												showAlert("Open Project", "This project already exists in Recent Projects list.");
+											}else{
+												//showAlert("Open Project", "Project has been successfully added to Recent Projects list.");
+												wtmdata.projects.push({
+													projectdir : openedprojectdir,
+													projectname : openedprojecttitle,
+												});
+												saveWtmdata();
+												loadRecentProjects();
+											}
+										});
+									}else{
+										showAlert("Open Project", "This is NOT a valid project.");
+									}
+								}
+							});
+						}
+						
 						function createproject(){
 						
 							if(newprojectname == "" && newprojectdir == ""){
 								showAlert("Incomplete Information", "Both Project Name and Project Directory must be set.");
 								$("#newprojectname").focus();
 							}else{
+							
+								if(fs.existsSync(newprojectdir + "\\WTMProject.wtm")){
+									showAlert("Invalid Directory", "This directory has been used for another project. Please choose another directory.");
+								}else{
+									showDim("Please Wait...");
 								
-								showDim("Please Wait...");
-								
-								setTimeout(function(){
-									fs.writeFile(newprojectdir + "/WTMProject" + projectext, newprojectname, function (err) {
-										if (err) return console.log(err);
-										console.log('Tadaaaa! New project is created!');
-										
-										const fse = require("fs-extra");
-										const srcDir = "./resources/panotemplate";
-										const destDir = newprojectdir;
-										fse.copySync(srcDir, destDir);
-										
-									});
-									
-									//Renaming project title
 									setTimeout(function(){
-										fs.readFile(newprojectdir + "/index.html", 'utf8', function (err, data) {
-											if (err) { return console.log(err); }
-											newhtml = data;
-											var newhtml = data.replace("<title>TITLE</title>", "<title>" +newprojectname+ "</title>");
-											fs.writeFile(newprojectdir + "/index.html", newhtml, function (err) {
-												if (err) return console.log(err);
-												console.log('Project title is set!');		
-
-												//Preview the Project
-												previewProject(newprojectdir.replace(/\\/g, "/") + "/index.html");
-												
-												wtmdata.projects.push({ 
-													projectdir : newprojectdir.replace(/\\/g, "/"),
-													projectname : newprojectname
-												});
-												saveWtmdata();
-												loadRecentProjects();
-												
-												hideDim();
-												
-												$("#newprojectname").val("").focus();
-												$("#newprojectdir").html("");
-												newprojectname = "";
-												newprojectdir = "";
-												
-											});
+										var initialProjectData = {
+											"title" : newprojectname,
+										};
+										fs.writeFile(newprojectdir + "/WTMProject" + projectext, JSON.stringify(initialProjectData), function (err) {
+											if (err) return console.log(err);
+											console.log('Tadaaaa! New project is created!');
+											
+											const fse = require("fs-extra");
+											const srcDir = "./resources/panotemplate";
+											const destDir = newprojectdir;
+											fse.copySync(srcDir, destDir);
+											
 										});
-									}, 3000);
-								}, 1000);
+										
+										//Renaming project title
+										setTimeout(function(){
+											fs.readFile(newprojectdir + "/index.html", 'utf8', function (err, data) {
+												if (err) { return console.log(err); }
+												newhtml = data;
+												var newhtml = data.replace("<title>TITLE</title>", "<title>" +newprojectname+ "</title>");
+												fs.writeFile(newprojectdir + "/index.html", newhtml, function (err) {
+													if (err) return console.log(err);
+													console.log('Project title is set!');		
+
+													//Preview the Project
+													previewProject(newprojectdir.replace(/\\/g, "/") + "/index.html");
+													
+													wtmdata.projects.push({ 
+														projectdir : newprojectdir.replace(/\\/g, "/"),
+														projectname : newprojectname
+													});
+													saveWtmdata();
+													loadRecentProjects();
+													
+													hideDim();
+													
+													$("#newprojectname").val("").focus();
+													$("#newprojectdir").html("");
+													newprojectname = "";
+													newprojectdir = "";
+													
+												});
+											});
+										}, 3000);
+									}, 1000);
+								}
 								
 							}
 						}
@@ -325,7 +376,7 @@
 						if (fs.existsSync(wtmdata.projects[i].projectdir)) {
 							$("#recentprojects").prepend("<div class='projectlist'><div onclick=previewProject('" + wtmdata.projects[i].projectdir + "/index.html') style='cursor: pointer;'><div style='font-size: 20px;'>" +wtmdata.projects[i].projectname+ "</div><div style='font-size: 12px; color: #eba576;'>" +wtmdata.projects[i].projectdir+ "</div></div><div class='button' style='margin-bottom: 0px; font-size: 10px;' onclick=removeFromProjectList(" +i+ ")><i class='fa fa-trash'></i> Remove from list</div><div class='button' style='margin-bottom: 0px; font-size: 10px;' onclick=showInExplorer('" +wtmdata.projects[i].projectdir+ "')><i class='fa fa-folder'></i> Show in Explorer</div></div>");
 						}else{
-							$("#recentprojects").prepend("<div class='projectlist'><div style='color: #e76d6d; font-style: italic;'><div style='font-size: 20px;'><i class='fa fa-warning'></i> " +wtmdata.projects[i].projectname+ "</div><div style='font-size: 12px; color: #e76d6d;'>" +wtmdata.projects[i].projectdir+ " (Directory not found)</div></div><div class='button' style='margin-bottom: 0px; font-size: 10px;' onclick=removeFromProjectList(" +i+ ")><i class='fa fa-trash'></i> Remove from list</div></div>");
+							$("#recentprojects").prepend("<div class='projectlist'><div style='color: #e76d6d; font-style: italic;'><div style='font-size: 20px;'><i class='fa fa-warning'></i> " +wtmdata.projects[i].projectname+ " (Not Found)</div><div style='font-size: 12px; color: #e76d6d;'>" +wtmdata.projects[i].projectdir+ "</div></div><div class='button' style='margin-bottom: 0px; font-size: 10px;' onclick=removeFromProjectList(" +i+ ")><i class='fa fa-trash'></i> Remove from list</div></div>");
 						}
 					}
 					$("#recentprojects").css({ "height" : (innerHeight - 75) + "px", "overflow" : "auto" });
@@ -341,7 +392,16 @@
 			}
 			
 			function showInExplorer(dir){
+				console.log("Trying to open in dir: " + dir);
 				require('child_process').exec('start "" ' + dir);
+			}
+			
+			function isProjectExist(title, dir){
+				for(var i = 0; i < wtmdata.projects.length; i++){
+					if(wtmdata.projects[i].projectdir == dir && wtmdata.projects[i].projectname == title)
+						return true;
+				}
+				return false;
 			}
 			
 			loadRecentProjects();
@@ -364,7 +424,7 @@
 			}
 			
 			function showAlert(title, message){
-				$("#dimmessage").html("<div style='width: 100%; max-width: 600px; margin: 0 auto;'><div style='background-color: #eba576; color: #3d4855; padding: 10px;'><i class='fa fa-info'></i> " +title+ "</div><div style='padding: 30px; background-color: #3d4855; font-size: 14px;'><div>" +message+ "</div><button onclick='hideDim()' style='margin-top: 20px; margin-bottom: 0px;'>Close</button></div></div>");
+				$("#dimmessage").html("<div style='width: 70%; max-width: 600px; margin: 0 auto;'><div style='background-color: #eba576; color: #3d4855; padding: 10px;'><i class='fa fa-info'></i> " +title+ "</div><div style='padding: 30px; background-color: #3d4855; font-size: 14px; font-weight: normal;'><div>" +message+ "</div><button onclick='hideDim()' style='margin-top: 20px; margin-bottom: 0px;'>Close</button></div></div>");
 				$("#dim").fadeIn();
 				$("#loading").hide();
 			}
