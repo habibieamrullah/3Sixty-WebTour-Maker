@@ -230,12 +230,12 @@
 		<!-- Project Editor -->
 		<div class="page" id="projecteditor">
 			<div style="display: table; width: 100%; table-layout: fixed;">
-				<div style="display: table-cell; vertical-align: middle;">
-					<h3 id="currentprojecttitle"></h3>
-					<p id="currentprojectdir" style='font-size: 12px; color: #eba576; font-style: italic;'></p>
+				<div style="display: table-cell; vertical-align: top;">
+					<div style="font-size: 20px;"><i class="fa fa-briefcase" style="width: 20px;"></i> <input id="currentprojecttitle" style="display: inline-block; width: 300px; color: #cccccc; font-size: 20px; font-weight: normal; margin-bottom: 5px; border: none;"onkeyup="renamecurrentproject()"></div>
+					<p id="currentprojectdir" style='font-size: 12px; color: #eba576; font-style: italic; cursor: pointer;'></p>
 				</div>
-				<div style="display: table-cell; vertical-align: middle; width: 100px; text-align: right;">
-					<div class="greenbutton" style="padding: 10px; font-size: 12px;"><i class="fa fa-play"></i></div>
+				<div style="display: table-cell; vertical-align: top; width: 100px; text-align: right;">
+					<div class="greenbutton" style="margin: 0px; padding: 10px; font-size: 12px;" id="currentprojectrunbutton"><i class="fa fa-play"></i></div>
 				</div>
 			</div>
 			<div style="display: table; width: 100%; table-layout: fixed;">
@@ -382,10 +382,26 @@
 				}
 			}
 			
+			var currentprojectindex;
 			function editproject(idx){
+				currentprojectindex = idx;
 				showpage("projecteditor");
-				$("#currentprojecttitle").html("<i class='fa fa-briefcase' style='width: 30px;'></i>" + wtmdata.projects[idx].projectname);
-				$("#currentprojectdir").html("<i class='fa fa-folder' style='width: 30px;'></i>" + wtmdata.projects[idx].projectdir);
+				$("#currentprojecttitle").val(wtmdata.projects[idx].projectname);
+				$("#currentprojectdir").html("<i class='fa fa-folder' style='width: 30px;'></i>" + wtmdata.projects[idx].projectdir).attr({ "onclick" : "showInExplorer('" +wtmdata.projects[idx].projectdir+ "')" });
+				$("#currentprojectrunbutton").attr({ "onclick" : "previewProject('" + wtmdata.projects[idx].projectdir + "/index.html')" });
+			}
+			
+			
+			var rnmttltimeout;
+			function renamecurrentproject(){
+				var newtitle = $("#currentprojecttitle").val();
+				if(newtitle.length > 3){
+					clearTimeout(rnmttltimeout);
+					rnmttltimeout = setTimeout(function(){
+						wtmdata.projects[currentprojectindex].projectname = newtitle;
+						saveWtmdata();
+					},2000);
+				}
 			}
 			
 			
