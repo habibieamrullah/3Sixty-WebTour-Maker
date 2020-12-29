@@ -238,10 +238,10 @@
 				</div>
 			</div>
 			<div style="display: table; width: 100%; table-layout: fixed;">
-				<div style="display: table-cell; vertical-align: top; width: 300px; overflow-x: hidden;">
-					
+				<div style="display: table-cell; vertical-align: top; width: 200px; overflow-x: hidden;">
+					<div class="editortab" onclick="showeditorc('panoramas')">Panoramas</div>
 				</div>
-				<div style="display: table-cell; vertical-align: top;"></div>
+				<div style="display: table-cell; vertical-align: top; padding-left: 40px;" id="editorcontent"></div>
 			</div>
 		</div>
 		
@@ -421,12 +421,34 @@
 			}
 			
 			var currentprojectindex;
+			var currentprojectdata;
 			function editproject(idx){
 				currentprojectindex = idx;
 				showpage("projecteditor");
 				$("#currentprojecttitle").val(wtmdata.projects[idx].projectname);
 				$("#currentprojectdir").html("<i class='fa fa-folder' style='width: 30px;'></i>" + wtmdata.projects[idx].projectdir).attr({ "onclick" : "showInExplorer(" + idx + ")" });
 				$("#currentprojectrunbutton").attr({ "onclick" : "previewProject("+idx+")" });
+				fs.readFile(wtmdata.projects[idx].projectdir + "/WTMProject.wtm", 'utf8', function (err, data) {
+					if(err){
+						showAlert("Project Corrupted", "Sorry this project can not be opened.");
+						showpage("projects");
+						return;
+					}
+					currentprojectdata = JSON.parse(data);
+					showeditorc("panoramas");
+				});
+			}
+			
+			function showeditorc(type){
+				switch(type){
+					case "panoramas" :
+						var panoramas = "";
+						for(var i = 0; i < currentprojectdata.panoramas.length; i++){
+							panoramas += currentprojectdata.panoramas[i];
+						}
+						$("#editorcontent").html("Panoramas List : " + panoramas);
+						break;
+				}
 			}
 			
 			

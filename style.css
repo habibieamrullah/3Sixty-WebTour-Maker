@@ -193,7 +193,11 @@ a:hover{
 	color: #0d9e59;
 }
 
-
+.editortab{
+	
+	border-bottom: 1px solid gray;
+	
+}
 
 
 
