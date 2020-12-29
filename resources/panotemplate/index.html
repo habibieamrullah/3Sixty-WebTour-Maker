@@ -48,32 +48,22 @@
 	    <div id="container"></div>
     	<div id="loading" class="fullwrapper" style="display: table; width: 100%; height: 100%;">
     		<div style="display: table-cell; vertical-align: middle; text-align: center; color: white; font-size: 30px; padding: 50px;">
-    			<p>Mohon tunggu sejenak...</p>
+    			<!--loadingtext--><p>Please Wait...</p><!--loadingtext-end-->
     		</div>
     	</div>
     	<script>
-            var panorama;
-            container = document.querySelector( '#container' );
-            panorama = new PANOLENS.ImagePanorama( "panoramas/testpanorama.jpg" );
-            viewer = new PANOLENS.Viewer( { 
+			
+            var container = document.querySelector( '#container' );
+            var viewer = new PANOLENS.Viewer( { 
                 container: container ,
                 controlBar: false,  
                 output: 'console' ,
-                autoHideInfospot: false,
+                autoHideInfospot: false,
             } );
 			
-            viewer.add( panorama );
-            viewer.addUpdateCallback(function(){});
-            
-            panorama.addEventListener('progress', function(e){
-                $("#loading").show();
-            });
-            panorama.addEventListener('load', function(e){
-                $("#loading").fadeOut();
-            });
-            
-            panorama.addEventListener('click', function(e){
-            })
+			viewer.addUpdateCallback(function(){});
+			
+			/*panoramas*/			/*panoramas-end*/
             
         </script>
 	</body>

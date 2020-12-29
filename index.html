@@ -163,6 +163,7 @@
 									setTimeout(function(){
 										var initialProjectData = {
 											"title" : newprojectname,
+											"panoramas" : ["testpanorama.jpg"],
 										};
 										fs.writeFile(newprojectdir + "/WTMProject" + projectext, JSON.stringify(initialProjectData), function (err) {
 											if (err) return console.log(err);
@@ -175,12 +176,14 @@
 											
 										});
 										
-										//Renaming project title
+										//Preparing initial HTML
 										setTimeout(function(){
 											fs.readFile(newprojectdir + "/index.html", 'utf8', function (err, data) {
 												if (err) { return console.log(err); }
 												newhtml = data;
 												var newhtml = data.replace("<title>TITLE</title>", "<title>" +newprojectname+ "</title>");
+												data = newhtml;
+												var newhtml = data.split("/*panoramas*/")[0] +"/*panoramas*/\n\r"+ generatePanoramas(initialProjectData.panoramas) +"\n\r/*panoramas*/"+ data.split("/*panoramas-end*/")[1];
 												fs.writeFile(newprojectdir + "/index.html", newhtml, function (err) {
 													if (err) return console.log(err);
 													console.log('Project title is set!');		
@@ -223,11 +226,14 @@
 		<!-- Project Editor -->
 		<div class="page" id="projecteditor">
 			<div style="display: table; width: 100%; table-layout: fixed;">
+				<div style="display: table-cell; vertical-align: top; width: 50px; vertical-align: middle;">
+					<a href="#" onclick="showpage('projects')"><i class="fa fa-chevron-left" style="font-size: 30px;"></i></a>
+				</div>
 				<div style="display: table-cell; vertical-align: top;">
 					<div style="font-size: 20px;"><i class="fa fa-briefcase" style="width: 20px;"></i> <input id="currentprojecttitle" style="display: inline-block; width: 300px; color: #cccccc; font-size: 20px; font-weight: normal; margin-bottom: 5px; border: none;"onkeyup="renamecurrentproject()"></div>
 					<p id="currentprojectdir" style='font-size: 12px; color: #eba576; font-style: italic; cursor: pointer;'></p>
 				</div>
-				<div style="display: table-cell; vertical-align: top; width: 100px; text-align: right;">
+				<div style="display: table-cell; vertical-align: middle; width: 100px; text-align: right;">
 					<div class="greenbutton" style="margin: 0px; padding: 10px; font-size: 12px;" id="currentprojectrunbutton"><i class="fa fa-play"></i></div>
 				</div>
 			</div>
@@ -332,6 +338,26 @@
 				newwin.webContents.openDevTools();
 			}
 			
+			function generatePanoramas(arr){
+				var pdata = "";
+				if(arr.length > 0){
+					for(var i = 0; i < arr.length; i++){
+						var panovar = arr[i].split(".")[0];
+						pdata += "var "+panovar+" = new PANOLENS.ImagePanorama( \"panoramas/" + arr[i] + "\" );\n\
+						viewer.add( "+panovar+" );\n\
+						"+panovar+".addEventListener('progress', function(e){\n\
+							$(\"#loading\").show();\n\
+						});\n\
+						"+panovar+".addEventListener('load', function(e){\n\
+							$(\"#loading\").fadeOut();\n\
+						});\n\
+						"+panovar+".addEventListener('click', function(e){\n\
+						});";
+					}
+				}
+				return pdata;
+			}
+			
 			function hideDim(){
 				$("#dim").fadeOut();
 				$("#loading").hide();
@@ -352,10 +378,10 @@
 			function showMiniPage(type){
 				switch (type){
 					case "about" :
-						showAlert("About", "<h4>360 Web Tour Maker</h4><p>Version 1.0.0<br><a href='#'>Release Notes</a><br><a href='#'>Terms and Conditions</a></p>");
+						showAlert("About", "<h1>360 Web Tour Maker</h1><h4>by habibieamrullah</h4><p>Version 1.0.0<br><a href='#'>Release Notes</a><br><a href='#'>Terms and Conditions</a></p>");
 						break;
 					case "donate" :
-						showAlert("Support The Development", "<p>This software is made for you for free. However, I expect any amount donations from users like you to keep me supported for maintenance and further development of this software.</p><p>Please send your donation to my PayPal account here: <a href='https://paypal.me/habibieamrullah'>https://paypal.me/habibieamrullah</a></p>");
+						showAlert("Support The Development", "<p><img src='paypal.png' style='background-color: white; padding: 20px;'></p><p>This software is made for you for free. However, I expect any amount donations from users like you to keep me supported for maintenance and further development of this software.</p><p>Please send your donation to my PayPal account here: <a href='https://paypal.me/habibieamrullah'>https://paypal.me/habibieamrullah</a></p>");
 						break;
 				}
 			}
