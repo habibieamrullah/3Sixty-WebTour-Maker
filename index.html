@@ -38,20 +38,29 @@
 			<div class="abitem">
 				About
 				<div class="dropdown-content">
-					<div class="subabitem"><i class="fa fa-info" style="width: 30px;"></i> Version Info</div>
+					<div class="subabitem"><i class="fa fa-question" style="width: 30px;"></i> What is 360 Web Tour Maker</div>
+					<div class="subabitem" onclick="showpage('versioninfo')"><i class="fa fa-info" style="width: 30px;"></i> Version Info</div>
+					<div class="subabitem"><i class="fa fa-dollar" style="width: 30px;"></i> Support the Development</div>
 				</div>
 			</div>
 			<div style="float: right;">
 				<div class="abitem" onclick="minimize()"><i class="fa fa-window-minimize"></i></div>
 				<div class="abitem minmaxbutton" onclick="maximize()"><i class="fa fa-window-restore"></i></div>
-				<div class="abitem quitbutton" onclick="quitprogram()"><i class="fa fa-window-close"></i></div>
+				<div class="abitem closebutton" onclick="quitprogram()"><i class="fa fa-window-close"></i></div>
 			</div>
+		</div>
+		
+		<!-- Version Info -->
+		<div class="page" id="versioninfo">
+			<h1>Version Info</h1>
+			<h3>Version 1.0.0</h3>
+			<p>12/29/2020 The very first release.</p>
 		</div>
 		
 		<!-- Projects -->
 		<div class="page" id="projects">
 			<div style="display: table; width: 100%; table-layout: fixed;">
-				<div style="display: table-cell; vertical-align: top; width: 30%; overflow-x: hidden; padding: 20px;">
+				<div style="display: table-cell; vertical-align: top; width: 30%; overflow-x: hidden;">
 					<h4><i class="fa fa-pencil"></i> Create New Project</h4>
 					<div>
 						<p style="font-size: 12px; font-style: italic;">1. Project Name</p>
@@ -330,6 +339,51 @@
 						break;
 				}
 			}
+			
+			
+			//click unclick menu blahblah
+			$(".dropdown-content").on("click", function(){
+				$(".dropdown-content", this).hide();
+				topmenuclicked = false;
+			});
+			
+			var topmenuclicked = false;
+			$(".abitem").on("click", function(){
+				$(".dropdown-content").hide();
+				if(!topmenuclicked){
+					$(".dropdown-content", this).show();
+					topmenuclicked = true;
+				}else{
+					topmenuclicked = false;
+				}
+			});
+			
+			$(".abitem").hover(function(){
+				$(".dropdown-content").hide();
+				$(this).css({ "background-color" : "#232c37" });
+				if(topmenuclicked){
+					$(".dropdown-content", this).show();
+				}
+			},function(){
+				$(".dropdown-content").hide();
+				$(this).css({ "background-color" : "#2c3643" });
+			});
+			
+			$(".closebutton").hover(function(){
+				$(this).css({ "background-color" : "red" });
+			}, function(){
+				$(this).css({ "background-color" : "#2c3643" });
+			});
+			
+			$(".minmaxbutton").hover(function(){
+				$(this).css({ "background-color" : "#0d9e59" });
+			}, function(){
+				$(this).css({ "background-color" : "#2c3643" });
+			});
+			
+			$(".page").on("click", function(){
+				topmenuclicked = false;
+			});
 			
 			showpage("projects");
 			

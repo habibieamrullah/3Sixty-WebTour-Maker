@@ -24,18 +24,6 @@
 	font-size: 12px;
 }
 
-.abitem:hover{
-	background-color: #232c37;
-}
-
-.abitem:hover .dropdown-content{
-	display: block;
-}
-
-.quitbutton:hover{
-	background-color: red;
-}
-
 .dropdown-content {
 	margin-left: -10px;
 	margin-top: 10px;
@@ -161,6 +149,19 @@ button:hover{
 	color: #eba576;
 	background-color: #505a6c;
 }
+
+
+.page{
+	padding: 20px;
+}
+
+
+
+
+
+
+
+
 
 .lds-hourglass {
   display: inline-block;
