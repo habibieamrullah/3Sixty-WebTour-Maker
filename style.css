@@ -42,7 +42,9 @@
 }
 
 .subabitem:hover{
-	background-color: #ff6600;
+	background-color: #eba576;
+	color: #3d4855;
+	font-weight: bold;
 }
 
 body{
@@ -70,9 +72,9 @@ input{
 	outline: none;
 	border: 1px solid gray;
 	color: #eba576;
-	padding: 10px;
+	padding: 5px;
 	margin-bottom: 20px;
-	font-size: 20px;
+	font-size: 15px;
 	transition: background-color .5s;
 }
 
@@ -83,7 +85,7 @@ input:focus{
 button{
 	background-color: #eba576;
 	color: #3d4855;
-	padding: 10px;
+	padding: 5px;
 	border: none;
 	outline: none;
 	min-width: 100px;
@@ -98,7 +100,7 @@ button:hover{
 	color: white;
 }
 
-.button{
+.button, .greenbutton{
 	display: inline-block;
 	background-color: #eba576;
 	color: #3d4855;
@@ -115,6 +117,15 @@ button:hover{
 .button:hover{
 	background-color: #ff6600;
 	color: white;
+}
+
+.greenbutton{
+	background-color: #0d9e59;
+	color: white;
+}
+
+.greenbutton:hover{
+	background-color: #00e075;
 }
 
 #newprojectdir{
@@ -139,7 +150,7 @@ button:hover{
 
 .projectlist{
 	border: 1px solid gray;
-	padding: 20px;
+	padding: 10px;
 	margin-bottom: 10px;
 	margin-right: 10px;
 	transition: color .5s, background-color .5s;

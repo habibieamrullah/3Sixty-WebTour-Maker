@@ -25,7 +25,7 @@
 		
 	</head>
 	
-	<body>
+	<body style="display: none;">
 		<div id="appbar">
 			<div class="abitem">
 				File
@@ -60,7 +60,7 @@
 		<div class="page" id="whatis">
 			<h1>What is 360 Web Tour Maker</h1>
 			<p>360 Web Tour Maker is a 100% free desktop software built for you to make a 360 panorama virtual tour for web.</p>
-			<p>This software is made with so many wonderfull open source technologies such as HTML5, JavaScript, jQuery, three.js, panolens and so on.</p>
+			<p>This software is made with so many wonderful open source technologies such as HTML5, JavaScript, jQuery, three.js, panolens and so on.</p>
 		</div>
 		
 		<!-- Version Info -->
@@ -72,6 +72,7 @@
 		
 		<!-- Projects -->
 		<div class="page" id="projects">
+			<h1>Projects</h1>
 			<div style="display: table; width: 100%; table-layout: fixed;">
 				<div style="display: table-cell; vertical-align: top; width: 30%; overflow-x: hidden;">
 					<h4><i class="fa fa-pencil"></i> Create New Project</h4>
@@ -219,11 +220,30 @@
 						}
 					</script>
 				</div>
-				<div style="display: table-cell; vertical-align: top; padding: 20px;">
+				<div style="display: table-cell; vertical-align: top; padding-left: 20px;">
 					<h4><i class="fa fa-briefcase"></i> Recent Projects</h4>
 					<div id="recentprojects"></div>
 				</div>
 			</div>			
+		</div>
+		
+		<!-- Project Editor -->
+		<div class="page" id="projecteditor">
+			<div style="display: table; width: 100%; table-layout: fixed;">
+				<div style="display: table-cell; vertical-align: middle;">
+					<h3 id="currentprojecttitle"></h3>
+					<p id="currentprojectdir" style='font-size: 12px; color: #eba576; font-style: italic;'></p>
+				</div>
+				<div style="display: table-cell; vertical-align: middle; width: 100px; text-align: right;">
+					<div class="greenbutton" style="padding: 10px; font-size: 12px;"><i class="fa fa-play"></i></div>
+				</div>
+			</div>
+			<div style="display: table; width: 100%; table-layout: fixed;">
+				<div style="display: table-cell; vertical-align: top; width: 300px; overflow-x: hidden;">
+					
+				</div>
+				<div style="display: table-cell; vertical-align: top;"></div>
+			</div>
 		</div>
 		
 		<!-- loading and alert dim -->
@@ -262,12 +282,22 @@
 				if(wtmdata.projects.length > 0){
 					for(var i = 0; i < wtmdata.projects.length; i++){
 						if (fs.existsSync(wtmdata.projects[i].projectdir)) {
-							$("#recentprojects").prepend("<div class='projectlist'><div onclick=previewProject('" + wtmdata.projects[i].projectdir + "/index.html') style='cursor: pointer;'><div style='font-size: 20px;'>" +wtmdata.projects[i].projectname+ "</div><div style='font-size: 12px; color: #eba576;'>" +wtmdata.projects[i].projectdir+ "</div></div><div class='button' style='margin-bottom: 0px; font-size: 10px;' onclick=removeFromProjectList(" +i+ ")><i class='fa fa-trash'></i> Remove from list</div><div class='button' style='margin-bottom: 0px; font-size: 10px;' onclick=showInExplorer('" +wtmdata.projects[i].projectdir+ "')><i class='fa fa-folder'></i> Show in Explorer</div></div>");
+							
+							$("#recentprojects").prepend("<div class='projectlist' onclick='editproject("+i+")'><div style='cursor: pointer;'><div style='font-size: 20px;'>" +wtmdata.projects[i].projectname+ "</div><div style='font-size: 12px; color: #eba576;'>" +wtmdata.projects[i].projectdir+ "</div></div><div class='greenbutton' style='margin-bottom: 0px; font-size: 10px;' onclick=previewProject('" + wtmdata.projects[i].projectdir + "/index.html')><i class='fa fa-play'></i> Run</div><div class='button' style='margin-bottom: 0px; font-size: 10px;' onclick=showInExplorer('" +wtmdata.projects[i].projectdir+ "')><i class='fa fa-folder'></i> Show in Explorer</div><div class='button' style='margin-bottom: 0px; font-size: 10px;' onclick=removeFromProjectList(" +i+ ")><i class='fa fa-trash'></i> Remove from list</div></div>");
+							
 						}else{
+							
 							$("#recentprojects").prepend("<div class='projectlist'><div style='color: #e76d6d; font-style: italic;'><div style='font-size: 20px;'><i class='fa fa-warning'></i> " +wtmdata.projects[i].projectname+ " (Not Found)</div><div style='font-size: 12px; color: #e76d6d;'>" +wtmdata.projects[i].projectdir+ "</div></div><div class='button' style='margin-bottom: 0px; font-size: 10px;' onclick=removeFromProjectList(" +i+ ")><i class='fa fa-trash'></i> Remove from list</div></div>");
+							
 						}
 					}
 					$("#recentprojects").css({ "height" : (innerHeight - 75) + "px", "overflow" : "auto" });
+					$(".projectlist").hide();
+					var num = 0;
+					$(".projectlist").each(function(){
+						$(".projectlist").eq(num).delay(num * 100).fadeIn();
+						num++;
+					});
 				}else{
 					$("#recentprojects").html("No project found.");
 				}
@@ -304,18 +334,17 @@
 			function hideDim(){
 				$("#dim").fadeOut();
 				$("#loading").hide();
-				$("#dimmessage").hide();
 			}
 			
 			function showDim(message){
-				$("#dimmessage").html(message).show();
+				$("#dimmessage").html(message);
 				$("#dim").fadeIn();
 				$("#loading").show();
 			}
 			
 			function showAlert(title, message){
 				$("#dimmessage").html("<div style='width: 70%; max-width: 600px; margin: 0 auto;'><div style='background-color: #eba576; color: #3d4855; padding: 10px;'><i class='fa fa-info'></i> " +title+ "</div><div style='padding: 30px; background-color: #3d4855; font-size: 14px; font-weight: normal;'><div>" +message+ "</div><button onclick='hideDim()' style='margin-top: 20px; margin-bottom: 0px;'>Close</button></div></div>");
-				$("#dim").fadeIn();
+				$("#dim").show();
 				$("#loading").hide();
 			}
 			
@@ -344,7 +373,7 @@
 			
 			function showpage(pid){
 				$(".page").hide();
-				$("#" + pid).show();
+				$("#" + pid).fadeIn();
 				
 				switch(pid){
 					case "projects" :
@@ -353,8 +382,14 @@
 				}
 			}
 			
+			function editproject(idx){
+				showpage("projecteditor");
+				$("#currentprojecttitle").html("<i class='fa fa-briefcase' style='width: 30px;'></i>" + wtmdata.projects[idx].projectname);
+				$("#currentprojectdir").html("<i class='fa fa-folder' style='width: 30px;'></i>" + wtmdata.projects[idx].projectdir);
+			}
 			
-			//funckin messy click unclick menu blahblah
+			
+			//fuckin messy click unclick menu blahblah
 			$(".subabitem").on("click", function(){
 				setTimeout(function(){
 					$(".dropdown-content", this).hide();
@@ -398,7 +433,7 @@
 			});
 			
 			$(".closebutton").hover(function(){
-				$(this).css({ "background-color" : "#9c1010" });
+				$(this).css({ "background-color" : "#cf0000" });
 			}, function(){
 				$(this).css({ "background-color" : "#2c3643" });
 			});
@@ -414,6 +449,18 @@
 			});
 			
 			showpage("projects");
+			
+			$(document).ready(function(){
+				$("body").fadeIn();
+			});
+			
+			//Open link in external browser
+			const shell = require('electron').shell;
+			// assuming $ is jQuery
+			$(document).on('click', 'a[href^="http"]', function(event) {
+				event.preventDefault();
+				shell.openExternal(this.href);
+			});
 			
 		</script>
 		
