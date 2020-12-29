@@ -4,199 +4,9 @@
 		<meta charset="UTF-8">
 		<title>360 Web Tour Maker</title>
 		<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
-		<style>
-			@font-face {
-				font-family: 'Quicksand';
-				font-style: normal;
-				font-weight: 500;
-				font-display: swap;
-				src: url(Quicksand.woff2) format('woff2');
-				unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-			}
-			
-			#appbar{
-				position: fixed; 
-				top: 0;
-				left: 0;
-				right: 0;
-				background-color: #2c3643;
-				-webkit-app-region: drag;
-				z-index: 100;
-			}
-			
-			.abitem{
-				padding: 10px;
-				-webkit-app-region: no-drag;
-				display: inline-block;
-				font-size: 12px;
-				transition: background-color .5s;
-			}
-			
-			.abitem:hover{
-				background-color: #36414e;
-			}
-			
-			.quitbutton:hover{
-				background-color: red;
-			}
 		
-			body{
-				font-family: 'Quicksand', sans-serif;
-				background-color: #3d4855;
-				color: #cccccc;
-				user-select: none;
-				font-size: 14px;
-				margin: 0px;
-				padding: 0px;
-				padding-top: 30px;
-				overflow: hidden;
-			}
-			
-			h1, h2, h3, h4, h5, p{
-				margin: 0px;
-				margin-bottom: 10px;
-			}
-			
-			input{
-				box-sizing: border-box;
-				width: 100%;
-				background-color: inherit;
-				border: none;
-				outline: none;
-				border: 1px solid gray;
-				color: #eba576;
-				padding: 10px;
-				margin-bottom: 20px;
-				font-size: 20px;
-				transition: background-color .5s;
-			}
-			
-			input:focus{
-				background-color: #505a6c;
-			}
-			
-			button{
-				background-color: #eba576;
-				color: #3d4855;
-				padding: 10px;
-				border: none;
-				outline: none;
-				min-width: 100px;
-				margin-bottom: 20px;
-				transition: background-color .5s, color .5s;
-				font-weight: bold;
-			}
-			
-			button:hover{
-				background-color: #ff6600;
-				color: white;
-			}
-			
-			.button{
-				display: inline-block;
-				background-color: #eba576;
-				color: #3d4855;
-				padding: 5px;
-				border: none;
-				outline: none;
-				margin-bottom: 10px;
-				margin-top: 10px;
-				margin-right: 10px;
-				transition: background-color .5s, color .5s;
-			}
-			
-			.button:hover{
-				background-color: #ff6600;
-				color: white;
-			}
-			
-			#newprojectdir{
-				font-size: 10px;
-				color: #eba576;
-			}
-			
-			#dim{
-				background-color: rgba(0,0,0,.75);
-				backdrop-filter: blur(10px);
-				color: white;
-				position: fixed;
-				top: 0;
-				left: 0;
-				right: 0;
-				bottom: 0;
-				display: table;
-				width: 100%;
-				height: 100%;
-				text-align: center;
-			}
-			
-			.projectlist{
-				border: 1px solid gray;
-				padding: 20px;
-				margin-bottom: 10px;
-				margin-right: 20px;
-				transition: color .5s, background-color .5s;
-			}
-			
-			.projectlist:hover{
-				color: #eba576;
-				background-color: #505a6c;
-			}
-			
-			.lds-hourglass {
-			  display: inline-block;
-			  position: relative;
-			  width: 80px;
-			  height: 80px;
-			}
-			.lds-hourglass:after {
-			  content: " ";
-			  display: block;
-			  border-radius: 50%;
-			  width: 0;
-			  height: 0;
-			  margin: 8px;
-			  box-sizing: border-box;
-			  border: 32px solid #fff;
-			  border-color: #fff transparent #fff transparent;
-			  animation: lds-hourglass 1.2s infinite;
-			}
-			@keyframes lds-hourglass {
-			  0% {
-				transform: rotate(0);
-				animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
-			  }
-			  50% {
-				transform: rotate(900deg);
-				animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
-			  }
-			  100% {
-				transform: rotate(1800deg);
-			  }
-			}
-			
-			/* SCROLLBAR STYLING */
-			/* width */
-			::-webkit-scrollbar {
-				width: 6px;
-				height: 3px;
-			}
-			/* Track */
-			::-webkit-scrollbar-track {
-				background: inherit; 
-			}
-			/* Handle */
-			::-webkit-scrollbar-thumb {
-				background: #eba576; 
-			}
-			/* Handle on hover */
-			::-webkit-scrollbar-thumb:hover {
-				background: #eba576; 
-			}
-
-			
-		</style>
 		<link rel="stylesheet" type="text/css" href="css/font-awesome.css">
+		<link rel="stylesheet" type="text/css" href="style.css">
 		
 		<!-- Insert this line above script imports  -->
 		<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
@@ -209,6 +19,7 @@
 		<script>
 			var projectext = ".wtm";
 			const { dialog, BrowserWindow } = require('electron').remote;
+			const { ipcRenderer } = require('electron');
 			const fs = require('fs');
 		</script>
 		
@@ -217,12 +28,23 @@
 	<body>
 	
 		<div id="appbar">
-			<div class="abitem" style="color: black; font-weight: bold; background-color: #eba576;">360 Web Tour Maker</div>
-			<div class="abitem">About</div>
+			<div class="abitem">
+				File
+				<div class="dropdown-content">
+					<div class="subabitem" onclick="showpage('projects')"><i class="fa fa-briefcase" style="width: 30px;"></i> Projects</div>
+					<div class="subabitem" onclick="quitprogram()"><i class="fa fa-window-close" style="width: 30px;"></i> Exit</div>
+				</div>
+			</div>
+			<div class="abitem">
+				About
+				<div class="dropdown-content">
+					<div class="subabitem"><i class="fa fa-info" style="width: 30px;"></i> Version Info</div>
+				</div>
+			</div>
 			<div style="float: right;">
-				<div class="abitem"><i class="fa fa-window-minimize"></i></div>
-				<div class="abitem"><i class="fa fa-window-restore"></i></div>
-				<div class="abitem quitbutton"><i class="fa fa-times"></i></div>
+				<div class="abitem" onclick="minimize()"><i class="fa fa-window-minimize"></i></div>
+				<div class="abitem minmaxbutton" onclick="maximize()"><i class="fa fa-window-restore"></i></div>
+				<div class="abitem quitbutton" onclick="quitprogram()"><i class="fa fa-window-close"></i></div>
 			</div>
 		</div>
 		
@@ -377,7 +199,7 @@
 				</div>
 				
 				<div style="display: table-cell; vertical-align: top; padding: 20px;">
-					<h4><i class="fa fa-list"></i> Recent Projects</h4>
+					<h4><i class="fa fa-briefcase"></i> Recent Projects</h4>
 					<div id="recentprojects"></div>
 				</div>
 				
@@ -451,7 +273,7 @@
 			loadRecentProjects();
 			
 			function previewProject(ppath){
-				const newwin = new BrowserWindow({ width: 1280, height : 720 });
+				const newwin = new BrowserWindow({ width: 1280, height : 720, title : "Project Preview" });
 				newwin.loadFile(ppath);
 				newwin.removeMenu();
 				newwin.webContents.openDevTools();
@@ -459,10 +281,12 @@
 			
 			function hideDim(){
 				$("#dim").fadeOut();
+				$("#loading").hide();
+				$("#dimmessage").hide();
 			}
 			
 			function showDim(message){
-				$("#dimmessage").html(message);
+				$("#dimmessage").html(message).show();
 				$("#dim").fadeIn();
 				$("#loading").show();
 			}
@@ -474,6 +298,41 @@
 			}
 			
 			hideDim();
+			
+			function quitprogram(){
+				console.log("Metusik");
+				ipcRenderer.send("quitprogram");
+			}
+			
+			function minimize(){
+				var currentWindow = BrowserWindow.getFocusedWindow();
+				currentWindow.minimize();
+			}
+			
+			function maximize(){
+				var window = BrowserWindow.getFocusedWindow();
+				if(window.isMaximized()){ 
+					window.unmaximize(); 
+					$(".minmaxbutton").html("<i class='fa fa-window-maximize'></i>");
+				}else{ 
+					window.maximize(); 
+					$(".minmaxbutton").html("<i class='fa fa-window-restore'></i>");
+				}
+			}
+			
+			function showpage(pid){
+				$(".page").hide();
+				$("#" + pid).show();
+				
+				switch(pid){
+					case "projects" :
+						loadRecentProjects();
+						break;
+				}
+			}
+			
+			showpage("projects");
+			
 		</script>
 		
 	</body>

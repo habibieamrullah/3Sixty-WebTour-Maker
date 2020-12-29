@@ -1,0 +1,214 @@
+@font-face {
+	font-family: 'Quicksand';
+	font-style: normal;
+	font-weight: 500;
+	font-display: swap;
+	src: url(Quicksand.woff2) format('woff2');
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+#appbar{
+	position: fixed; 
+	top: 0;
+	left: 0;
+	right: 0;
+	background-color: #2c3643;
+	-webkit-app-region: drag;
+	z-index: 100;
+}
+
+.abitem{
+	padding: 10px;
+	-webkit-app-region: no-drag;
+	display: inline-block;
+	font-size: 12px;
+}
+
+.abitem:hover{
+	background-color: #232c37;
+}
+
+.abitem:hover .dropdown-content{
+	display: block;
+}
+
+.quitbutton:hover{
+	background-color: red;
+}
+
+.dropdown-content {
+	margin-left: -10px;
+	margin-top: 10px;
+	display: none;
+	position: absolute;
+	background-color: #232c37;
+	min-width: 160px;
+	box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+	z-index: 1;
+	transition: display .5s;
+}
+
+.subabitem{
+	display: block;
+	padding: 10px;
+}
+
+.subabitem:hover{
+	background-color: #ff6600;
+}
+
+body{
+	font-family: 'Quicksand', sans-serif;
+	background-color: #3d4855;
+	color: #cccccc;
+	user-select: none;
+	font-size: 14px;
+	margin: 0px;
+	padding: 0px;
+	padding-top: 30px;
+	overflow: hidden;
+}
+
+h1, h2, h3, h4, h5, p{
+	margin: 0px;
+	margin-bottom: 10px;
+}
+
+input{
+	box-sizing: border-box;
+	width: 100%;
+	background-color: inherit;
+	border: none;
+	outline: none;
+	border: 1px solid gray;
+	color: #eba576;
+	padding: 10px;
+	margin-bottom: 20px;
+	font-size: 20px;
+	transition: background-color .5s;
+}
+
+input:focus{
+	background-color: #505a6c;
+}
+
+button{
+	background-color: #eba576;
+	color: #3d4855;
+	padding: 10px;
+	border: none;
+	outline: none;
+	min-width: 100px;
+	margin-bottom: 20px;
+	transition: background-color .5s, color .5s;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+button:hover{
+	background-color: #ff6600;
+	color: white;
+}
+
+.button{
+	display: inline-block;
+	background-color: #eba576;
+	color: #3d4855;
+	padding: 5px;
+	border: none;
+	outline: none;
+	margin-bottom: 10px;
+	margin-top: 10px;
+	margin-right: 10px;
+	transition: background-color .5s, color .5s;
+	cursor: pointer;
+}
+
+.button:hover{
+	background-color: #ff6600;
+	color: white;
+}
+
+#newprojectdir{
+	font-size: 10px;
+	color: #eba576;
+}
+
+#dim{
+	background-color: rgba(0,0,0,.75);
+	backdrop-filter: blur(5px);
+	color: white;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	display: table;
+	width: 100%;
+	height: 100%;
+	text-align: center;
+}
+
+.projectlist{
+	border: 1px solid gray;
+	padding: 20px;
+	margin-bottom: 10px;
+	margin-right: 10px;
+	transition: color .5s, background-color .5s;
+}
+
+.projectlist:hover{
+	color: #eba576;
+	background-color: #505a6c;
+}
+
+.lds-hourglass {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+.lds-hourglass:after {
+  content: " ";
+  display: block;
+  border-radius: 50%;
+  width: 0;
+  height: 0;
+  margin: 8px;
+  box-sizing: border-box;
+  border: 32px solid #fff;
+  border-color: #fff transparent #fff transparent;
+  animation: lds-hourglass 1.2s infinite;
+}
+@keyframes lds-hourglass {
+  0% {
+	transform: rotate(0);
+	animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+  }
+  50% {
+	transform: rotate(900deg);
+	animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+  100% {
+	transform: rotate(1800deg);
+  }
+}
+
+/* SCROLLBAR STYLING */
+/* width */
+::-webkit-scrollbar {
+	width: 6px;
+	height: 3px;
+}
+/* Track */
+::-webkit-scrollbar-track {
+	background: inherit; 
+}
+/* Handle */
+::-webkit-scrollbar-thumb {
+	background: #eba576; 
+}
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+	background: #eba576; 
+}
