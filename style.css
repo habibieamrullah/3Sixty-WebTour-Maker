@@ -100,7 +100,7 @@ button:hover{
 	color: white;
 }
 
-.button, .greenbutton{
+.button, .greenbutton, .redbutton{
 	display: inline-block;
 	background-color: #eba576;
 	color: #3d4855;
@@ -126,6 +126,15 @@ button:hover{
 
 .greenbutton:hover{
 	background-color: #00e075;
+}
+
+.redbutton{
+	background-color: #cf0000;
+	color: white;
+}
+
+.redbutton:hover{
+	background-color: #ff0000;
 }
 
 #newprojectdir{

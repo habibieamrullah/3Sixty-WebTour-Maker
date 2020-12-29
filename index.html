@@ -37,9 +37,10 @@
 			<div class="abitem">
 				About
 				<div class="dropdown-content">
+					<div class="subabitem" onclick="showpage('donate')"><i class="fa fa-dollar" style="width: 30px;"></i> Support The Development</div>
 					<div class="subabitem" onclick="showpage('whatis')"><i class="fa fa-question" style="width: 30px;"></i> What is 360 Web Tour Maker</div>
 					<div class="subabitem" onclick="showpage('versioninfo')"><i class="fa fa-info" style="width: 30px;"></i> Version Info</div>
-					<div class="subabitem" onclick="showpage('donate')"><i class="fa fa-dollar" style="width: 30px;"></i> Support The Development</div>
+					
 				</div>
 			</div>
 			<div style="float: right;">
@@ -283,11 +284,11 @@
 					for(var i = 0; i < wtmdata.projects.length; i++){
 						if (fs.existsSync(wtmdata.projects[i].projectdir)) {
 							
-							$("#recentprojects").prepend("<div class='projectlist' onclick='editproject("+i+")'><div style='cursor: pointer;'><div style='font-size: 20px;'>" +wtmdata.projects[i].projectname+ "</div><div style='font-size: 12px; color: #eba576;'>" +wtmdata.projects[i].projectdir+ "</div></div><div class='greenbutton' style='margin-bottom: 0px; font-size: 10px;' onclick=previewProject('" + wtmdata.projects[i].projectdir + "/index.html')><i class='fa fa-play'></i> Run</div><div class='button' style='margin-bottom: 0px; font-size: 10px;' onclick=showInExplorer('" +wtmdata.projects[i].projectdir+ "')><i class='fa fa-folder'></i> Show in Explorer</div><div class='button' style='margin-bottom: 0px; font-size: 10px;' onclick=removeFromProjectList(" +i+ ")><i class='fa fa-trash'></i> Remove from list</div></div>");
+							$("#recentprojects").prepend("<div class='projectlist' onclick='editproject("+i+")'><div style='cursor: pointer;'><div style='font-size: 20px;'>" +wtmdata.projects[i].projectname+ "</div><div style='font-size: 12px; color: #eba576;'>" +wtmdata.projects[i].projectdir+ "</div></div><div class='greenbutton' style='margin-bottom: 0px; font-size: 10px;' onclick=previewProject('" + wtmdata.projects[i].projectdir + "/index.html')><i class='fa fa-play'></i> Run</div><div class='button' style='margin-bottom: 0px; font-size: 10px;' onclick=showInExplorer('" +wtmdata.projects[i].projectdir+ "')><i class='fa fa-folder'></i> Show in Explorer</div><div class='redbutton' style='margin-bottom: 0px; font-size: 10px;' onclick=removeFromProjectList(" +i+ ")><i class='fa fa-trash'></i> Remove from list</div></div>");
 							
 						}else{
 							
-							$("#recentprojects").prepend("<div class='projectlist'><div style='color: #e76d6d; font-style: italic;'><div style='font-size: 20px;'><i class='fa fa-warning'></i> " +wtmdata.projects[i].projectname+ " (Not Found)</div><div style='font-size: 12px; color: #e76d6d;'>" +wtmdata.projects[i].projectdir+ "</div></div><div class='button' style='margin-bottom: 0px; font-size: 10px;' onclick=removeFromProjectList(" +i+ ")><i class='fa fa-trash'></i> Remove from list</div></div>");
+							$("#recentprojects").prepend("<div class='projectlist'><div style='color: #e76d6d; font-style: italic;'><div style='font-size: 20px;'><i class='fa fa-warning'></i> " +wtmdata.projects[i].projectname+ " (Not Found)</div><div style='font-size: 12px; color: #e76d6d;'>" +wtmdata.projects[i].projectdir+ "</div></div><div class='redbutton' style='margin-bottom: 0px; font-size: 10px;' onclick=removeFromProjectList(" +i+ ")><i class='fa fa-trash'></i> Remove from list</div></div>");
 							
 						}
 					}
