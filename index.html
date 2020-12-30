@@ -379,6 +379,19 @@
 				$("#loading").hide();
 			}
 			
+			var doit;
+			function showYesNoAlert(title, message, fn){
+				
+				$("#dimmessage").html("<div style='width: 70%; max-width: 400px; margin: 0 auto;'><div style='background-color: #eba576; color: #3d4855; padding: 10px;'><i class='fa fa-info'></i> " +title+ "</div><div style='padding: 30px; background-color: #3d4855; font-size: 14px; font-weight: normal;'><div>" +message+ "</div><button onclick='doit(); hideDim();' style='margin-top: 20px; margin-bottom: 0px; margin-right: 10px;'>Yes</button><button onclick='hideDim()' style='margin-left: 10px; margin-top: 20px; margin-bottom: 0px;'>No</button></div></div>");
+				$("#dim").show();
+				$("#loading").hide();
+				
+				doit = function(){
+					fn();
+				}
+				
+			}
+			
 			function showMiniPage(type){
 				switch (type){
 					case "about" :
@@ -464,7 +477,7 @@
 					case "panoramas" :
 						var panoramas = "<h2>Panorama Images</h2>";
 						for(var i = 0; i < currentprojectdata.panoramas.length; i++){
-							panoramas += "<div class='imgthumb' style='background: url(" + wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[i].panofile + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'><span style='background-color: black; padding: 5px; font-size: 10px;'>" + truncate(currentprojectdata.panoramas[i].panofile, 20) + "</span></div>";
+							panoramas += "<div class='imgthumb' style='position: relative; background: url(" + wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[i].panofile + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'><span style='background-color: black; padding: 5px; font-size: 10px;'>" + truncate(currentprojectdata.panoramas[i].panofile, 20) + "</span><div onclick='removePanorama(" +i+ ")' class='redbutton' style='position: absolute; bottom: 0; right: 0;'><i class='fa fa-trash'></i></div></div>";
 						}
 						$("#editorcontent").html(panoramas + "<div class='imgthumb' onclick='addpanorama()'><div style='display: table; width: 100%; height: 100%;'><div style='display: table-cell; text-align: center; vertical-align: middle;'><i class='fa fa-plus' style='font-size: 40px;'></i></div></div></div>");
 						break;
@@ -528,6 +541,14 @@
 							});
 						});
 					}
+				});
+			}
+			
+			//To remove panorama
+			function removePanorama(idx){
+				showYesNoAlert("Remove this Panorama?", "Are you sure?", function(){
+					console.log("I choose to delete this panu, yeah!");
+					console.log("So, remove this panu: " + currentprojectdata.panoramas[idx].panofile);
 				});
 			}
 			
