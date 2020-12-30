@@ -194,10 +194,42 @@ a:hover{
 }
 
 .editortab{
-	
 	border-bottom: 1px solid gray;
-	
+	padding: 10px;
+	padding-bottom: 10px;
+	cursor: pointer;
+	transition: background-color .5s, color .5s;
 }
+
+.editortab:hover{
+	background-color: white;
+	color: #3d4855;
+}
+
+.imgthumb{
+	width: 128px;
+	height: 128px;
+	display: inline-block;
+	margin: 10px;
+	cursor: pointer;
+	padding: 10px;
+	transition: border .5s, color .5s;
+	vertical-align: top;
+	border: 3px solid white;
+}
+
+.imgthumb:hover{
+	border: 3px solid #eba576;
+	color: #eba576;
+}
+
+
+
+
+
+
+
+
 
 
 

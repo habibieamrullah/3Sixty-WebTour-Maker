@@ -21,6 +21,7 @@
 			const { dialog, BrowserWindow } = require('electron').remote;
 			const { ipcRenderer } = require('electron');
 			const fs = require('fs');
+			const fse = require("fs-extra");
 		</script>
 		
 	</head>
@@ -168,8 +169,7 @@
 										fs.writeFile(newprojectdir + "/WTMProject" + projectext, JSON.stringify(initialProjectData), function (err) {
 											if (err) return console.log(err);
 											console.log('Tadaaaa! New project is created!');
-											
-											const fse = require("fs-extra");
+
 											const srcDir = "./resources/panotemplate";
 											const destDir = newprojectdir;
 											fse.copySync(srcDir, destDir);
@@ -237,9 +237,10 @@
 					<div class="greenbutton" style="margin: 0px; padding: 10px; font-size: 12px;" id="currentprojectrunbutton"><i class="fa fa-play"></i></div>
 				</div>
 			</div>
-			<div style="display: table; width: 100%; table-layout: fixed;">
+			<div style="display: table; width: 100%; table-layout: fixed; margin-top: 30px;">
 				<div style="display: table-cell; vertical-align: top; width: 200px; overflow-x: hidden;">
-					<div class="editortab" onclick="showeditorc('panoramas')">Panoramas</div>
+					<div class="editortab" onclick="showeditorc('panoramas')"><i class="fa fa-camera" style="width: 20px;"></i> Panoramas</div>
+					<div class="editortab" onclick="showeditorc('panoramas')"><i class="fa fa-circle-thin" style="width: 20px;"></i> Hotspots</div>
 				</div>
 				<div style="display: table-cell; vertical-align: top; padding-left: 40px;" id="editorcontent"></div>
 			</div>
@@ -444,11 +445,36 @@
 					case "panoramas" :
 						var panoramas = "";
 						for(var i = 0; i < currentprojectdata.panoramas.length; i++){
-							panoramas += currentprojectdata.panoramas[i];
+							panoramas += "<div class='imgthumb' style='background: url(" + wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[i] + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'></div>";
 						}
-						$("#editorcontent").html("Panoramas List : " + panoramas);
+						$("#editorcontent").html(panoramas + "<div class='imgthumb' onclick='addpanorama()'><div style='display: table; width: 100%; height: 100%;'><div style='display: table-cell; text-align: center; vertical-align: middle;'><i class='fa fa-plus' style='font-size: 40px;'></i></div></div></div>");
 						break;
 				}
+			}
+			
+			function addpanorama(){
+				var newpanoramapath = "";
+				dialog.showOpenDialog({
+					properties: ['openFile'],
+					filters : [{
+						name : 'Images', extensions : ['jpg', 'gif'],
+					}]
+				}).then(result => {
+					newpanoramapath = result.filePaths[0];
+					console.log(newpanoramapath);
+					var newpanoramafile = newpanoramapath.split("\\")[newpanoramapath.split("\\").length-1];
+					newpanoramafile = newpanoramafile.replace(/\s+/g, '-').toLowerCase();
+					console.log("Selected file: " + newpanoramafile);
+					//Copying new panorama image to project image directory
+					
+					fse.copySync(newpanoramapath, wtmdata.projects[currentprojectindex].projectdir + '/panoramas/' + newpanoramafile);
+					/*
+					fs.copyFile('C:/Users/ci2020/Desktop/freepanoramas/lakes.jpg', currentprojectdata.projectdir + "/apikrek.jpg", (err) => {
+						if (err) throw err;
+						console.log('source.txt was copied to destination.txt');
+					});
+					*/
+				});
 			}
 			
 			
