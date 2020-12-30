@@ -64,7 +64,7 @@ h1, h2, h3, h4, h5, p{
 	margin-bottom: 10px;
 }
 
-input{
+input, select, option{
 	box-sizing: border-box;
 	width: 100%;
 	background-color: inherit;
@@ -76,6 +76,11 @@ input{
 	margin-bottom: 20px;
 	font-size: 15px;
 	transition: background-color .5s;
+}
+
+option{
+	background-color: #2c3643;
+	color: white;
 }
 
 input:focus{
@@ -210,12 +215,14 @@ a:hover{
 	width: 128px;
 	height: 128px;
 	display: inline-block;
-	margin: 10px;
+	margin-right: 10px;
+	margin-bottom: 10px;
 	cursor: pointer;
 	padding: 10px;
 	transition: border .5s, color .5s;
 	vertical-align: top;
 	border: 3px solid white;
+	overflow: auto;
 }
 
 .imgthumb:hover{

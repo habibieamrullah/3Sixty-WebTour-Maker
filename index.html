@@ -32,7 +32,7 @@
 				File
 				<div class="dropdown-content">
 					<div class="subabitem" onclick="showpage('projects')"><i class="fa fa-briefcase" style="width: 30px;"></i> Projects</div>
-					<div class="subabitem" onclick="quitprogram()"><i class="fa fa-window-close" style="width: 30px;"></i> Exit</div>
+					<div class="subabitem" onclick="quitprogram()"><i class="fa fa-times" style="width: 30px;"></i> Exit</div>
 				</div>
 			</div>
 			<div class="abitem">
@@ -45,7 +45,7 @@
 			<div style="float: right;">
 				<div class="abitem rightbtn minimizebutton" onclick="minimize()"><i class="fa fa-window-minimize"></i></div>
 				<div class="abitem rightbtn minmaxbutton" onclick="maximize()"><i class="fa fa-window-restore"></i></div>
-				<div class="abitem rightbtn closebutton" onclick="quitprogram()"><i class="fa fa-window-close"></i></div>
+				<div class="abitem rightbtn closebutton" onclick="quitprogram()"><i class="fa fa-times"></i></div>
 			</div>
 		</div>
 		
@@ -76,17 +76,17 @@
 					<div>
 						<p style="font-size: 12px; font-style: italic;">2. Project Directory</p>
 						<p id="newprojectdir"></p>
-						<button onclick="chooseprojectdir()">Browse</button>
+						<button onclick="chooseprojectdir()"><i class="fa fa-folder"></i> Browse</button>
 					</div>
 					<div>
 						<p style="font-size: 12px; font-style: italic;">3. Hit Create Button!</p>
-						<button onclick="createproject()">Create</button>
+						<button onclick="createproject()"><i class="fa fa-chevron-right"></i> Create</button>
 					</div>
 					
 					<h4><i class="fa fa-folder"></i> Or Open Existing Project</h4>
 					<div>
 						<p style="font-size: 12px; font-style: italic;">Click to browse</p>
-						<button onclick="openproject()">Browse</button>
+						<button onclick="openproject()"><i class="fa fa-folder"></i> Browse</button>
 					</div>
 					<script>
 						var newprojectname = "";
@@ -102,6 +102,7 @@
 										$("#newprojectdir").html(newprojectdir);
 									}else{
 										$("#newprojectdir").html("");
+										newprojectdir = "";
 									}
 								});
 							}else{
@@ -150,8 +151,8 @@
 						}
 						
 						function createproject(){
-						
-							if(newprojectname == "" && newprojectdir == ""){
+							newprojectname = $("#newprojectname").val();
+							if(newprojectname == "" || newprojectdir == ""){
 								showAlert("Incomplete Information", "Both Project Name and Project Directory must be set.");
 								$("#newprojectname").focus();
 							}else{
@@ -164,7 +165,7 @@
 									setTimeout(function(){
 										var initialProjectData = {
 											"title" : newprojectname,
-											"panoramas" : ["testpanorama.jpg"],
+											"panoramas" : [ { panofile : "testpanorama.jpg", hotspots : [] }],
 										};
 										fs.writeFile(newprojectdir + "/WTMProject" + projectext, JSON.stringify(initialProjectData), function (err) {
 											if (err) return console.log(err);
@@ -183,7 +184,7 @@
 												newhtml = data;
 												var newhtml = data.replace("<title>TITLE</title>", "<title>" +newprojectname+ "</title>");
 												data = newhtml;
-												var newhtml = data.split("/*panoramas*/")[0] +"/*panoramas*/\n\r"+ generatePanoramas(initialProjectData.panoramas) +"\n\r/*panoramas*/"+ data.split("/*panoramas-end*/")[1];
+												var newhtml = data.split("/*panoramas*/")[0] +"/*panoramas*/\n\r"+ generatePanoramas(initialProjectData.panoramas) +"\n\r/*panoramas-end*/"+ data.split("/*panoramas-end*/")[1];
 												fs.writeFile(newprojectdir + "/index.html", newhtml, function (err) {
 													if (err) return console.log(err);
 													console.log('Project title is set!');		
@@ -240,9 +241,10 @@
 			<div style="display: table; width: 100%; table-layout: fixed; margin-top: 30px;">
 				<div style="display: table-cell; vertical-align: top; width: 200px; overflow-x: hidden;">
 					<div class="editortab" onclick="showeditorc('panoramas')"><i class="fa fa-camera" style="width: 20px;"></i> Panoramas</div>
-					<div class="editortab" onclick="showeditorc('panoramas')"><i class="fa fa-circle-thin" style="width: 20px;"></i> Hotspots</div>
+					<div class="editortab" onclick="showeditorc('hotspots')"><i class="fa fa-circle-thin" style="width: 20px;"></i> Hotspots</div>
+					<div class="editortab" onclick="showeditorc('settings')"><i class="fa fa-cog" style="width: 20px;"></i> Settings</div>
 				</div>
-				<div style="display: table-cell; vertical-align: top; padding-left: 40px;" id="editorcontent"></div>
+				<div style="display: table-cell; vertical-align: top; padding-left: 20px;" id="editorcontent"></div>
 			</div>
 		</div>
 		
@@ -343,8 +345,8 @@
 				var pdata = "";
 				if(arr.length > 0){
 					for(var i = 0; i < arr.length; i++){
-						var panovar = arr[i].split(".")[0];
-						pdata += "var "+panovar+" = new PANOLENS.ImagePanorama( \"panoramas/" + arr[i] + "\" );\n\
+						var panovar = arr[i].panofile.split(".")[0];
+						pdata += "var "+panovar+" = new PANOLENS.ImagePanorama( \"panoramas/" + arr[i].panofile + "\" );\n\
 						viewer.add( "+panovar+" );\n\
 						"+panovar+".addEventListener('progress', function(e){\n\
 							$(\"#loading\").show();\n\
@@ -353,7 +355,8 @@
 							$(\"#loading\").fadeOut();\n\
 						});\n\
 						"+panovar+".addEventListener('click', function(e){\n\
-						});";
+						});\n\r\n\r";
+						console.log("JS Code for this panorama has been added: " + panovar);
 					}
 				}
 				return pdata;
@@ -379,7 +382,7 @@
 			function showMiniPage(type){
 				switch (type){
 					case "about" :
-						showAlert("About", "<h1>360 Web Tour Maker</h1><h4>by habibieamrullah</h4><p>Version 1.0.0<br><a href='#'>Release Notes</a><br><a href='#'>Terms and Conditions</a></p>");
+						showAlert("About", "<h1>360 Web Tour Maker</h1><h3>Version 1.0.0</h3><p><br><a href='https://ciihuy.com/'>Visit the Web</a><br><a href='#'>Terms and Conditions</a></p>");
 						break;
 					case "donate" :
 						showAlert("Support The Development", "<p><img src='paypal.png' style='background-color: white; padding: 20px;'></p><p>This software is made for you for free. However, I expect any amount donations from users like you to keep me supported for maintenance and further development of this software.</p><p>Please send your donation to my PayPal account here: <a href='https://paypal.me/habibieamrullah'>https://paypal.me/habibieamrullah</a></p>");
@@ -421,6 +424,22 @@
 				}
 			}
 			
+			//Function to generate random characters
+			function randomblah(length){
+				var result = '';
+				var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+				var charactersLength = characters.length;
+				for ( var i = 0; i < length; i++ ) {
+				result += characters.charAt(Math.floor(Math.random() * charactersLength));
+				}
+				return result;
+			}
+			
+			//Function to truncate string
+			function truncate(str, n){
+				return (str.length > n) ? str.substr(0, n-1) + '&hellip;' : str;
+			};
+			
 			var currentprojectindex;
 			var currentprojectdata;
 			function editproject(idx){
@@ -443,13 +462,33 @@
 			function showeditorc(type){
 				switch(type){
 					case "panoramas" :
-						var panoramas = "";
+						var panoramas = "<h2>Panorama Images</h2>";
 						for(var i = 0; i < currentprojectdata.panoramas.length; i++){
-							panoramas += "<div class='imgthumb' style='background: url(" + wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[i] + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'></div>";
+							panoramas += "<div class='imgthumb' style='background: url(" + wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[i].panofile + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'><span style='background-color: black; padding: 5px; font-size: 10px;'>" + truncate(currentprojectdata.panoramas[i].panofile, 20) + "</span></div>";
 						}
 						$("#editorcontent").html(panoramas + "<div class='imgthumb' onclick='addpanorama()'><div style='display: table; width: 100%; height: 100%;'><div style='display: table-cell; text-align: center; vertical-align: middle;'><i class='fa fa-plus' style='font-size: 40px;'></i></div></div></div>");
 						break;
+					case "settings" :
+						$("#editorcontent").html("<h2>Project Settings</h2><p>Panorama Loading Text</p><input value='Please wait...'><p>First panorama to load</p><select>" +getPanoramasNameOption()+ "</select><button onclick='saveProjectSettings()'><i class='fa fa-floppy-o'></i> Save</button>");
+						break;
+					case "hotspots" :
+						$("#editorcontent").html("<h2>Hotspots</h2><p>Hotspots will be here...</p>");
+						break;
 				}
+			}
+			
+			function saveProjectSettings(){
+				showAlert("Project Settings", "Project Settings has been saved successfully.");
+			}
+			
+			function getPanoramasNameOption(){
+				op = "";
+				for(var i = 0; i < currentprojectdata.panoramas.length; i++){
+					var panname = currentprojectdata.panoramas[i].panofile.split(".")[0];
+					op += "<option>" +panname+ "</option>";
+				}
+				return op;
+				
 			}
 			
 			function addpanorama(){
@@ -460,21 +499,45 @@
 						name : 'Images', extensions : ['jpg', 'gif'],
 					}]
 				}).then(result => {
+					//Get the new panorama file path
 					newpanoramapath = result.filePaths[0];
-					console.log(newpanoramapath);
-					var newpanoramafile = newpanoramapath.split("\\")[newpanoramapath.split("\\").length-1];
-					newpanoramafile = newpanoramafile.replace(/\s+/g, '-').toLowerCase();
-					console.log("Selected file: " + newpanoramafile);
-					//Copying new panorama image to project image directory
-					
-					fse.copySync(newpanoramapath, wtmdata.projects[currentprojectindex].projectdir + '/panoramas/' + newpanoramafile);
-					/*
-					fs.copyFile('C:/Users/ci2020/Desktop/freepanoramas/lakes.jpg', currentprojectdata.projectdir + "/apikrek.jpg", (err) => {
-						if (err) throw err;
-						console.log('source.txt was copied to destination.txt');
-					});
-					*/
+					if(newpanoramapath != undefined){
+						console.log(newpanoramapath);
+						//Renaming the file to better file name
+						var newpanoramafile = newpanoramapath.split("\\")[newpanoramapath.split("\\").length-1];
+						newpanoramafile = newpanoramafile.replace(/\s+/g, '').toLowerCase();
+						//Checking duplicate file name to avoid conflicts
+						if(foundduplicatepanofile(newpanoramafile))
+							newpanoramafile = newpanoramafile.split(".")[0] + randomblah(5) + "." + newpanoramafile.split(".")[1];
+						console.log("Selected file: " + newpanoramafile);
+						//Copying new panorama image to project image directory
+						fse.copySync(newpanoramapath, wtmdata.projects[currentprojectindex].projectdir + '/panoramas/' + newpanoramafile);
+						console.log("New panorama file copied to project directory.");
+						//Pushing new panorama file name to projectdata
+						currentprojectdata.panoramas.push({ panofile : newpanoramafile, hotspots : [] });
+						//Write new projectdata to wtm file
+						fs.writeFile(wtmdata.projects[currentprojectindex].projectdir + "/WTMProject.wtm", JSON.stringify(currentprojectdata), function (err,data){});
+						//Regenerate html panoramas
+						fs.readFile(wtmdata.projects[currentprojectindex].projectdir + "/index.html", 'utf8', function (err, data) {
+							if (err) { return console.log(err); }
+							var newhtml = data.split("/*panoramas*/")[0] +"/*panoramas*/\n\r"+ generatePanoramas(currentprojectdata.panoramas) +"\n\r/*panoramas-end*/"+ data.split("/*panoramas-end*/")[1];
+							fs.writeFile(wtmdata.projects[currentprojectindex].projectdir + "/index.html", newhtml, function (err) {
+								if (err) return console.log(err);
+								showeditorc('panoramas');
+								console.log("Done regenerating new HTML after adding new panorama.");
+							});
+						});
+					}
 				});
+			}
+			
+			//A function to check is this file name is duplicated or not
+			function foundduplicatepanofile(filename){
+				for(var i = 0; i < currentprojectdata.panoramas.length; i++){
+					if(filename == currentprojectdata.panoramas[i].panofile)
+						return true;
+				}
+				return false;
 			}
 			
 			
