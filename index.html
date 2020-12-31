@@ -327,7 +327,8 @@
 			
 			function isProjectExist(title, dir){
 				for(var i = 0; i < wtmdata.projects.length; i++){
-					if(wtmdata.projects[i].projectdir == dir && wtmdata.projects[i].projectname == title)
+					// && wtmdata.projects[i].projectname == title
+					if(wtmdata.projects[i].projectdir == dir)
 						return true;
 				}
 				return false;
@@ -490,6 +491,7 @@
 						$("#editorcontent").html("<h2>Hotspots</h2><p>Hotspots will be here...</p>");
 						break;
 				}
+				$("#editorcontent").hide().fadeIn();
 			}
 			
 			function saveProjectSettings(){
@@ -595,39 +597,35 @@
 				if(newtitle.length > 3){
 					clearTimeout(rnmttltimeout);
 					rnmttltimeout = setTimeout(function(){
-						
+						//Read existing WTM data
 						fs.readFile(wtmdata.projects[currentprojectindex].projectdir + "/WTMProject.wtm", 'utf8', function (err,data) {
-							
 							if (err) {
 								return console.log(err);
 							}
-							
 							var projectinfo = JSON.parse(data);
 							projectinfo.title = newtitle;
-							
+							//Then replace the WTM data with the updated one
 							fs.writeFile(wtmdata.projects[currentprojectindex].projectdir + "/WTMProject.wtm", JSON.stringify(projectinfo), function (err) {
 								if (err) return console.log(err);
-							});
-							
-							fs.readFile(wtmdata.projects[currentprojectindex].projectdir + "/index.html", 'utf8', function (err,data){
-								if (err) {
-									return false;
-								}
-								
-								var newhtml = data.split("<title>")[0] + "<title>" +newtitle+ "</title>" + data.split("</title>")[1];
-								
-								fs.writeFile(wtmdata.projects[currentprojectindex].projectdir + "/index.html", newhtml, function (err) {
-									if (err) return console.log(err);
+									//Then re-generate the HTML accordingly
+									//First read the existing HTML content
+									fs.readFile(wtmdata.projects[currentprojectindex].projectdir + "/index.html", 'utf8', function (err,data){
+									if (err) {
+										return false;
+									}							
+									//Then manipulate and place the new content
+									var newhtml = data.split("<title>")[0] + "<title>" +newtitle+ "</title>" + data.split("</title>")[1];
+									fs.writeFile(wtmdata.projects[currentprojectindex].projectdir + "/index.html", newhtml, function (err) {
+										if (err) return console.log(err);
+										//If everything is done, save it!
+										wtmdata.projects[currentprojectindex].projectname = newtitle;
+										saveWtmdata();
+										showAlert("Project Title Change", "New project title has been saved.");
+									});
 								});
-								
-								wtmdata.projects[currentprojectindex].projectname = newtitle;
-								saveWtmdata();
-								
 							});
-							
 						});
-						
-					},2000);
+					},5000);
 				}
 			}
 			
