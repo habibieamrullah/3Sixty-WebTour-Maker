@@ -306,9 +306,11 @@
 			}
 			
 			function removeFromProjectList(index){
-				wtmdata.projects.splice(index, 1);
-				saveWtmdata();
-				loadRecentProjects();
+				showYesNoAlert("Are you sure?", "Remove this project from the Project list? You will need to remove the directory from your hard drive manually to completely delete it from your computer.", function(){
+					wtmdata.projects.splice(index, 1);
+					saveWtmdata();
+					loadRecentProjects();
+				});
 			}
 			
 			function showInExplorer(idx){
@@ -374,7 +376,7 @@
 			}
 			
 			function showAlert(title, message){
-				$("#dimmessage").html("<div style='width: 70%; max-width: 400px; margin: 0 auto;'><div style='background-color: #eba576; color: #3d4855; padding: 10px;'><i class='fa fa-info'></i> " +title+ "</div><div style='padding: 30px; background-color: #3d4855; font-size: 14px; font-weight: normal;'><div>" +message+ "</div><button onclick='hideDim()' style='margin-top: 20px; margin-bottom: 0px;'>Close</button></div></div>");
+				$("#dimmessage").html("<div style='width: 70%; max-width: 400px; margin: 0 auto;'><div style='background-color: #2c3643; color: white; padding: 10px;'><i class='fa fa-info-circle'></i> " +title+ "</div><div style='padding: 30px; background-color: #3d4855; font-size: 14px; font-weight: normal;'><div>" +message+ "</div><button onclick='hideDim()' style='margin-top: 20px; margin-bottom: 0px;'>Close</button></div></div>");
 				$("#dim").show();
 				$("#loading").hide();
 			}
@@ -382,7 +384,7 @@
 			var doit;
 			function showYesNoAlert(title, message, fn){
 				
-				$("#dimmessage").html("<div style='width: 70%; max-width: 400px; margin: 0 auto;'><div style='background-color: #eba576; color: #3d4855; padding: 10px;'><i class='fa fa-info'></i> " +title+ "</div><div style='padding: 30px; background-color: #3d4855; font-size: 14px; font-weight: normal;'><div>" +message+ "</div><button onclick='doit(); hideDim();' style='margin-top: 20px; margin-bottom: 0px; margin-right: 10px;'>Yes</button><button onclick='hideDim()' style='margin-left: 10px; margin-top: 20px; margin-bottom: 0px;'>No</button></div></div>");
+				$("#dimmessage").html("<div style='width: 70%; max-width: 400px; margin: 0 auto;'><div style='background-color: #2c3643; color: white; padding: 10px;'><i class='fa fa-question-circle'></i> " +title+ "</div><div style='padding: 30px; background-color: #3d4855; font-size: 14px; font-weight: normal;'><div>" +message+ "</div><button onclick='doit(); hideDim();' style='margin-top: 20px; margin-bottom: 0px; margin-right: 10px;'>Yes</button><button onclick='hideDim()' style='margin-left: 10px; margin-top: 20px; margin-bottom: 0px;'>No</button></div></div>");
 				$("#dim").show();
 				$("#loading").hide();
 				
@@ -479,7 +481,7 @@
 						for(var i = 0; i < currentprojectdata.panoramas.length; i++){
 							panoramas += "<div class='imgthumb' style='position: relative; background: url(" + wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[i].panofile + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'><span style='background-color: black; padding: 5px; font-size: 10px;'>" + truncate(currentprojectdata.panoramas[i].panofile, 20) + "</span><div onclick='removePanorama(" +i+ ")' class='redbutton' style='position: absolute; bottom: 0; right: 0;'><i class='fa fa-trash'></i></div></div>";
 						}
-						$("#editorcontent").html(panoramas + "<div class='imgthumb' onclick='addpanorama()'><div style='display: table; width: 100%; height: 100%;'><div style='display: table-cell; text-align: center; vertical-align: middle;'><i class='fa fa-plus' style='font-size: 40px;'></i></div></div></div>");
+						$("#editorcontent").html(panoramas + "<div class='imgthumb' onclick='addpanorama()'><div style='cursor: pointer; display: table; width: 100%; height: 100%;'><div style='display: table-cell; text-align: center; vertical-align: middle;'><i class='fa fa-plus' style='font-size: 40px;'></i></div></div></div>");
 						break;
 					case "settings" :
 						$("#editorcontent").html("<h2>Project Settings</h2><p>Panorama Loading Text</p><input value='Please wait...'><p>First panorama to load</p><select>" +getPanoramasNameOption()+ "</select><button onclick='saveProjectSettings()'><i class='fa fa-floppy-o'></i> Save</button>");
@@ -491,7 +493,7 @@
 			}
 			
 			function saveProjectSettings(){
-				showAlert("Project Settings", "Project Settings has been saved successfully.");
+				showAlert("Project Settings", "Project Settings has been updated successfully.");
 			}
 			
 			function getPanoramasNameOption(){
@@ -529,27 +531,47 @@
 						//Pushing new panorama file name to projectdata
 						currentprojectdata.panoramas.push({ panofile : newpanoramafile, hotspots : [] });
 						//Write new projectdata to wtm file
-						fs.writeFile(wtmdata.projects[currentprojectindex].projectdir + "/WTMProject.wtm", JSON.stringify(currentprojectdata), function (err,data){});
+						updateWtmFile();
 						//Regenerate html panoramas
-						fs.readFile(wtmdata.projects[currentprojectindex].projectdir + "/index.html", 'utf8', function (err, data) {
-							if (err) { return console.log(err); }
-							var newhtml = data.split("/*panoramas*/")[0] +"/*panoramas*/\n\r"+ generatePanoramas(currentprojectdata.panoramas) +"\n\r/*panoramas-end*/"+ data.split("/*panoramas-end*/")[1];
-							fs.writeFile(wtmdata.projects[currentprojectindex].projectdir + "/index.html", newhtml, function (err) {
-								if (err) return console.log(err);
-								showeditorc('panoramas');
-								console.log("Done regenerating new HTML after adding new panorama.");
-							});
-						});
+						generateHTMLPanoramas();
 					}
+				});
+			}
+			
+			//Generating html for panorama changes
+			function generateHTMLPanoramas(){
+				fs.readFile(wtmdata.projects[currentprojectindex].projectdir + "/index.html", 'utf8', function (err, data) {
+					if (err) { return console.log(err); }
+					var newhtml = data.split("/*panoramas*/")[0] +"/*panoramas*/\n\r"+ generatePanoramas(currentprojectdata.panoramas) +"\n\r/*panoramas-end*/"+ data.split("/*panoramas-end*/")[1];
+					fs.writeFile(wtmdata.projects[currentprojectindex].projectdir + "/index.html", newhtml, function (err) {
+						if (err) return console.log(err);
+						showeditorc('panoramas');
+						console.log("Done regenerating new HTML after adding new panorama.");
+					});
 				});
 			}
 			
 			//To remove panorama
 			function removePanorama(idx){
-				showYesNoAlert("Remove this Panorama?", "Are you sure?", function(){
+				showYesNoAlert("Remove this Panorama?", "Do you want to remove this panorama? You will also lost all the hotspots inside it.", function(){
 					console.log("I choose to delete this panu, yeah!");
 					console.log("So, remove this panu: " + currentprojectdata.panoramas[idx].panofile);
+					deleteFile(wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[idx].panofile);
+					currentprojectdata.panoramas.splice(idx, 1);
+					updateWtmFile();
+					generateHTMLPanoramas();
+					showeditorc("panoramas");
 				});
+			}
+			
+			//FS delete file
+			function deleteFile(f){
+				try {
+					fs.unlinkSync(f)
+					//file removed
+				} catch(err) {
+					console.error(err)
+				}
 			}
 			
 			//A function to check is this file name is duplicated or not
@@ -559,6 +581,11 @@
 						return true;
 				}
 				return false;
+			}
+			
+			//Update the WTM File of current project
+			function updateWtmFile(){
+				fs.writeFile(wtmdata.projects[currentprojectindex].projectdir + "/WTMProject.wtm", JSON.stringify(currentprojectdata), function (err,data){});
 			}
 			
 			
