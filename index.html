@@ -171,6 +171,7 @@
 												"firstpanorama" : "testpanorama.jpg",
 											},
 										};
+										currentprojectdata = initialProjectData;
 										fs.writeFile(newprojectdir + "/WTMProject" + projectext, JSON.stringify(initialProjectData), function (err) {
 											if (err) return console.log(err);
 											console.log('Tadaaaa! New project is created!');
@@ -489,12 +490,14 @@
 							var itsmainpano = "";
 							var itsmainpanogreen = "background-color: #eba576;";
 							var itsmainpanoaction = " onclick='setitasmainpano(" +i+ ")'";
+							var itsmainpanotrash = "";
 							if(currentprojectdata.panoramas[i].panofile == currentprojectdata.settings.firstpanorama){
 								itsmainpano = "<i class='fa fa-home'></i> ";
 								itsmainpanogreen = "background-color: #0d9e59;";
 								itsmainpanoaction = " onclick='showAlert(\"Main Panorama\", \"This panorama is already set as Main Panorama\");'";
+								itsmainpanotrash = " display: none;";
 							}
-							panoramas += "<div class='imgthumb' style='position: relative; background: url(" + wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[i].panofile + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'><span"+itsmainpanoaction+" style='"+itsmainpanogreen+" color: black; cursor: pointer; font-weight: bold; padding: 5px; font-size: 10px;'>" + itsmainpano + truncate(currentprojectdata.panoramas[i].panofile, 20) + "</span><div onclick='removePanorama(" +i+ ")' class='redbutton' style='position: absolute; bottom: 0; right: 0;'><i class='fa fa-trash'></i></div></div>";
+							panoramas += "<div class='imgthumb' style='position: relative; background: url(" + wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[i].panofile + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'><span"+itsmainpanoaction+" style='"+itsmainpanogreen+" color: black; cursor: pointer; font-weight: bold; padding: 5px; font-size: 10px;'>" + itsmainpano + truncate(currentprojectdata.panoramas[i].panofile, 20) + "</span><div onclick='removePanorama(" +i+ ")' class='redbutton' style='" +itsmainpanotrash+ "position: absolute; bottom: 0; right: 0;'><i class='fa fa-trash'></i></div></div>";
 						}
 						$("#editorcontent").html(panoramas + "<div class='imgthumb' onclick='addpanorama()'><div style='cursor: pointer; display: table; width: 100%; height: 100%;'><div style='display: table-cell; text-align: center; vertical-align: middle;'><i class='fa fa-plus' style='font-size: 40px;'></i></div></div></div>");
 						break;
@@ -502,9 +505,21 @@
 						$("#editorcontent").html("<h2>Project Settings</h2><p>Panorama Loading Text</p><input id='psloadingtext' value='" +currentprojectdata.settings.loadingtext+ "'><p>Main Panorama (First panorama to load)</p><select id='firstpanorama'>" +getPanoramasNameOption()+ "</select><button onclick='saveProjectSettings()'><i class='fa fa-floppy-o'></i> Save</button>");
 						break;
 					case "hotspots" :
-						$("#editorcontent").html("<h2>Hotspots</h2><p>Hotspots will be here...</p>");
+						var panoswithhots = "";
+						for(var i = 0; i < currentprojectdata.panoramas.length; i++){
+							var hotspotsofit = "";
+							if(currentprojectdata.panoramas[i].hotspots.length == 0){
+								hotspotsofit = "<div>There is no hotspot for this panorama.</div>";
+							}
+							panoswithhots += "<div style='background: url(" + wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[i].panofile + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; margin-bottom: 20px;'><div class='brighteronhover' style='padding: 20px;'><div style='border: 2px solid white; color: white; padding: 10px; display: inline-block; margin-bottom: 10px;'>" +currentprojectdata.panoramas[i].panofile+ "</div>" + hotspotsofit + "<button style='margin: 0px; margin-top: 10px;' onclick=addNewHotspotFor("+i+")><i class='fa fa-plus-square'></i> Add New Hotspot</button></div></div>";
+						}
+						$("#editorcontent").html("<h2>Hotspots</h2>" + panoswithhots);
 						break;
 				}
+			}
+			
+			function addNewHotspotFor(idx){
+				$("#editorcontent").html("<h2>Add New Hotspot for " +idx+ "</h2>");
 			}
 			
 			function setitasmainpano(idx){
@@ -601,13 +616,17 @@
 			//To remove panorama
 			function removePanorama(idx){
 				showYesNoAlert("Remove this Panorama?", "Do you want to remove this panorama? You will also lost all the hotspots inside it.", function(){
-					console.log("I choose to delete this panu, yeah!");
-					console.log("So, remove this panu: " + currentprojectdata.panoramas[idx].panofile);
-					deleteFile(wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[idx].panofile);
-					currentprojectdata.panoramas.splice(idx, 1);
-					updateWtmFile();
-					generateHTMLPanoramas();
-					showeditorc("panoramas");
+					if(currentprojectdata.panoramas[idx].panofile == currentprojectdata.settings.firstpanorama){
+						showAlert("Unable to Remove", "This panorama has been set as Main Panorama. You can not remove it unless you set another panorama file as Main Panorama.");
+					}else{
+						console.log("I choose to delete this panu, yeah!");
+						console.log("So, remove this panu: " + currentprojectdata.panoramas[idx].panofile);
+						deleteFile(wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[idx].panofile);
+						currentprojectdata.panoramas.splice(idx, 1);
+						updateWtmFile();
+						generateHTMLPanoramas();
+						showeditorc("panoramas");
+					}
 				});
 			}
 			
