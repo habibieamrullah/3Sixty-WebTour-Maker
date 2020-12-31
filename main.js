@@ -10,10 +10,15 @@ function createWindow () {
 			enableRemoteModule: true,
 		}
 	})
+
 	win.loadFile('index.html')
 	win.webContents.openDevTools();
 	win.maximize();
 	win.removeMenu();
+	
+	ipcMain.on("infospotlocationreceived", (evt, arg) => {
+		win.webContents.send("setnewinfospotlocation", arg);
+	});
 
 }
 

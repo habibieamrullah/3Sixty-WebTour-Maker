@@ -249,7 +249,9 @@
 					<div class="editortab" onclick="showeditorc('hotspots')"><i class="fa fa-circle-thin" style="width: 20px;"></i> Hotspots</div>
 					<div class="editortab" onclick="showeditorc('settings')"><i class="fa fa-cog" style="width: 20px;"></i> Settings</div>
 				</div>
-				<div style="display: table-cell; vertical-align: top; padding-left: 20px;" id="editorcontent"></div>
+				<div style="display: table-cell; vertical-align: top; padding-left: 20px;">
+					<div id="editorcontent" style="height: 400px; overflow: auto;"></div>
+				</div>
 			</div>
 		</div>
 		
@@ -298,13 +300,13 @@
 							
 						}
 					}
-					$("#recentprojects").css({ "height" : (innerHeight - 75) + "px", "overflow" : "auto" });
 					$(".projectlist").hide();
 					var num = 0;
 					$(".projectlist").each(function(){
 						$(".projectlist").eq(num).delay(num * 100).fadeIn();
 						num++;
 					});
+					limitHeight();
 				}else{
 					$("#recentprojects").html("No project found.");
 				}
@@ -343,7 +345,7 @@
 			
 			function previewProject(idx){
 				var ppath = wtmdata.projects[idx].projectdir + "/index.html";
-				const newwin = new BrowserWindow({ width: 1280, height : 720, title : "Project Preview" });
+				var newwin = new BrowserWindow({ width: 1280, height : 720, title : "Project Preview" });
 				newwin.loadFile(ppath);
 				newwin.removeMenu();
 				newwin.webContents.openDevTools();
@@ -464,6 +466,7 @@
 			};
 			
 			var currentprojectindex;
+			var currentpanoramaindex;
 			var currentprojectdata;
 			function editproject(idx){
 				currentprojectindex = idx;
@@ -510,16 +513,59 @@
 							var hotspotsofit = "";
 							if(currentprojectdata.panoramas[i].hotspots.length == 0){
 								hotspotsofit = "<div>There is no hotspot for this panorama.</div>";
+							}else{
+								for(var x = 0 ; x < currentprojectdata.panoramas[i].hotspots.length; x++){
+									hotspotsofit += "<div>" +currentprojectdata.panoramas[i].hotspots[x]+ "</div>";
+								}
 							}
-							panoswithhots += "<div style='background: url(" + wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[i].panofile + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; margin-bottom: 20px;'><div class='brighteronhover' style='padding: 20px;'><div style='border: 2px solid white; color: white; padding: 10px; display: inline-block; margin-bottom: 10px;'>" +currentprojectdata.panoramas[i].panofile+ "</div>" + hotspotsofit + "<button style='margin: 0px; margin-top: 10px;' onclick=addNewHotspotFor("+i+")><i class='fa fa-plus-square'></i> Add New Hotspot</button></div></div>";
+							panoswithhots += "<div style='background: url(" + wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[i].panofile + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; margin-bottom: 20px;'><div class='brighteronhover' style='padding: 20px;'><div style='border: 2px solid white; color: white; padding: 10px; display: inline-block; margin-bottom: 10px;'>" +currentprojectdata.panoramas[i].panofile+ "</div>" + hotspotsofit + "<button style='margin: 0px; margin-top: 10px;' onclick=addNewHotspotFor("+i+")><i class='fa fa-plus-square'></i> Add</button></div></div>";
 						}
 						$("#editorcontent").html("<h2>Hotspots</h2>" + panoswithhots);
 						break;
 				}
+				
+				limitHeight();
 			}
 			
 			function addNewHotspotFor(idx){
-				$("#editorcontent").html("<h2>Add New Hotspot for " +idx+ "</h2>");
+				currentpanoramaindex = idx;
+				var hotpath = "./hotspotmaker.html";
+				var panofile = currentprojectdata.panoramas[idx].panofile;
+				var panoname = panofile.split(".")[0];
+				//Let's copy current panorama file to temp panorama directory
+				fse.copySync(wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + panofile, './temp/' + panofile);
+				fs.readFile(hotpath, 'utf8', function (err, data) {
+					if (err) { return console.log(err); }
+					var newhtml = data.split("/*panoramas*/")[0] +"/*panoramas*/\n\r" + 
+					"var "+panoname+" = new PANOLENS.ImagePanorama( \"temp/" + panofile + "\" );\n" +
+						"viewer.add( "+panoname+" );\n" +
+						panoname+".addEventListener('progress', function(e){\n" +
+							"$(\"#loading\").show();\n" +
+						"});\n" + 
+						panoname+".addEventListener('load', function(e){\n" +
+							"$(\"#loading\").fadeOut();\n" + 
+						"});\n" + 
+						panoname+".addEventListener('click', function(e){\n" +
+						"});\n\r\n\r" +
+					"\n\r/*panoramas-end*/" + data.split("/*panoramas-end*/")[1];
+					fs.writeFile(hotpath, newhtml, function (err) {
+						if (err) return console.log(err);
+						
+						var hoteditor = new BrowserWindow({ 
+							width: 1280, 
+							height : 720, 
+							title : "Add New Hotspot", 
+							webPreferences : { 
+								nodeIntegration: true,
+								enableRemoteModule: true,
+							} 
+						});
+						hoteditor.loadFile(hotpath);
+						hoteditor.removeMenu();
+						
+						//hoteditor.webContents.openDevTools();
+					});
+				});
 			}
 			
 			function setitasmainpano(idx){
@@ -759,12 +805,30 @@
 				$("body").fadeIn();
 			});
 			
+			
+			function limitHeight(){
+				$("#recentprojects").css({ "height" : (innerHeight - 75) + "px", "overflow" : "auto" });
+				$("#editorcontent").css({ "height" : (innerHeight-200) + "px" });
+			}
+			
+			$(window).resize(function(){
+				limitHeight();
+			});
+			
 			//Open link in external browser
 			const shell = require('electron').shell;
 			// assuming $ is jQuery
 			$(document).on('click', 'a[href^="http"]', function(event) {
 				event.preventDefault();
 				shell.openExternal(this.href);
+			});
+			
+			//Electron Bridge
+			ipcRenderer.on("setnewinfospotlocation", (event, arg)=>{
+				//showAlert("New Hotspot", "New Hotspot location added on this coordinates: " + arg.position);
+				currentprojectdata.panoramas[currentpanoramaindex].hotspots.push(arg.position);
+				updateWtmFile();
+				showeditorc("hotspots");
 			});
 			
 		</script>

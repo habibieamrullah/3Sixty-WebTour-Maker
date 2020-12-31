@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Add New Hotspot</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta charset="utf-8">
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
+		
+		<!-- Insert this line above script imports  -->
+		<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+		
+		<script src="resources/panotemplate/jquery.js"></script>
+		<script src="resources/panotemplate/three.min.js"></script>
+		<script src="resources/panotemplate/panolens.min.js"></script>
+		
+		<!-- Insert this line after script imports -->
+		<script>if (window.module) module = window.module;</script>
+		
+		<style>
+			html, body {
+				margin: 0;
+				width: 100%;
+				height: 100%;
+				overflow: hidden;
+				background-color: #000;
+			}
+
+			a:link, a:visited{
+				color: #bdc3c7;	
+			}
+
+			.fullwrapper{
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background-color: black;
+			}
+			
+			#container {
+                width: 100%;
+                height: 100%;
+            }
+		</style>
+	</head>
+	<body id="body">
+	    <div id="container"></div>
+		<div id="infospotloc" style="display: none;"></div>
+    	<div id="loading" class="fullwrapper" style="display: table; width: 100%; height: 100%;">
+    		<div style="display: table-cell; vertical-align: middle; text-align: center; color: white; font-size: 30px; padding: 50px;">
+    			<!--loadingtext--><p>Please Wait...</p><!--loadingtext-end-->
+    		</div>
+    	</div>		<div style="position: fixed; top: 0; left: 0; right: 0; padding: 10px; text-align: center; background-color: rgba(255,255,255,.5);">
+			Press Ctrl + Click on any area you wish to add the new Hotspot.
+		</div>
+    	<script>
+			
+            var container = document.querySelector( '#container' );
+            var viewer = new PANOLENS.Viewer( { 
+                container: container ,
+                controlBar: false,  
+                output: 'console' ,
+                autoHideInfospot: false,
+            } );
+			
+			viewer.addUpdateCallback(function(){});
+			
+			/*panoramas*/
+var menaraeifel = new PANOLENS.ImagePanorama( "temp/menaraeifel.jpg" );
+viewer.add( menaraeifel );
+menaraeifel.addEventListener('progress', function(e){
+$("#loading").show();
+});
+menaraeifel.addEventListener('load', function(e){
+$("#loading").fadeOut();
+});
+menaraeifel.addEventListener('click', function(e){
+});
+
+
+/*panoramas-end*/
+            
+			const { ipcRenderer } = require('electron');
+			const remote = require('electron').remote;
+			
+			$("body").on("click", function(e){
+				if(e.ctrlKey){
+					var hpos = $("#infospotloc").html();
+					console.log("Infospot New Location: " + $("#infospotloc").html());
+					ipcRenderer.send("infospotlocationreceived", { position : hpos});
+					var window = remote.getCurrentWindow();
+					window.close();
+				}
+			});
+			
+			
+			
+        </script>
+	</body>
+</html>
