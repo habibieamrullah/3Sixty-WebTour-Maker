@@ -85,6 +85,7 @@ select:hover{
 option{
 	background-color: #2c3643;
 	color: white;
+	padding: 20px;
 }
 
 input:focus{
@@ -251,6 +252,42 @@ a:hover{
 	backdrop-filter: blur(3px);
 }
 
+.hotspotholder{
+	display: inline-block;
+	width: 256px;
+	margin-right: 10px;
+	margin-bottom: 10px;
+	font-size: 12px;
+	text-align: center;
+	background-color: #3d4855;
+	border: 1px solid #2c3643;
+	transition: border .5s;
+}
+
+.hotspotholder:hover{
+	border: 1px solid white;
+}
+
+.hotspotholder button{
+	margin: 10px;
+	font-size: 12px;
+}
+
+.hotspottitle{
+	padding: 5px;
+	background-color: #2c3643;
+	color: white;
+	font-size: 14px;
+}
+
+.hotspottitle input{
+	background-color: inherit;
+	border: none;
+	font-size: inherit;
+	text-align: center;
+	margin: 0px;
+}
+
 
 
 
@@ -307,8 +344,9 @@ a:hover{
 /* Handle */
 ::-webkit-scrollbar-thumb {
 	background: #eba576; 
+	transition: background .5s;
 }
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-	background: #eba576; 
+	background: #ff6600; 
 }

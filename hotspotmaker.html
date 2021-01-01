@@ -67,15 +67,15 @@
 			viewer.addUpdateCallback(function(){});
 			
 			/*panoramas*/
-var menaraeifel = new PANOLENS.ImagePanorama( "temp/menaraeifel.jpg" );
-viewer.add( menaraeifel );
-menaraeifel.addEventListener('progress', function(e){
+var siti = new PANOLENS.ImagePanorama( "temp/siti.jpg" );
+viewer.add( siti );
+siti.addEventListener('progress', function(e){
 $("#loading").show();
 });
-menaraeifel.addEventListener('load', function(e){
+siti.addEventListener('load', function(e){
 $("#loading").fadeOut();
 });
-menaraeifel.addEventListener('click', function(e){
+siti.addEventListener('click', function(e){
 });
 
 

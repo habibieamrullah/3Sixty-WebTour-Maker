@@ -247,6 +247,7 @@
 				<div style="display: table-cell; vertical-align: top; width: 200px; overflow-x: hidden;">
 					<div class="editortab" onclick="showeditorc('panoramas')"><i class="fa fa-camera" style="width: 20px;"></i> Panoramas</div>
 					<div class="editortab" onclick="showeditorc('hotspots')"><i class="fa fa-circle-thin" style="width: 20px;"></i> Hotspots</div>
+					<div class="editortab" onclick="showeditorc('imageassets')"><i class="fa fa-image" style="width: 20px;"></i> Image Assets</div>
 					<div class="editortab" onclick="showeditorc('settings')"><i class="fa fa-cog" style="width: 20px;"></i> Settings</div>
 				</div>
 				<div style="display: table-cell; vertical-align: top; padding-left: 20px;">
@@ -393,7 +394,6 @@
 			
 			var doit;
 			function showYesNoAlert(title, message, fn){
-				
 				$("#dimmessage").html("<div style='width: 70%; max-width: 400px; margin: 0 auto;'><div style='background-color: #2c3643; color: white; padding: 10px;'><i class='fa fa-question-circle'></i> " +title+ "</div><div style='padding: 30px; background-color: #3d4855; font-size: 14px; font-weight: normal;'><div>" +message+ "</div><button onclick='doit(); hideDim();' style='margin-top: 20px; margin-bottom: 0px; margin-right: 10px;'>Yes</button><button onclick='hideDim()' style='margin-left: 10px; margin-top: 20px; margin-bottom: 0px;'>No</button></div></div>");
 				$("#dim").show();
 				$("#loading").hide();
@@ -401,13 +401,12 @@
 				doit = function(){
 					fn();
 				}
-				
 			}
 			
 			function showMiniPage(type){
 				switch (type){
 					case "about" :
-						showAlert("About", "<h1>360 Web Tour Maker</h1><h3>Version 1.0.0</h3><p><br><a href='https://ciihuy.com/'>Visit the Web</a><br><a href='#'>Terms and Conditions</a></p>");
+						showAlert("About", "<h1>360 Web Tour Maker</h1><h3>Version 1.0.0</h3><p><br><a href='#' onclick=showMiniPage('donate')>Support The Development</a><br><a href='#'>Terms and Conditions</a><br><a href='https://ciihuy.com/'>Visit the Web</a></p>");
 						break;
 					case "donate" :
 						showAlert("Support The Development", "<p><img src='paypal.png' style='background-color: white; padding: 20px;'></p><p>This software is made for you for free. However, I expect any amount donations from users like you to keep me supported for maintenance and further development of this software.</p><p>Please send your donation to my PayPal account here: <a href='https://paypal.me/habibieamrullah'>https://paypal.me/habibieamrullah</a></p>");
@@ -505,7 +504,7 @@
 						$("#editorcontent").html(panoramas + "<div class='imgthumb' onclick='addpanorama()'><div style='cursor: pointer; display: table; width: 100%; height: 100%;'><div style='display: table-cell; text-align: center; vertical-align: middle;'><i class='fa fa-plus' style='font-size: 40px;'></i></div></div></div>");
 						break;
 					case "settings" :
-						$("#editorcontent").html("<h2>Project Settings</h2><p>Panorama Loading Text</p><input id='psloadingtext' value='" +currentprojectdata.settings.loadingtext+ "'><p>Main Panorama (First panorama to load)</p><select id='firstpanorama'>" +getPanoramasNameOption()+ "</select><button onclick='saveProjectSettings()'><i class='fa fa-floppy-o'></i> Save</button>");
+						$("#editorcontent").html("<h2>Project Settings</h2><p>Default Tour Mode</p><select><option>Normal</option><option>Cardboard</option><option>Stereoscopic</option></select><p>Panorama Loading Text</p><input id='psloadingtext' value='" +currentprojectdata.settings.loadingtext+ "'><p>Main Panorama (First panorama to load)</p><select id='firstpanorama'>" +getPanoramasNameOption()+ "</select><p>Hide Panolens Control Buttons (bottom right)</p><select><option>Yes</option><option>No</option></select><button onclick='saveProjectSettings()'><i class='fa fa-floppy-o'></i> Save</button>");
 						break;
 					case "hotspots" :
 						var panoswithhots = "";
@@ -515,13 +514,19 @@
 								hotspotsofit = "<div>There is no hotspot for this panorama.</div>";
 							}else{
 								for(var x = 0 ; x < currentprojectdata.panoramas[i].hotspots.length; x++){
-									hotspotsofit += "<div>" +currentprojectdata.panoramas[i].hotspots[x]+ "</div>";
+									hotspotsofit += "<div class='hotspotholder'><div class='hotspottitle'><input value='" +currentprojectdata.panoramas[i].hotspots[x]+ "'></div><div><button>Add Action</button><button class='redbutton'>Remove</button></div></div>";
 								}
 							}
-							panoswithhots += "<div style='background: url(" + wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[i].panofile + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; margin-bottom: 20px;'><div class='brighteronhover' style='padding: 20px;'><div style='border: 2px solid white; color: white; padding: 10px; display: inline-block; margin-bottom: 10px;'>" +currentprojectdata.panoramas[i].panofile+ "</div>" + hotspotsofit + "<button style='margin: 0px; margin-top: 10px;' onclick=addNewHotspotFor("+i+")><i class='fa fa-plus-square'></i> Add</button></div></div>";
+							
+							hotspotsofit = "<div>" + hotspotsofit + "</div>";
+							
+							panoswithhots += "<div style='background: url(" + wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[i].panofile + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; margin-bottom: 20px; margin-right: 20px;'><div class='brighteronhover' style='padding: 20px;'><div style='border: 2px solid white; color: white; padding: 10px; display: inline-block; margin-bottom: 10px;'>" +currentprojectdata.panoramas[i].panofile+ "</div>" + hotspotsofit + "<button style='margin: 0px; margin-top: 10px;' class='greenbutton' onclick=addNewHotspotFor("+i+")><i class='fa fa-plus-square'></i> Add</button></div></div>";
 						}
 						$("#editorcontent").html("<h2>Hotspots</h2>" + panoswithhots);
 						break;
+						
+					case "imageassets" :
+						$("#editorcontent").html("<h2>Image Assets</h2><p>Image assets will be here</p>");
 				}
 				
 				limitHeight();
@@ -826,7 +831,7 @@
 			//Electron Bridge
 			ipcRenderer.on("setnewinfospotlocation", (event, arg)=>{
 				//showAlert("New Hotspot", "New Hotspot location added on this coordinates: " + arg.position);
-				currentprojectdata.panoramas[currentpanoramaindex].hotspots.push(arg.position);
+				currentprojectdata.panoramas[currentpanoramaindex].hotspots.push({ title : arg.position, position : arg.position, actions : [] });
 				updateWtmFile();
 				showeditorc("hotspots");
 			});
