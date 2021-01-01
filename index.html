@@ -467,6 +467,7 @@
 			var currentprojectindex;
 			var currentpanoramaindex;
 			var currentprojectdata;
+			var tempstring; 
 			function editproject(idx){
 				currentprojectindex = idx;
 				showpage("projecteditor");
@@ -514,7 +515,7 @@
 								hotspotsofit = "<div>There is no hotspot for this panorama.</div>";
 							}else{
 								for(var x = 0 ; x < currentprojectdata.panoramas[i].hotspots.length; x++){
-									hotspotsofit += "<div class='hotspotholder'><div class='hotspottitle'><input value='" +currentprojectdata.panoramas[i].hotspots[x]+ "'></div><div><button>Add Action</button><button class='redbutton'>Remove</button></div></div>";
+									hotspotsofit += "<div class='hotspotholder'><div class='hotspottitle'><input id='"+currentprojectdata.panoramas[i].hotspots[x].hotspotid+"' class='hotspotnameinput' value='" +currentprojectdata.panoramas[i].hotspots[x].title+ "'><div style='font-style: italic; font-weight: normal;font-size: 10px;'>" +currentprojectdata.panoramas[i].hotspots[x].position+ "</div></div><div><button>Add Action</button><button class='redbutton'>Remove</button></div></div>";
 								}
 							}
 							
@@ -523,6 +524,10 @@
 							panoswithhots += "<div style='background: url(" + wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[i].panofile + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; margin-bottom: 20px; margin-right: 20px;'><div class='brighteronhover' style='padding: 20px;'><div style='border: 2px solid white; color: white; padding: 10px; display: inline-block; margin-bottom: 10px;'>" +currentprojectdata.panoramas[i].panofile+ "</div>" + hotspotsofit + "<button style='margin: 0px; margin-top: 10px;' class='greenbutton' onclick=addNewHotspotFor("+i+")><i class='fa fa-plus-square'></i> Add</button></div></div>";
 						}
 						$("#editorcontent").html("<h2>Hotspots</h2>" + panoswithhots);
+						
+						$(".hotspotnameinput").on("keyup", function(){
+							console.log("Renamed to this: " + $(this).val());
+						});
 						break;
 						
 					case "imageassets" :
@@ -568,7 +573,7 @@
 						hoteditor.loadFile(hotpath);
 						hoteditor.removeMenu();
 						
-						//hoteditor.webContents.openDevTools();
+						hoteditor.webContents.openDevTools();
 					});
 				});
 			}
@@ -830,8 +835,7 @@
 			
 			//Electron Bridge
 			ipcRenderer.on("setnewinfospotlocation", (event, arg)=>{
-				//showAlert("New Hotspot", "New Hotspot location added on this coordinates: " + arg.position);
-				currentprojectdata.panoramas[currentpanoramaindex].hotspots.push({ title : arg.position, position : arg.position, actions : [] });
+				currentprojectdata.panoramas[currentpanoramaindex].hotspots.push({ "hotspotid" : arg.id, "title" : arg.title, "position" : arg.position, "actions" : [] });
 				updateWtmFile();
 				showeditorc("hotspots");
 			});

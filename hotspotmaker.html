@@ -5,6 +5,8 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<meta charset="utf-8">
 		<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
+		<link rel="stylesheet" type="text/css" href="style.css">
+		<link rel="stylesheet" type="text/css" href="css/font-awesome.css">
 		
 		<!-- Insert this line above script imports  -->
 		<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
@@ -15,6 +17,8 @@
 		
 		<!-- Insert this line after script imports -->
 		<script>if (window.module) module = window.module;</script>
+		
+		
 		
 		<style>
 			html, body {
@@ -42,6 +46,7 @@
                 width: 100%;
                 height: 100%;
             }
+			
 		</style>
 	</head>
 	<body id="body">
@@ -51,9 +56,19 @@
     		<div style="display: table-cell; vertical-align: middle; text-align: center; color: white; font-size: 30px; padding: 50px;">
     			<!--loadingtext--><p>Please Wait...</p><!--loadingtext-end-->
     		</div>
-    	</div>		<div style="position: fixed; top: 0; left: 0; right: 0; padding: 10px; text-align: center; background-color: rgba(255,255,255,.5);">
+    	</div>		
+		
+		<!-- loading and alert dim -->
+		<div id="dim">
+			<div style="display: table-cell; vertical-align: middle; text-align: center;">
+				<h3 id="dimmessage"></h3>
+			</div>
+		</div>
+		
+		<div style="position: fixed; top: 0; left: 0; right: 0; text-align: center; padding: 20px; background-color: #2c3643;">
 			Press Ctrl + Click on any area you wish to add the new Hotspot.
 		</div>
+		
     	<script>
 			
             var container = document.querySelector( '#container' );
@@ -67,15 +82,15 @@
 			viewer.addUpdateCallback(function(){});
 			
 			/*panoramas*/
-var siti = new PANOLENS.ImagePanorama( "temp/siti.jpg" );
-viewer.add( siti );
-siti.addEventListener('progress', function(e){
+var testpanorama = new PANOLENS.ImagePanorama( "temp/testpanorama.jpg" );
+viewer.add( testpanorama );
+testpanorama.addEventListener('progress', function(e){
 $("#loading").show();
 });
-siti.addEventListener('load', function(e){
+testpanorama.addEventListener('load', function(e){
 $("#loading").fadeOut();
 });
-siti.addEventListener('click', function(e){
+testpanorama.addEventListener('click', function(e){
 });
 
 
@@ -84,17 +99,43 @@ siti.addEventListener('click', function(e){
 			const { ipcRenderer } = require('electron');
 			const remote = require('electron').remote;
 			
+			
 			$("body").on("click", function(e){
 				if(e.ctrlKey){
-					var hpos = $("#infospotloc").html();
-					console.log("Infospot New Location: " + $("#infospotloc").html());
-					ipcRenderer.send("infospotlocationreceived", { position : hpos});
-					var window = remote.getCurrentWindow();
-					window.close();
+					initHotspotDialog();
 				}
 			});
 			
+			function initHotspotDialog(){
+				
+				$("#dimmessage").html("<div style='width: 70%; max-width: 400px; margin: 0 auto;'><div style='background-color: #2c3643; color: white; padding: 10px;'><i class='fa fa-info-circle'></i> New Hotspot</div><div style='padding: 30px; background-color: #3d4855; font-size: 14px; font-weight: normal;'><div><p>Give the hotspot a name:</p><input placeholder='Hotspot Name' id='hotspotname' style='margin: 0px; margin-bottom: 10px;'></div><button onclick='addTheHotspot()' style='margin: 5px;'>Add</button><button onclick=$('#dim').fadeOut() style='margin: 5px;'>Cancel</button></div></div>");
+				$("#dim").show();
+				
+			}
+			var hpos;
+			function addTheHotspot(){
+				hpos = $("#infospotloc").html();
+				var hotspotname = $("#hotspotname").val();
+				if(hotspotname == ""){
+					hotspotname = "Untitled";
+				}
+				console.log("Infospot New Location: " + hpos);
+				ipcRenderer.send("infospotlocationreceived", { id : "123456789", title : hotspotname, position : hpos });
+				var window = remote.getCurrentWindow();
+				window.close();
+			}
 			
+			function randomblah(length){
+				var result = '';
+				var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+				var charactersLength = characters.length;
+				for ( var i = 0; i < length; i++ ) {
+				result += characters.charAt(Math.floor(Math.random() * charactersLength));
+				}
+				return result;
+			}
+			
+			$("#dim").fadeOut();
 			
         </script>
 	</body>
