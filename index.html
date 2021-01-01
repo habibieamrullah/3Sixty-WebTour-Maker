@@ -38,6 +38,7 @@
 			<div class="abitem">
 				Help
 				<div class="dropdown-content">
+					<div class="subabitem" onclick="showpage('tutorials')"><i class="fa fa-film" style="width: 30px;"></i> Video Tutorials</div>
 					<div class="subabitem" onclick="showMiniPage('donate')"><i class="fa fa-dollar" style="width: 30px;"></i> Support The Development</div>
 					<div class="subabitem" onclick="showMiniPage('about')"><i class="fa fa-question" style="width: 30px;"></i> About 360 Web Tour Maker</div>					
 				</div>
@@ -49,11 +50,10 @@
 			</div>
 		</div>
 		
-		<!-- Donate -->
-		<div class="page" id="donate">
-			<h1>Support The Development</h1>
-			<p>This software is made for you for free. However, I expect any amount donations from users like you to keep me supported for maintenance and further development of this software.</p>
-			<p>Please send your donation to my PayPal account here: <a href="https://paypal.me/habibieamrullah">https://paypal.me/habibieamrullah</a></p>
+		<!-- Tutorials -->
+		<div class="page" id="tutorials">
+			<h1>Video Tutorials</h1>
+			<p>Visit my channel yaaaa...</p>
 		</div>
 		
 		<!-- What is -->
@@ -424,14 +424,20 @@
 			}
 			
 			function showAlert(title, message){
-				$("#dimmessage").html("<div style='width: 70%; max-width: 400px; margin: 0 auto;'><div style='background-color: #2c3643; color: white; padding: 10px;'><i class='fa fa-info-circle'></i> " +title+ "</div><div style='padding: 30px; background-color: #3d4855; font-size: 14px; font-weight: normal;'><div>" +message+ "</div><button onclick='hideDim()' style='margin-top: 20px; margin-bottom: 0px;'>Close</button></div></div>");
+				$("#dimmessage").html("<div style='width: 70%; max-width: 400px; margin: 0 auto;'><div style='background-color: #2c3643; color: white; padding: 10px;'><i class='fa fa-info-circle'></i> " +title+ "</div><div style='padding: 30px; background-color: #3d4855; font-size: 14px; font-weight: normal;'><div>" +message+ "</div><button onclick='hideDim()' style='margin-top: 20px; margin-bottom: 0px;'><i class='fa fa-times'></i> Close</button></div></div>");
+				$("#dim").show();
+				$("#loading").hide();
+			}
+			
+			function showImage(title, image){
+				$("#dimmessage").html("<div style='width: 70%; margin: 0 auto;'><div style='background-color: #2c3643; color: white; padding: 10px;'><i class='fa fa-image'></i> " +title+ "</div><div style='padding: 30px; background-color: #3d4855; font-size: 14px; font-weight: normal; overflow: hidden;'><div style='text-align: center; overflow: hidden;'><img src='"+image+"' style='display: inline-block; height: 100%; max-height: 400px;'></div><button onclick='hideDim()' style='margin-top: 20px; margin-bottom: 0px;'><i class='fa fa-times'></i> Close</button></div></div>");
 				$("#dim").show();
 				$("#loading").hide();
 			}
 			
 			var doit;
 			function showYesNoAlert(title, message, fn){
-				$("#dimmessage").html("<div style='width: 70%; max-width: 400px; margin: 0 auto;'><div style='background-color: #2c3643; color: white; padding: 10px;'><i class='fa fa-question-circle'></i> " +title+ "</div><div style='padding: 30px; background-color: #3d4855; font-size: 14px; font-weight: normal;'><div>" +message+ "</div><button onclick='doit(); hideDim();' style='margin-top: 20px; margin-bottom: 0px; margin-right: 10px;'>Yes</button><button onclick='hideDim()' style='margin-left: 10px; margin-top: 20px; margin-bottom: 0px;'>No</button></div></div>");
+				$("#dimmessage").html("<div style='width: 70%; max-width: 400px; margin: 0 auto;'><div style='background-color: #2c3643; color: white; padding: 10px;'><i class='fa fa-question-circle'></i> " +title+ "</div><div style='padding: 30px; background-color: #3d4855; font-size: 14px; font-weight: normal;'><div>" +message+ "</div><button onclick='doit(); hideDim();' style='margin-top: 20px; margin-bottom: 0px; margin-right: 10px;'><i class='fa fa-check'></i> Yes</button><button onclick='hideDim()' style='margin-left: 10px; margin-top: 20px; margin-bottom: 0px;'><i class='fa fa-times'></i> No</button></div></div>");
 				$("#dim").show();
 				$("#loading").hide();
 				
@@ -538,7 +544,7 @@
 								itsmainpanoaction = " onclick='showAlert(\"Main Panorama\", \"This panorama is already set as Main Panorama\");'";
 								itsmainpanotrash = " display: none;";
 							}
-							panoramas += "<div class='imgthumb' style='position: relative; background: url(" + wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[i].panofile + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'><span"+itsmainpanoaction+" style='"+itsmainpanogreen+" color: black; cursor: pointer; font-weight: bold; padding: 5px; font-size: 10px;'>" + itsmainpano + truncate(currentprojectdata.panoramas[i].panofile, 20) + "</span><div onclick='removePanorama(" +i+ ")' class='redbutton' style='" +itsmainpanotrash+ "position: absolute; bottom: 0; right: 0;'><i class='fa fa-trash'></i></div></div>";
+							panoramas += "<div class='imgthumb' style='position: relative; background: url(" + wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[i].panofile + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'><span"+itsmainpanoaction+" style='"+itsmainpanogreen+" color: black; cursor: pointer; font-weight: bold; padding: 5px; font-size: 10px;'>" + itsmainpano + truncate(currentprojectdata.panoramas[i].panofile, 20) + "</span><div style='position: absolute; bottom: 0; right: 0;'><div onclick=\"showImage('"+currentprojectdata.panoramas[i].panofile+"', '" + wtmdata.projects[currentprojectindex].projectdir+"/panoramas/"+currentprojectdata.panoramas[i].panofile + "');\" class='greenbutton'><i class='fa fa-eye'></i></div><div onclick='removePanorama(" +i+ ")' class='redbutton' style='" +itsmainpanotrash+ "'><i class='fa fa-trash'></i></div></div></div>";
 						}
 						$("#editorcontent").html(panoramas + "<div class='imgthumb' onclick='addpanorama()'><div style='cursor: pointer; display: table; width: 100%; height: 100%;'><div style='display: table-cell; text-align: center; vertical-align: middle;'><i class='fa fa-plus' style='font-size: 40px;'></i></div></div></div>");
 						break;
@@ -553,13 +559,13 @@
 								hotspotsofit = "<div>There is no hotspot for this panorama.</div>";
 							}else{
 								for(var x = 0 ; x < currentprojectdata.panoramas[i].hotspots.length; x++){
-									hotspotsofit += "<div class='hotspotholder'><div class='hotspottitle'><input onkeyup=renameHotspotTitle("+i+","+x+") id='hinput"+currentprojectdata.panoramas[i].hotspots[x].hotspotid+"' value='" +currentprojectdata.panoramas[i].hotspots[x].title+ "'><div style='font-style: italic; font-weight: normal;font-size: 10px; display: none;'>" +currentprojectdata.panoramas[i].hotspots[x].position+ "</div></div><div><button>Add Action</button><button class='redbutton'>Remove</button></div></div>";
+									hotspotsofit += "<div class='hotspotholder'><div class='hotspottitle'><input onkeyup=renameHotspotTitle("+i+","+x+") id='hinput"+currentprojectdata.panoramas[i].hotspots[x].hotspotid+"' value='" +currentprojectdata.panoramas[i].hotspots[x].title+ "'></div><div style='padding: 10px; white-space: normal; display: block; box-sizing: border-box;'><p>This Hotspot has no action yet. Click Plus button to add an action to it.</p></div><div><button style='min-width: 10px;'><i class='fa fa-plus'></i></button><button style='min-width: 10px;'><i class='fa fa-cogs'></i></button><button class='redbutton' style='min-width: 10px;'><i class='fa fa-trash'></i></button></div></div>";
 								}
 							}
 							
 							hotspotsofit = "<div>" + hotspotsofit + "</div>";
 							
-							panoswithhots += "<div style='background: url(" + wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[i].panofile + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; margin-bottom: 20px; margin-right: 20px;'><div class='brighteronhover' style='padding: 20px;'><div style='border: 2px solid white; color: white; padding: 10px; display: inline-block; margin-bottom: 10px;'>" +currentprojectdata.panoramas[i].panofile+ "</div>" + hotspotsofit + "<button style='margin: 0px; margin-top: 10px;' class='greenbutton' onclick=addNewHotspotFor("+i+")><i class='fa fa-plus-square'></i> Add</button></div></div>";
+							panoswithhots += "<div style='background: url(" + wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[i].panofile + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; margin-bottom: 20px; margin-right: 20px;'><div class='brighteronhover' style='padding: 20px;'><div style='border: 2px solid white; color: white; padding: 10px; display: inline-block; margin-bottom: 10px;'>" +currentprojectdata.panoramas[i].panofile+ "</div><div style='overflow: auto; white-space: nowrap;'>" + hotspotsofit + "</div><button style='margin: 0px; margin-top: 10px;' class='greenbutton' onclick=addNewHotspotFor("+i+")><i class='fa fa-plus-square'></i> Add</button></div></div>";
 						}
 						$("#editorcontent").html("<h2>Hotspots</h2>" + panoswithhots);
 						
@@ -568,7 +574,10 @@
 					case "imageassets" :
 						var imagefiles = "";
 						fs.readdirSync(wtmdata.projects[currentprojectindex].projectdir + "/images/").forEach(file =>{
-							imagefiles += "<div class='assetthumb'><img src='" + wtmdata.projects[currentprojectindex].projectdir+"/images/"+file + "' style='height: 128px; margin: 0px; padding: 0px;'></div>";
+							if(file.split(".")[1] == "jpg" || file.split(".")[1] == "png"){
+								imagefiles += "<div class='imgthumb' style='position: relative; background: url(" + wtmdata.projects[currentprojectindex].projectdir+"/images/"+file + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'><span style='background-color: black; color: white; font-weight: bold; padding: 5px; font-size: 10px;'>" + truncate(file, 20) + "</span><div style='position: absolute; bottom: 0; right: 0;'><div onclick=\"showImage('"+file+"', '" + wtmdata.projects[currentprojectindex].projectdir+"/images/"+file + "');\" class='greenbutton'><i class='fa fa-eye'></i></div><div onclick='removeImageasset()' class='redbutton'><i class='fa fa-trash'></i></div></div></div>";
+							}
+							
 						});
 						$("#editorcontent").html("<h2>Image Assets</h2>" + imagefiles + "</div><div class='imgthumb' onclick='addasset()'><div style='cursor: pointer; display: table; width: 100%; height: 100%;'><div style='display: table-cell; text-align: center; vertical-align: middle;'><i class='fa fa-plus' style='font-size: 40px;'></i>");
 				}
@@ -637,6 +646,10 @@
 			//Adding new image asset
 			function addasset(){
 				showAlert("Add New Image", "Coming Soon...");
+			}
+			
+			function removeImageasset(){
+				showAlert("Delete Image Asset", "Coming Soon...");
 			}
 			
 			function setitasmainpano(idx){
