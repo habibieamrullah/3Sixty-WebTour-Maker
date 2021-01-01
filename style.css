@@ -288,6 +288,21 @@ a:hover{
 	margin: 0px;
 }
 
+.assetthumb{
+	display: inline-block;
+	margin-right: 10px;
+	margin-bottom: 10px;
+	padding: 8px;
+	transition: border .5s, color .5s;
+	vertical-align: top;
+	border: 3px solid white;
+}
+
+.assetthumb:hover{
+	border: 3px solid #eba576;
+	color: #eba576;
+}
+
 
 
 

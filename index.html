@@ -359,7 +359,6 @@
 					for(var i = 0; i < arr.length; i++){
 						var panovar = arr[i].panofile.split(".")[0];
 						pdata += "var "+panovar+" = new PANOLENS.ImagePanorama( \"panoramas/" + arr[i].panofile + "\" );\n\
-						viewer.add( "+panovar+" );\n\
 						"+panovar+".addEventListener('progress', function(e){\n\
 							$(\"#loading\").show();\n\
 						});\n\
@@ -403,11 +402,11 @@
 							
 							
 						}
-						
+						pdata += "viewer.add( "+panovar+" );\n\r";
 						console.log("JS Code for this panorama has been added: " + panovar);
 					}
 					
-					pdata += "viewer.setPanorama( "+currentprojectdata.settings.firstpanorama.split(".")[0]+" );\n";
+					pdata += "$(document).ready(function(){ viewer.setPanorama( "+currentprojectdata.settings.firstpanorama.split(".")[0]+" ); });\n";
 					
 				}
 				return pdata;
@@ -567,7 +566,11 @@
 						break;
 						
 					case "imageassets" :
-						$("#editorcontent").html("<h2>Image Assets</h2><p>Image assets will be here</p>");
+						var imagefiles = "";
+						fs.readdirSync(wtmdata.projects[currentprojectindex].projectdir + "/images/").forEach(file =>{
+							imagefiles += "<div class='assetthumb'><img src='" + wtmdata.projects[currentprojectindex].projectdir+"/images/"+file + "' style='height: 128px; margin: 0px; padding: 0px;'></div>";
+						});
+						$("#editorcontent").html("<h2>Image Assets</h2>" + imagefiles + "</div><div class='imgthumb' onclick='addasset()'><div style='cursor: pointer; display: table; width: 100%; height: 100%;'><div style='display: table-cell; text-align: center; vertical-align: middle;'><i class='fa fa-plus' style='font-size: 40px;'></i>");
 				}
 				
 				limitHeight();
@@ -629,6 +632,11 @@
 						hoteditor.webContents.openDevTools();
 					});
 				});
+			}
+			
+			//Adding new image asset
+			function addasset(){
+				showAlert("Add New Image", "Coming Soon...");
 			}
 			
 			function setitasmainpano(idx){
