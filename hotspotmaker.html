@@ -82,15 +82,15 @@
 			viewer.addUpdateCallback(function(){});
 			
 			/*panoramas*/
-var testpanorama = new PANOLENS.ImagePanorama( "temp/testpanorama.jpg" );
-viewer.add( testpanorama );
-testpanorama.addEventListener('progress', function(e){
+var kebonan = new PANOLENS.ImagePanorama( "temp/kebonan.jpg" );
+viewer.add( kebonan );
+kebonan.addEventListener('progress', function(e){
 $("#loading").show();
 });
-testpanorama.addEventListener('load', function(e){
+kebonan.addEventListener('load', function(e){
 $("#loading").fadeOut();
 });
-testpanorama.addEventListener('click', function(e){
+kebonan.addEventListener('click', function(e){
 });
 
 
@@ -99,10 +99,12 @@ testpanorama.addEventListener('click', function(e){
 			const { ipcRenderer } = require('electron');
 			const remote = require('electron').remote;
 			
-			
+			var hpos;
 			$("body").on("click", function(e){
 				if(e.ctrlKey){
-					initHotspotDialog();
+					hpos = $("#infospotloc").html();
+					if(hpos != "")
+						initHotspotDialog();
 				}
 			});
 			
@@ -112,27 +114,17 @@ testpanorama.addEventListener('click', function(e){
 				$("#dim").show();
 				
 			}
-			var hpos;
+			
 			function addTheHotspot(){
-				hpos = $("#infospotloc").html();
+				
 				var hotspotname = $("#hotspotname").val();
 				if(hotspotname == ""){
 					hotspotname = "Untitled";
 				}
 				console.log("Infospot New Location: " + hpos);
-				ipcRenderer.send("infospotlocationreceived", { id : "123456789", title : hotspotname, position : hpos });
+				ipcRenderer.send("infospotlocationreceived", { title : hotspotname, position : hpos });
 				var window = remote.getCurrentWindow();
 				window.close();
-			}
-			
-			function randomblah(length){
-				var result = '';
-				var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-				var charactersLength = characters.length;
-				for ( var i = 0; i < length; i++ ) {
-				result += characters.charAt(Math.floor(Math.random() * charactersLength));
-				}
-				return result;
 			}
 			
 			$("#dim").fadeOut();

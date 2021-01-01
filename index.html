@@ -354,6 +354,7 @@
 			
 			function generatePanoramas(arr){
 				var pdata = "";
+				var linkcount = 0;
 				if(arr.length > 0){
 					for(var i = 0; i < arr.length; i++){
 						var panovar = arr[i].panofile.split(".")[0];
@@ -367,10 +368,47 @@
 						});\n\
 						"+panovar+".addEventListener('click', function(e){\n\
 						});\n\r\n\r";
+						
+						for( var x = 0; x < arr[i].hotspots.length; x++){
+							//pdata += panovar +".link( "+panovar+", new THREE.Vector3( "+arr[i].hotspots[x].position+" ), 400, 'images/hotspot.png' );\n\r";
+							//Seems pano link sucks
+							/*
+							pdata += panovar +".link( "+panovar+", new THREE.Vector3( "+arr[i].hotspots[x].position+" ), 400, 'images/hotspot.png');\n\r";
+							linkcount++;
+							
+							if(linkcount == 2){
+								pdata += panovar +".link( "+panovar+", new THREE.Vector3( "+arr[i].hotspots[x].position+" ), 400, 'images/hotspot.png');\n\r";
+							}
+							*/
+							//Let's try infospot
+							
+							linkcount++;
+							
+							pdata += "var infospot"+panovar+x+" = new PANOLENS.Infospot( 500, 'images/hotspot.png', true );\n\
+							infospot"+panovar+x+".position.set( "+arr[i].hotspots[x].position+" );\n\
+							infospot"+panovar+x+".addEventListener( 'click', function(){\n\
+								viewer.setPanorama( "+panovar+" );\n\
+							});\n\
+							"+panovar+".add(infospot"+panovar+x+");\n\r";
+							
+							
+							if(linkcount == 2){
+								pdata += "var xinfospot"+panovar+x+" = new PANOLENS.Infospot( 500, 'images/hotspot.png', true );\n\
+								xinfospot"+panovar+x+".position.set( "+arr[i].hotspots[x].position+" );\n\
+								xinfospot"+panovar+x+".addEventListener( 'click', function(){\n\
+									viewer.setPanorama( "+panovar+" );\n\
+								});\n\
+								"+panovar+".add(xinfospot"+panovar+x+");\n\r";
+							}
+							
+							
+						}
+						
 						console.log("JS Code for this panorama has been added: " + panovar);
 					}
 					
 					pdata += "viewer.setPanorama( "+currentprojectdata.settings.firstpanorama.split(".")[0]+" );\n";
+					
 				}
 				return pdata;
 			}
@@ -382,7 +420,7 @@
 			
 			function showDim(message){
 				$("#dimmessage").html(message);
-				$("#dim").fadeIn();
+				$("#dim").show();
 				$("#loading").show();
 			}
 			
@@ -468,6 +506,7 @@
 			var currentpanoramaindex;
 			var currentprojectdata;
 			var tempstring; 
+			var tempTimeout;
 			function editproject(idx){
 				currentprojectindex = idx;
 				showpage("projecteditor");
@@ -515,7 +554,7 @@
 								hotspotsofit = "<div>There is no hotspot for this panorama.</div>";
 							}else{
 								for(var x = 0 ; x < currentprojectdata.panoramas[i].hotspots.length; x++){
-									hotspotsofit += "<div class='hotspotholder'><div class='hotspottitle'><input id='"+currentprojectdata.panoramas[i].hotspots[x].hotspotid+"' class='hotspotnameinput' value='" +currentprojectdata.panoramas[i].hotspots[x].title+ "'><div style='font-style: italic; font-weight: normal;font-size: 10px;'>" +currentprojectdata.panoramas[i].hotspots[x].position+ "</div></div><div><button>Add Action</button><button class='redbutton'>Remove</button></div></div>";
+									hotspotsofit += "<div class='hotspotholder'><div class='hotspottitle'><input onkeyup=renameHotspotTitle("+i+","+x+") id='hinput"+currentprojectdata.panoramas[i].hotspots[x].hotspotid+"' value='" +currentprojectdata.panoramas[i].hotspots[x].title+ "'><div style='font-style: italic; font-weight: normal;font-size: 10px; display: none;'>" +currentprojectdata.panoramas[i].hotspots[x].position+ "</div></div><div><button>Add Action</button><button class='redbutton'>Remove</button></div></div>";
 								}
 							}
 							
@@ -525,9 +564,6 @@
 						}
 						$("#editorcontent").html("<h2>Hotspots</h2>" + panoswithhots);
 						
-						$(".hotspotnameinput").on("keyup", function(){
-							console.log("Renamed to this: " + $(this).val());
-						});
 						break;
 						
 					case "imageassets" :
@@ -537,6 +573,23 @@
 				limitHeight();
 			}
 			
+			//Function for dynamically renaming hotspot title
+			function renameHotspotTitle(pidx, hidx){
+				tempstring = $("#hinput" + currentprojectdata.panoramas[pidx].hotspots[hidx].hotspotid).val();
+				//console.log(tempstring);
+				clearTimeout(tempTimeout);
+				tempTimeout = setTimeout(function(){
+					if(tempstring != ""){
+						//console.log("Hotspot renamed to: " + tempstring);
+						//console.log("pidx: " + pidx + ", hidx: " + hidx);
+						currentprojectdata.panoramas[pidx].hotspots[hidx].title = tempstring;
+						updateWtmFile();
+						generateHTMLPanoramas();
+					}
+				}, 1000);
+			}
+			
+			//Adding new hotspot
 			function addNewHotspotFor(idx){
 				currentpanoramaindex = idx;
 				var hotpath = "./hotspotmaker.html";
@@ -652,6 +705,11 @@
 						updateWtmFile();
 						//Regenerate html panoramas
 						generateHTMLPanoramas();
+						showDim("Please wait...");
+						setTimeout(function(){
+							showeditorc('panoramas');
+							hideDim();
+						},1000);
 					}
 				});
 			}
@@ -663,7 +721,6 @@
 					var newhtml = data.split("/*panoramas*/")[0] +"/*panoramas*/\n\r"+ generatePanoramas(currentprojectdata.panoramas) +"\n\r/*panoramas-end*/"+ data.split("/*panoramas-end*/")[1];
 					fs.writeFile(wtmdata.projects[currentprojectindex].projectdir + "/index.html", newhtml, function (err) {
 						if (err) return console.log(err);
-						showeditorc('panoramas');
 						console.log("Done regenerating new HTML after adding new panorama.");
 					});
 				});
@@ -681,7 +738,11 @@
 						currentprojectdata.panoramas.splice(idx, 1);
 						updateWtmFile();
 						generateHTMLPanoramas();
-						showeditorc("panoramas");
+						showDim("Please wait...");
+						setTimeout(function(){
+							showeditorc('panoramas');
+							hideDim();
+						},1000);
 					}
 				});
 			}
@@ -745,7 +806,7 @@
 								});
 							});
 						});
-					},5000);
+					},1000);
 				}
 			}
 			
@@ -835,8 +896,9 @@
 			
 			//Electron Bridge
 			ipcRenderer.on("setnewinfospotlocation", (event, arg)=>{
-				currentprojectdata.panoramas[currentpanoramaindex].hotspots.push({ "hotspotid" : arg.id, "title" : arg.title, "position" : arg.position, "actions" : [] });
+				currentprojectdata.panoramas[currentpanoramaindex].hotspots.push({ "hotspotid" : randomblah(10), "title" : arg.title, "position" : arg.position, "actions" : [] });
 				updateWtmFile();
+				generateHTMLPanoramas();
 				showeditorc("hotspots");
 			});
 			
