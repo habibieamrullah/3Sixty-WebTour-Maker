@@ -211,7 +211,7 @@ a:hover{
 }
 
 .editortab{
-	border-bottom: 1px solid gray;
+	border-bottom: 1px solid #2c3643;
 	padding: 10px;
 	padding-bottom: 10px;
 	cursor: pointer;
@@ -219,8 +219,8 @@ a:hover{
 }
 
 .editortab:hover{
-	background-color: white;
-	color: #3d4855;
+	background-color: #2c3643;
+	color: #eba576;
 }
 
 .imgthumb{

@@ -31,23 +31,23 @@
 			<div class="abitem">
 				File
 				<div class="dropdown-content">
-					<div class="subabitem" onclick="showpage('projects')"><div style="display: inline-block; width: 260px;"><i class="fa fa-briefcase" style="width: 30px;"></i> Projects</div><div style="display: inline-block; color: gray;">Ctrl+P</div></div>
-					<div class="subabitem" onclick="openproject()"><div style="display: inline-block; width: 260px;"><i class="fa fa-folder" style="width: 30px;"></i> Open Existing Project</div><div style="display: inline-block; color: gray;">Ctrl+O</div></div>
-					<div class="subabitem" onclick="quitprogram()"><div style="display: inline-block; width: 260px;"><i class="fa fa-times" style="width: 30px;"></i> Exit</div><div style="display: inline-block; color: gray;">Ctrl+Q</div></div>
+					<div class="subabitem" onclick="showpage('projects')"><div style="display: inline-block; width: 190px;"><i class="fa fa-briefcase" style="width: 30px;"></i> Projects</div><div style="display: inline-block; color: gray;">Ctrl+P</div></div>
+					<div class="subabitem" onclick="openproject()"><div style="display: inline-block; width: 190px;"><i class="fa fa-folder" style="width: 30px;"></i> Open Existing Project</div><div style="display: inline-block; color: gray;">Ctrl+O</div></div>
+					<div class="subabitem" onclick="quitprogram()"><div style="display: inline-block; width: 190px;"><i class="fa fa-times" style="width: 30px;"></i> Exit</div><div style="display: inline-block; color: gray;">Ctrl+Q</div></div>
 				</div>
 			</div>
 			<div class="abitem">
 				Help
 				<div class="dropdown-content">
-					<div class="subabitem" onclick="showpage('tutorials')"><div style="display: inline-block; width: 260px;"><i class="fa fa-film" style="width: 30px;"></i> Video Tutorials</div><div style="display: inline-block; color: gray;">Ctrl+T</div></div>
-					<div class="subabitem" onclick="showMiniPage('donate')"><div style="display: inline-block; width: 260px;"><i class="fa fa-dollar" style="width: 30px;"></i> Support The Development</div><div style="display: inline-block; color: gray;">Ctrl+S</div></div>
-					<div class="subabitem" onclick="showMiniPage('about')"><div style="display: inline-block; width: 260px;"><i class="fa fa-question" style="width: 30px;"></i> About 360 Web Tour Maker</div><div style="display: inline-block; color: gray;">Ctrl+B</div></div>					
+					<div class="subabitem" onclick="showpage('tutorials')"><div style="display: inline-block; width: 190px;"><i class="fa fa-film" style="width: 30px;"></i> Tutorials</div><div style="display: inline-block; color: gray;">Ctrl+T</div></div>
+					<div class="subabitem" onclick="showMiniPage('donate')"><div style="display: inline-block; width: 190px;"><i class="fa fa-paypal" style="width: 30px;"></i> Support The Dev.</div><div style="display: inline-block; color: gray;">Ctrl+S</div></div>
+					<div class="subabitem" onclick="showMiniPage('about')"><div style="display: inline-block; width: 190px;"><i class="fa fa-question" style="width: 30px;"></i> About</div><div style="display: inline-block; color: gray;">Ctrl+B</div></div>					
 				</div>
 			</div>
 			<div style="float: right;">
-				<div class="abitem rightbtn minimizebutton" onclick="minimize()"><i class="fa fa-window-minimize"></i></div>
-				<div class="abitem rightbtn minmaxbutton" onclick="maximize()"><i class="fa fa-window-restore"></i></div>
-				<div class="abitem rightbtn closebutton" onclick="quitprogram()"><i class="fa fa-times"></i></div>
+				<div class="abitem rightbtn minimizebutton" onclick="minimize()" style="width: 30px; text-align: center;"><i class="fa fa-window-minimize"></i></div>
+				<div class="abitem rightbtn minmaxbutton" onclick="maximize()" style="width: 30px; text-align: center;"><i class="fa fa-window-restore"></i></div>
+				<div class="abitem rightbtn closebutton" onclick="quitprogram()" style="width: 30px; text-align: center;"><i class="fa fa-times"></i></div>
 			</div>
 		</div>
 		
@@ -301,7 +301,7 @@
 					for(var i = 0; i < wtmdata.projects.length; i++){
 						if (fs.existsSync(wtmdata.projects[i].projectdir)) {
 							
-							$("#recentprojects").prepend("<div class='projectlist'><div style='cursor: pointer;' onclick='editproject("+i+")'><div style='font-size: 20px;'>" +wtmdata.projects[i].projectname+ "</div><div style='font-size: 12px; color: #eba576;'>" +wtmdata.projects[i].projectdir+ "</div></div><div class='greenbutton' style='margin-bottom: 0px; font-size: 10px;' onclick=previewProject("+i+")><i class='fa fa-play'></i> Run</div><div class='button' style='margin-bottom: 0px; font-size: 10px;' onclick=showInExplorer(" +i+ ")><i class='fa fa-folder'></i> Show in Explorer</div><div class='redbutton' style='margin-bottom: 0px; font-size: 10px;' onclick=removeFromProjectList(" +i+ ")><i class='fa fa-trash'></i> Remove from list</div></div>");
+							$("#recentprojects").prepend("<div class='projectlist'><div style='cursor: pointer;' onclick='editproject("+i+")'><div style='font-size: 20px;'>" +wtmdata.projects[i].projectname+ "</div><div style='font-size: 12px; color: #eba576;'>" +wtmdata.projects[i].projectdir+ "</div></div><div class='button' style='margin-bottom: 0px; font-size: 10px;' onclick=showInExplorer(" +i+ ")><i class='fa fa-folder'></i> Show in Explorer</div><div class='redbutton' style='margin-bottom: 0px; font-size: 10px;' onclick=removeFromProjectList(" +i+ ")><i class='fa fa-trash'></i> Remove from list</div></div>");
 							
 						}else{
 							
@@ -353,11 +353,16 @@
 			loadRecentProjects();
 			
 			function previewProject(idx){
-				var ppath = wtmdata.projects[idx].projectdir + "/index.html";
-				var newwin = new BrowserWindow({ width: 1280, height : 720, title : "Project Preview" });
-				newwin.loadFile(ppath);
-				newwin.removeMenu();
-				newwin.webContents.openDevTools();
+				generateHTMLPanoramas();
+				showDim("Building...");
+				setTimeout(function(){
+					var ppath = wtmdata.projects[idx].projectdir + "/index.html";
+					var newwin = new BrowserWindow({ width: 1280, height : 720, title : "Project Preview" });
+					newwin.loadFile(ppath);
+					newwin.removeMenu();
+					newwin.webContents.openDevTools();
+					hideDim();
+				}, 2000);
 			}
 			
 			function generatePanoramas(arr){
@@ -557,7 +562,7 @@
 						$("#editorcontent").html(panoramas + "<div class='imgthumb' onclick='addpanorama()'><div style='cursor: pointer; display: table; width: 100%; height: 100%;'><div style='display: table-cell; text-align: center; vertical-align: middle;'><i class='fa fa-plus' style='font-size: 40px;'></i></div></div></div>");
 						break;
 					case "settings" :
-						$("#editorcontent").html("<h2>Project Settings</h2><div style='display: table; width: 100%; table-layout: fixed;'><div style='display: table-cell; vertical-align: top; padding-right: 10px;'><p>Default Tour Mode</p><select><option>Normal</option><option>Cardboard</option><option>Stereoscopic</option></select><p>Panorama Loading Text</p><input id='psloadingtext' value='" +currentprojectdata.settings.loadingtext+ "'></div><div style='display: table-cell; vertical-align: top;'><p>Main Panorama (First panorama to load)</p><select id='firstpanorama'>" +getPanoramasNameOption()+ "</select><p>Hide Panolens Control Buttons (bottom right)</p><select><option>Yes</option><option>No</option></select></div></div><button onclick='saveProjectSettings()'><i class='fa fa-floppy-o'></i> Save</button>");
+						$("#editorcontent").html("<h2>Project Settings</h2><p>Project Description</p><input><p>Tags (separate them by comma)</p><input><div style='display: table; width: 100%; table-layout: fixed;'><div style='display: table-cell; vertical-align: top; padding-right: 10px;'><p>Default Tour Mode</p><select><option>Normal</option><option>Cardboard</option><option>Stereoscopic</option></select><p>Panorama Loading Text</p><input id='psloadingtext' value='" +currentprojectdata.settings.loadingtext+ "'></div><div style='display: table-cell; vertical-align: top;'><p>Main Panorama (First panorama to load)</p><select id='firstpanorama'>" +getPanoramasNameOption()+ "</select><p>Hide Panolens Control Buttons (bottom right)</p><select><option>Yes</option><option>No</option></select></div></div><button onclick='saveProjectSettings()'><i class='fa fa-floppy-o'></i> Save</button>");
 						break;
 					case "hotspots" :
 						var panoswithhots = "";
@@ -568,7 +573,8 @@
 							}else{
 								for(var x = 0 ; x < currentprojectdata.panoramas[i].hotspots.length; x++){
 									var cid = currentprojectdata.panoramas[i].hotspots[x].hotspotid;
-									hotspotsofit = "<div class='hotspotholder'><div class='hotspottitle'><input onkeyup=renameHotspotTitle("+i+","+x+") id='hinput"+cid+"' value='" +currentprojectdata.panoramas[i].hotspots[x].title+ "'></div><div style='padding: 10px; white-space: normal; display: block; box-sizing: border-box;'><div id='hotscreen"+cid+"' style='display: none;'></div><div id='hothome"+cid+"'><div style='width: 92px; height: 92px; margin: 0 auto; margin-bottom: 20px; background: url("+wtmdata.projects[currentprojectindex].projectdir+"/imgs/hotspot.png) no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'></div><p>This Hotspot has no action yet. Click Plus button to add an action to it.</p></div></div><div><button style='min-width: 10px;' class='greenbutton' onclick='hotShowAddNewAction(\""+cid+"\")'><i class='fa fa-plus'></i></button><button style='min-width: 10px;' onclick='hotShowConfigs(\""+cid+"\")'><i class='fa fa-cogs'></i></button><button class='redbutton' style='min-width: 10px;' onclick=removehotspot('"+cid+"');><i class='fa fa-trash'></i></button></div></div>" + hotspotsofit;
+									var hotspoticon = "/imgs/hotspot.png";
+									hotspotsofit = "<div class='hotspotholder'><div class='hotspottitle'><input onkeyup=renameHotspotTitle("+i+","+x+") id='hinput"+cid+"' value='" +currentprojectdata.panoramas[i].hotspots[x].title+ "'></div><div style='padding: 10px; white-space: normal; display: block; box-sizing: border-box;'><div id='hotscreen"+cid+"' style='display: none;'></div><div id='hothome"+cid+"'><div style='width: 92px; height: 92px; margin: 0 auto; margin-bottom: 20px; background: url("+wtmdata.projects[currentprojectindex].projectdir+hotspoticon+") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'></div><p>This Hotspot has no action yet. Click Plus button to add an action to it.</p></div></div><div><button style='min-width: 20px;' class='greenbutton' onclick='hotShowAddNewAction(\""+cid+"\")'><i class='fa fa-plus'></i> Add</button><button style='min-width: 20px;' onclick='hotShowConfigs(\""+cid+"\")'><i class='fa fa-cogs'></i> Conf.</button><button class='redbutton' style='min-width: 20px;' onclick=removehotspot('"+cid+"');><i class='fa fa-trash'></i> Del.</button></div></div>" + hotspotsofit;
 								}
 							}
 							
@@ -644,13 +650,14 @@
 			//HOTSPOTS Operations//
 			//Show add new action dialog
 			function hotShowAddNewAction(cid){
-				$("#hotscreen"+cid).hide().html("<div><h4>Select Action</h4></div><select><option>Choose one...</option><option>Open Panorama</option><option>Show Image</option><option>Play a Video</option><option>Open a PDF file</option><option>Open URL</option><option>Execute JavaScript code</option></select><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-chevron-left'></i> Back</div>").slideDown();
+				$("#hotscreen"+cid).hide().html("<div><h4>Select Action</h4></div><select><option>Choose one...</option><option>Open Panorama</option><option>Show Image</option><option>Play a Video</option><option>Open a PDF file</option><option>Open URL</option><option>Execute JavaScript code</option></select><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-floppy-o'></i> Save</div><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-times'></i> Close</div>").slideDown();
 				$("#hothome" + cid).hide();
 			}
 			//Show configs panel
 			function hotShowConfigs(cid){
+				var hotspoticon = "/imgs/hotspot.png";
 				$("#hothome" + cid).hide();
-				$("#hotscreen"+cid).hide().html("<h4>Configs</h4><p>Show title on hover</p><select><option>No</option><option>Yes</option></select><p>Current Hotspot icon<br>(Click to change):</p><div style='width: 92px; height: 92px; margin: 0 auto; margin-bottom: 20px; background: url("+wtmdata.projects[currentprojectindex].projectdir+"/imgs/hotspot.png) no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'></div><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-chevron-left'></i> Back</div>").slideDown();
+				$("#hotscreen"+cid).hide().html("<h4>Configs</h4><p>Show title on hover</p><select><option>No</option><option>Yes</option></select><p>Current Hotspot icon<br>(Click to change):</p><div style='width: 92px; height: 92px; margin: 0 auto; margin-bottom: 20px; background: url("+wtmdata.projects[currentprojectindex].projectdir+hotspoticon+") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'></div><input value='hotspot.png' readonly><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-floppy-o'></i> Save</div><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-times'></i> Close</div>").slideDown();
 			}
 			//Go hot home
 			function hotGoHome(cid){
@@ -670,7 +677,7 @@
 						//console.log("pidx: " + pidx + ", hidx: " + hidx);
 						currentprojectdata.panoramas[pidx].hotspots[hidx].title = tempstring;
 						updateWtmFile();
-						generateHTMLPanoramas();
+						//generateHTMLPanoramas();
 					}
 				}, 1000);
 			}
@@ -816,14 +823,7 @@
 			function setitasmainpano(idx){
 				currentprojectdata.settings.firstpanorama = currentprojectdata.panoramas[idx].panofile;
 				updateWtmFile();
-				fs.readFile(wtmdata.projects[currentprojectindex].projectdir + "/index.html", 'utf8', function (err, data) {
-					if (err) { return console.log(err); }
-					var newhtml = data.split("/*panoramas*/")[0] +"/*panoramas*/\n\r"+ generatePanoramas(currentprojectdata.panoramas) +"\n\r/*panoramas-end*/"+ data.split("/*panoramas-end*/")[1];
-					fs.writeFile(wtmdata.projects[currentprojectindex].projectdir + "/index.html", newhtml, function (err) {
-						if (err) return console.log(err);
-						showeditorc("panoramas");
-					});
-				});
+				showeditorc("panoramas");
 			}
 			
 			function saveProjectSettings(){
@@ -886,7 +886,7 @@
 						//Write new projectdata to wtm file
 						updateWtmFile();
 						//Regenerate html panoramas
-						generateHTMLPanoramas();
+						//generateHTMLPanoramas();
 						showDim("Please wait...");
 						setTimeout(function(){
 							showeditorc('panoramas');
@@ -919,7 +919,7 @@
 						deleteFile(wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[idx].panofile);
 						currentprojectdata.panoramas.splice(idx, 1);
 						updateWtmFile();
-						generateHTMLPanoramas();
+						//generateHTMLPanoramas();
 						showDim("Please wait...");
 						setTimeout(function(){
 							showeditorc('panoramas');
@@ -1150,7 +1150,7 @@
 			ipcRenderer.on("setnewinfospotlocation", (event, arg)=>{
 				currentprojectdata.panoramas[currentpanoramaindex].hotspots.push({ "hotspotid" : randomblah(10), "title" : arg.title, "position" : arg.position, "actions" : [] });
 				updateWtmFile();
-				generateHTMLPanoramas();
+				//generateHTMLPanoramas();
 				showeditorc("hotspots");
 			});
 			
