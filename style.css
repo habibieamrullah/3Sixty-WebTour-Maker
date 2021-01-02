@@ -262,6 +262,7 @@ a:hover{
 	background-color: #3d4855;
 	border: 1px solid #2c3643;
 	transition: border .5s;
+	vertical-align: top;
 }
 
 .hotspotholder:hover{

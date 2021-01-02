@@ -32,6 +32,7 @@
 				File
 				<div class="dropdown-content">
 					<div class="subabitem" onclick="showpage('projects')"><i class="fa fa-briefcase" style="width: 30px;"></i> Projects</div>
+					<div class="subabitem" onclick="openproject()"><i class="fa fa-folder" style="width: 30px;"></i> Open Existing Project</div>
 					<div class="subabitem" onclick="quitprogram()"><i class="fa fa-times" style="width: 30px;"></i> Exit</div>
 				</div>
 			</div>
@@ -68,7 +69,7 @@
 			<h1>Projects</h1>
 			<div style="display: table; width: 100%; table-layout: fixed;">
 				<div style="display: table-cell; vertical-align: top; width: 30%; overflow-x: hidden;">
-					<h4><i class="fa fa-pencil"></i> Create New Project</h4>
+					<h2><i class="fa fa-pencil"></i> Create New Project</h2>
 					<div>
 						<p style="font-size: 12px; font-style: italic;">1. Project Name</p>
 						<input id="newprojectname" placeholder="Give it a name">
@@ -83,11 +84,13 @@
 						<button onclick="createproject()"><i class="fa fa-chevron-right"></i> Create</button>
 					</div>
 					
-					<h4><i class="fa fa-folder"></i> Or Open Existing Project</h4>
+					<!--
+					<h2><i class="fa fa-folder"></i> Or Open Existing Project</h2>
 					<div>
 						<p style="font-size: 12px; font-style: italic;">Click to browse</p>
 						<button onclick="openproject()"><i class="fa fa-folder"></i> Browse</button>
 					</div>
+					-->
 					<script>
 						var newprojectname = "";
 						var newprojectdir = "";
@@ -223,7 +226,7 @@
 					</script>
 				</div>
 				<div style="display: table-cell; vertical-align: top; padding-left: 20px;">
-					<h4><i class="fa fa-briefcase"></i> Recent Projects</h4>
+					<h2><i class="fa fa-briefcase"></i> Recent Projects</h2>
 					<div id="recentprojects"></div>
 				</div>
 			</div>			
@@ -563,13 +566,14 @@
 								hotspotsofit = "<div>There is no hotspot for this panorama.</div>";
 							}else{
 								for(var x = 0 ; x < currentprojectdata.panoramas[i].hotspots.length; x++){
-									hotspotsofit = "<div class='hotspotholder'><div class='hotspottitle'><input onkeyup=renameHotspotTitle("+i+","+x+") id='hinput"+currentprojectdata.panoramas[i].hotspots[x].hotspotid+"' value='" +currentprojectdata.panoramas[i].hotspots[x].title+ "'></div><div style='padding: 10px; white-space: normal; display: block; box-sizing: border-box;'><p>This Hotspot has no action yet. Click Plus button to add an action to it.</p></div><div><button style='min-width: 10px;' class='greenbutton'><i class='fa fa-plus'></i></button><button style='min-width: 10px;'><i class='fa fa-cogs'></i></button><button class='redbutton' style='min-width: 10px;'><i class='fa fa-trash'></i></button></div></div>" + hotspotsofit;
+									var cid = currentprojectdata.panoramas[i].hotspots[x].hotspotid;
+									hotspotsofit = "<div class='hotspotholder'><div class='hotspottitle'><input onkeyup=renameHotspotTitle("+i+","+x+") id='hinput"+cid+"' value='" +currentprojectdata.panoramas[i].hotspots[x].title+ "'></div><div style='padding: 10px; white-space: normal; display: block; box-sizing: border-box;'><div id='hotscreen"+cid+"' style='display: none;'></div><div id='hothome"+cid+"'><div style='width: 92px; height: 92px; margin: 0 auto; margin-bottom: 20px; background: url("+wtmdata.projects[currentprojectindex].projectdir+"/imgs/hotspot.png) no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'></div><p>This Hotspot has no action yet. Click Plus button to add an action to it.</p></div></div><div><button style='min-width: 10px;' class='greenbutton' onclick='hotShowAddNewAction(\""+cid+"\")'><i class='fa fa-plus'></i></button><button style='min-width: 10px;' onclick='hotShowConfigs(\""+cid+"\")'><i class='fa fa-cogs'></i></button><button class='redbutton' style='min-width: 10px;'><i class='fa fa-trash'></i></button></div></div>" + hotspotsofit;
 								}
 							}
 							
 							hotspotsofit = "<div>" + hotspotsofit + "</div>";
 							
-							panoswithhots += "<div style='background: url(" + wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[i].panofile + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; margin-bottom: 20px; margin-right: 20px;'><div class='brighteronhover' style='padding: 20px;'><div style='border: 2px solid white; color: white; padding: 10px; display: inline-block; margin-bottom: 10px;'>" +currentprojectdata.panoramas[i].panofile+ "</div><div style='overflow: auto; white-space: nowrap;'>" + hotspotsofit + "</div><button style='margin: 0px; margin-top: 10px;' class='greenbutton' onclick=addNewHotspotFor("+i+")><i class='fa fa-plus-square'></i> Add</button></div></div>";
+							panoswithhots += "<div style='background: url(" + wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[i].panofile + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; margin-bottom: 20px; margin-right: 20px;'><div class='brighteronhover' style='padding: 20px;'><div style='border: 2px solid white; color: white; padding: 10px; display: inline-block; margin-bottom: 10px;'>" +currentprojectdata.panoramas[i].panofile+ "</div><div style='overflow: auto; white-space: nowrap;'>" + hotspotsofit + "</div><button style='margin: 0px; margin-top: 10px;' class='greenbutton' onclick=addNewHotspotFor("+i+")><i class='fa fa-plus-square'></i> Add New Hotspot</button></div></div>";
 						}
 						$("#editorcontent").html("<h2>Hotspots</h2>" + panoswithhots);
 						
@@ -583,20 +587,53 @@
 							}
 							
 						});
-						$("#editorcontent").html("<h2>Image Assets</h2>" + imagefiles + "</div><div class='imgthumb' onclick='addImageasset()'><div style='cursor: pointer; display: table; width: 100%; height: 100%;'><div style='display: table-cell; text-align: center; vertical-align: middle;'><i class='fa fa-plus' style='font-size: 40px;'></i>");
+						$("#editorcontent").html("<h2>Image Assets</h2>" + imagefiles + "<div class='imgthumb' onclick='addImageasset()'><div style='cursor: pointer; display: table; width: 100%; height: 100%;'><div style='display: table-cell; text-align: center; vertical-align: middle;'><i class='fa fa-plus' style='font-size: 40px;'></i></div></div></div>");
 						
 						break;
 					
 					case "videos" :
-						$("#editorcontent").html("<h2>Videos</h2><p>Coming soon...</p>");
+						var tmpfiles = "";
+						fs.readdirSync(wtmdata.projects[currentprojectindex].projectdir + "/videos/").forEach(file =>{
+							if(file.split(".")[1] == "mp4"){
+								tmpfiles += "<div style='display: inline-block; margin-right: 20px; margin-bottom: 20px;'><div style='display: table;'><div style='background-color: #2c3643; display: table-cell; padding: 10px;'><i class='fa fa-film'></i> " + truncate(file, 30) + "</div><div class='redbutton' style='margin: 0px; padding: 10px; display: table-cell;' onclick=removeVideofile('"+wtmdata.projects[currentprojectindex].projectdir+"/videos/"+file+"')><i class='fa fa-trash'></i></div></div></div>";
+							}
+							
+						});
+						$("#editorcontent").html("<h2>Videos</h2><div>"+tmpfiles+"</div><div class='imgthumb' style='height: 50px; width: 250px;' onclick='addVideofile()'><div style='cursor: pointer; display: table; width: 100%; height: 100%;'><div style='display: table-cell; text-align: center; vertical-align: middle;'><i class='fa fa-plus' style='font-size: 20px;'></i> Add New File</div></div></div>");
 						break;
 					case "pdfs" :
-						$("#editorcontent").html("<h2>PDF Documents</h2><p>Coming soon...</p>");
+						var tmpfiles = "";
+						fs.readdirSync(wtmdata.projects[currentprojectindex].projectdir + "/pdf/").forEach(file =>{
+							if(file.split(".")[1] == "pdf"){
+								tmpfiles += "<div style='display: inline-block; margin-right: 20px; margin-bottom: 20px;'><div style='display: table;'><div style='background-color: #2c3643; display: table-cell; padding: 10px;'><i class='fa fa-file-pdf-o'></i> " + truncate(file, 30) + "</div><div class='redbutton' style='margin: 0px; padding: 10px; display: table-cell;' onclick=removePdffile('"+wtmdata.projects[currentprojectindex].projectdir+"/pdf/"+file+"')><i class='fa fa-trash'></i></div></div></div>";
+							}
+							
+						});
+						$("#editorcontent").html("<h2>PDF Documents</h2><div>"+tmpfiles+"</div><div class='imgthumb' style='height: 50px; width: 250px;' onclick='addPdffile()'><div style='cursor: pointer; display: table; width: 100%; height: 100%;'><div style='display: table-cell; text-align: center; vertical-align: middle;'><i class='fa fa-plus' style='font-size: 20px;'></i> Add New File</div></div></div>");
 						break;
+						
 				}
 				
 				limitHeight();
 			}
+			
+			//HOTSPOTS Operations//
+			//Show add new action dialog
+			function hotShowAddNewAction(cid){
+				$("#hotscreen"+cid).hide().html("<div><h4>Select Action</h4></div><select><option>Choose one...</option><option>Open Panorama</option><option>Show Image</option><option>Play a Video</option><option>Open a PDF file</option><option>Open URL</option><option>Execute JavaScript code</option></select><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-chevron-left'></i> Back</div>").slideDown();
+				$("#hothome" + cid).hide();
+			}
+			//Show configs panel
+			function hotShowConfigs(cid){
+				$("#hothome" + cid).hide();
+				$("#hotscreen"+cid).hide().html("<h4>Configs</h4><p>Show title on hover</p><select><option>No</option><option>Yes</option></select><p>Current Hotspot icon<br>(Click to change):</p><div style='width: 92px; height: 92px; margin: 0 auto; margin-bottom: 20px; background: url("+wtmdata.projects[currentprojectindex].projectdir+"/imgs/hotspot.png) no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'></div><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-chevron-left'></i> Back</div>").slideDown();
+			}
+			//Go hot home
+			function hotGoHome(cid){
+				$("#hothome"+cid).hide().slideDown();
+				$("#hotscreen"+cid).hide();
+			}
+			
 			
 			//Function for dynamically renaming hotspot title
 			function renameHotspotTitle(pidx, hidx){
@@ -660,17 +697,59 @@
 			function addImageasset(){
 				pointToFile(["jpg", "jpeg", "png"], function(){
 					showDim("Adding new file...");
-					tempDestinationDirectory = wtmdata.projects[currentprojectindex].projectdir + "/images/";
-					addFile(function(){
-						setTimeout(function(){hideDim(); showeditorc("imageassets");},1000);
-					});
+					setTimeout(function(){
+						tempDestinationDirectory = wtmdata.projects[currentprojectindex].projectdir + "/images/";
+						addFile(function(){
+							setTimeout(function(){hideDim(); showeditorc("imageassets");},1000);
+						});
+					}, 1000);
+					
 				});
 			}
-			
+			//Removeing image asset
 			function removeImageasset(f){
 				showDim("Removing the file. Please wait...");
 				deleteFile(f);
 				setTimeout(function(){hideDim(); showeditorc("imageassets");},1000);
+			}
+			
+			//Adding new video file
+			function addVideofile(){
+				pointToFile(["mp4"], function(){
+					showDim("Adding new file...");
+					setTimeout(function(){
+						tempDestinationDirectory = wtmdata.projects[currentprojectindex].projectdir + "/videos/";
+						addFile(function(){
+							setTimeout(function(){hideDim(); showeditorc("videos");},1000);
+						});
+					},1000);					
+				});
+			}
+			//Removeing video file
+			function removeVideofile(f){
+				showDim("Removing the file. Please wait...");
+				deleteFile(f);
+				setTimeout(function(){hideDim(); showeditorc("videos");},1000);
+			}
+			
+			//Adding new video file
+			function addPdffile(){
+				pointToFile(["pdf"], function(){
+					showDim("Adding new file...");
+					setTimeout(function(){
+						tempDestinationDirectory = wtmdata.projects[currentprojectindex].projectdir + "/pdf/";
+						addFile(function(){
+							setTimeout(function(){hideDim(); showeditorc("pdfs");},1000);
+						});
+					}, 1000);
+					
+				});
+			}
+			//Removeing video file
+			function removePdffile(f){
+				showDim("Removing the file. Please wait...");
+				deleteFile(f);
+				setTimeout(function(){hideDim(); showeditorc("pdfs");},1000);
 			}
 			
 			function setitasmainpano(idx){

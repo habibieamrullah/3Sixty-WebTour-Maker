@@ -27,6 +27,7 @@
 				height: 100%;
 				overflow: hidden;
 				background-color: #000;
+				cursor: crosshair;
 			}
 
 			a:link, a:visited{
@@ -82,15 +83,15 @@
 			viewer.addUpdateCallback(function(){});
 			
 			/*panoramas*/
-var testpanorama = new PANOLENS.ImagePanorama( "temp/testpanorama.jpg" );
-viewer.add( testpanorama );
-testpanorama.addEventListener('progress', function(e){
+var kebonan = new PANOLENS.ImagePanorama( "temp/kebonan.jpg" );
+viewer.add( kebonan );
+kebonan.addEventListener('progress', function(e){
 $("#loading").show();
 });
-testpanorama.addEventListener('load', function(e){
+kebonan.addEventListener('load', function(e){
 $("#loading").fadeOut();
 });
-testpanorama.addEventListener('click', function(e){
+kebonan.addEventListener('click', function(e){
 });
 
 
@@ -107,10 +108,11 @@ testpanorama.addEventListener('click', function(e){
 						initHotspotDialog();
 				}
 			});
+		
 			
 			function initHotspotDialog(){
 				
-				$("#dimmessage").html("<div style='width: 70%; max-width: 400px; margin: 0 auto;'><div style='background-color: #2c3643; color: white; padding: 10px;'><i class='fa fa-info-circle'></i> New Hotspot</div><div style='padding: 30px; background-color: #3d4855; font-size: 14px; font-weight: normal;'><div><p>Give the hotspot a name:</p><input placeholder='Hotspot Name' id='hotspotname' style='margin: 0px; margin-bottom: 10px;'></div><button onclick='addTheHotspot()' style='margin: 5px;'>Add</button><button onclick=$('#dim').fadeOut() style='margin: 5px;'>Cancel</button></div></div>");
+				$("#dimmessage").html("<div style='width: 70%; max-width: 400px; margin: 0 auto;'><div style='background-color: #2c3643; color: white; padding: 10px;'><i class='fa fa-info-circle'></i> New Hotspot</div><div style='padding: 30px; background-color: #3d4855; font-size: 14px; font-weight: normal;'><div><p>Give the hotspot a name:</p><input placeholder='Hotspot Name' id='hotspotname' style='margin: 0px; margin-bottom: 10px;'></div><button onclick='addTheHotspot()' style='margin: 5px;'><i class='fa fa-plus'></i> Add</button><button onclick=$('#dim').fadeOut() style='margin: 5px;'><i class='fa fa-times'></i> Cancel</button></div></div>");
 				$("#dim").show();
 				
 			}
