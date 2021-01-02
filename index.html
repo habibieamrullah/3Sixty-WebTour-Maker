@@ -31,17 +31,17 @@
 			<div class="abitem">
 				File
 				<div class="dropdown-content">
-					<div class="subabitem" onclick="showpage('projects')"><i class="fa fa-briefcase" style="width: 30px;"></i> Projects</div>
-					<div class="subabitem" onclick="openproject()"><i class="fa fa-folder" style="width: 30px;"></i> Open Existing Project</div>
-					<div class="subabitem" onclick="quitprogram()"><i class="fa fa-times" style="width: 30px;"></i> Exit</div>
+					<div class="subabitem" onclick="showpage('projects')"><div style="display: inline-block; width: 260px;"><i class="fa fa-briefcase" style="width: 30px;"></i> Projects</div><div style="display: inline-block; color: gray;">Ctrl+P</div></div>
+					<div class="subabitem" onclick="openproject()"><div style="display: inline-block; width: 260px;"><i class="fa fa-folder" style="width: 30px;"></i> Open Existing Project</div><div style="display: inline-block; color: gray;">Ctrl+O</div></div>
+					<div class="subabitem" onclick="quitprogram()"><div style="display: inline-block; width: 260px;"><i class="fa fa-times" style="width: 30px;"></i> Exit</div><div style="display: inline-block; color: gray;">Ctrl+Q</div></div>
 				</div>
 			</div>
 			<div class="abitem">
 				Help
 				<div class="dropdown-content">
-					<div class="subabitem" onclick="showpage('tutorials')"><i class="fa fa-film" style="width: 30px;"></i> Video Tutorials</div>
-					<div class="subabitem" onclick="showMiniPage('donate')"><i class="fa fa-dollar" style="width: 30px;"></i> Support The Development</div>
-					<div class="subabitem" onclick="showMiniPage('about')"><i class="fa fa-question" style="width: 30px;"></i> About 360 Web Tour Maker</div>					
+					<div class="subabitem" onclick="showpage('tutorials')"><div style="display: inline-block; width: 260px;"><i class="fa fa-film" style="width: 30px;"></i> Video Tutorials</div><div style="display: inline-block; color: gray;">Ctrl+T</div></div>
+					<div class="subabitem" onclick="showMiniPage('donate')"><div style="display: inline-block; width: 260px;"><i class="fa fa-dollar" style="width: 30px;"></i> Support The Development</div><div style="display: inline-block; color: gray;">Ctrl+S</div></div>
+					<div class="subabitem" onclick="showMiniPage('about')"><div style="display: inline-block; width: 260px;"><i class="fa fa-question" style="width: 30px;"></i> About 360 Web Tour Maker</div><div style="display: inline-block; color: gray;">Ctrl+B</div></div>					
 				</div>
 			</div>
 			<div style="float: right;">
@@ -391,7 +391,7 @@
 							
 							linkcount++;
 							
-							pdata += "var infospot"+panovar+x+" = new PANOLENS.Infospot( 500, 'images/hotspot.png', true );\n\
+							pdata += "var infospot"+panovar+x+" = new PANOLENS.Infospot( 500, 'imgs/hotspot.png', true );\n\
 							infospot"+panovar+x+".position.set( "+arr[i].hotspots[x].position+" );\n\
 							infospot"+panovar+x+".addEventListener( 'click', function(){\n\
 								viewer.setPanorama( "+panovar+" );\n\
@@ -400,7 +400,7 @@
 							
 							
 							if(linkcount == 2){
-								pdata += "var xinfospot"+panovar+x+" = new PANOLENS.Infospot( 500, 'images/hotspot.png', true );\n\
+								pdata += "var xinfospot"+panovar+x+" = new PANOLENS.Infospot( 500, 'imgs/hotspot.png', true );\n\
 								xinfospot"+panovar+x+".position.set( "+arr[i].hotspots[x].position+" );\n\
 								xinfospot"+panovar+x+".addEventListener( 'click', function(){\n\
 									viewer.setPanorama( "+panovar+" );\n\
@@ -582,7 +582,11 @@
 						
 					case "imageassets" :
 						var imagefiles = "";
-						fs.readdirSync(wtmdata.projects[currentprojectindex].projectdir + "/images/").forEach(file =>{
+						var workingdir = wtmdata.projects[currentprojectindex].projectdir + "/images/";
+						if (!fs.existsSync(workingdir)){
+							fs.mkdirSync(workingdir);
+						}
+						fs.readdirSync(workingdir).forEach(file =>{
 							if(file.split(".")[1] == "jpg" || file.split(".")[1] == "jpeg" || file.split(".")[1] == "png"){
 								imagefiles += "<div class='imgthumb' style='position: relative; background: url(" + wtmdata.projects[currentprojectindex].projectdir+"/images/"+file + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'><span style='background-color: black; color: white; font-weight: bold; padding: 5px; font-size: 10px;'>" + truncate(file, 20) + "</span><div style='position: absolute; bottom: 0; right: 0;'><div onclick=\"showImage('"+file+"', '" + wtmdata.projects[currentprojectindex].projectdir+"/images/"+file + "');\" class='greenbutton'><i class='fa fa-eye'></i></div><div onclick=removeImageasset('"+wtmdata.projects[currentprojectindex].projectdir+"/images/"+file+"') class='redbutton'><i class='fa fa-trash'></i></div></div></div>";
 							}
@@ -594,7 +598,11 @@
 					
 					case "videos" :
 						var tmpfiles = "";
-						fs.readdirSync(wtmdata.projects[currentprojectindex].projectdir + "/videos/").forEach(file =>{
+						var workingdir = wtmdata.projects[currentprojectindex].projectdir + "/videos/";
+						if (!fs.existsSync(workingdir)){
+							fs.mkdirSync(workingdir);
+						}
+						fs.readdirSync(workingdir).forEach(file =>{
 							if(file.split(".")[1] == "mp4"){
 								tmpfiles += "<div style='display: inline-block; margin-right: 20px; margin-bottom: 20px;'><div style='display: table;'><div style='background-color: #2c3643; display: table-cell; padding: 10px;'><i class='fa fa-film'></i> " + truncate(file, 30) + "</div><div class='redbutton' style='margin: 0px; padding: 10px; display: table-cell;' onclick=removeVideofile('"+wtmdata.projects[currentprojectindex].projectdir+"/videos/"+file+"')><i class='fa fa-trash'></i></div></div></div>";
 							}
@@ -603,7 +611,11 @@
 						break;
 					case "audios" :
 						var tmpfiles = "";
-						fs.readdirSync(wtmdata.projects[currentprojectindex].projectdir + "/audios/").forEach(file =>{
+						var workingdir = wtmdata.projects[currentprojectindex].projectdir + "/audios/";
+						if (!fs.existsSync(workingdir)){
+							fs.mkdirSync(workingdir);
+						}
+						fs.readdirSync(workingdir).forEach(file =>{
 							if(file.split(".")[1] == "mp3"){
 								tmpfiles += "<div style='display: inline-block; margin-right: 20px; margin-bottom: 20px;'><div style='display: table;'><div style='background-color: #2c3643; display: table-cell; padding: 10px;'><i class='fa fa-film'></i> " + truncate(file, 30) + "</div><div class='redbutton' style='margin: 0px; padding: 10px; display: table-cell;' onclick=removeAudiofile('"+wtmdata.projects[currentprojectindex].projectdir+"/audios/"+file+"')><i class='fa fa-trash'></i></div></div></div>";
 							}
@@ -612,7 +624,11 @@
 						break;
 					case "pdfs" :
 						var tmpfiles = "";
-						fs.readdirSync(wtmdata.projects[currentprojectindex].projectdir + "/pdf/").forEach(file =>{
+						var workingdir = wtmdata.projects[currentprojectindex].projectdir + "/pdf/";
+						if (!fs.existsSync(workingdir)){
+							fs.mkdirSync(workingdir);
+						}
+						fs.readdirSync(workingdir).forEach(file =>{
 							if(file.split(".")[1] == "pdf"){
 								tmpfiles += "<div style='display: inline-block; margin-right: 20px; margin-bottom: 20px;'><div style='display: table;'><div style='background-color: #2c3643; display: table-cell; padding: 10px;'><i class='fa fa-file-pdf-o'></i> " + truncate(file, 30) + "</div><div class='redbutton' style='margin: 0px; padding: 10px; display: table-cell;' onclick=removePdffile('"+wtmdata.projects[currentprojectindex].projectdir+"/pdf/"+file+"')><i class='fa fa-trash'></i></div></div></div>";
 							}
@@ -1094,6 +1110,32 @@
 			
 			$(window).resize(function(){
 				limitHeight();
+			});
+			
+			//Keyboard Shortcuts
+			
+			$(window).keydown(function(e){
+				if(e.ctrlKey && e.which == 80){
+					showpage("projects");
+				}
+				if(e.ctrlKey && e.which == 79){
+					openproject();
+				}
+				if(e.ctrlKey && e.which == 81){
+					quitprogram();
+				}
+				
+				if(e.ctrlKey && e.which == 84){
+					showpage('tutorials')
+				}
+				if(e.ctrlKey && e.which == 83){
+					showMiniPage('donate');
+				}
+				if(e.ctrlKey && e.which == 66){
+					showMiniPage('about')
+				}
+				
+				e.preventDefault;
 			});
 			
 			//Open link in external browser
