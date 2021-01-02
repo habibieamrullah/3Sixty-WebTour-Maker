@@ -64,7 +64,7 @@ h1, h2, h3, h4, h5, p{
 	margin-bottom: 10px;
 }
 
-input, select, option{
+input, select, option, textarea{
 	box-sizing: border-box;
 	width: 100%;
 	background-color: inherit;
@@ -80,6 +80,10 @@ input, select, option{
 
 select:hover{
 	background-color: #505a6c;
+}
+
+textarea{
+	height: 200px;
 }
 
 option{

@@ -28,6 +28,7 @@
 	
 	<body style="display: none;">
 		<div id="appbar">
+			<div style="background-color: #0d9e59; color: white; padding: 10px; display: inline-block; font-weight: bold;">3sixty</div>
 			<div class="abitem">
 				File
 				<div class="dropdown-content">
@@ -459,6 +460,16 @@
 				}
 			}
 			
+			function showItemChooser(title, dir, fn){
+				doit = function(){fn()};
+				
+				var itemstochoose = "<p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p><p>sdfgs s as</p>";
+				
+				$("#dimmessage").html("<div style='width: 100%; max-width: 720px; height: 100%; margin: 0 auto;'><div style='background-color: #2c3643; color: white; padding: 10px;'><i class='fa fa-question-circle'></i> " +title+ "</div><div style='padding: 30px; background-color: #3d4855; font-size: 14px; font-weight: normal;'><div style='box-sizing: border-box; width: 100%; height: "+(innerHeight-400)+"px; overflow: auto;'>"+itemstochoose+"</div><button onclick='hideDim()' style='margin-left: 10px; margin-top: 20px; margin-bottom: 0px;'><i class='fa fa-times'></i> Close</button></div></div>");
+				$("#dim").show();
+				$("#loading").hide();
+			}
+			
 			function showMiniPage(type){
 				switch (type){
 					case "about" :
@@ -562,7 +573,7 @@
 						$("#editorcontent").html(panoramas + "<div class='imgthumb' onclick='addpanorama()'><div style='cursor: pointer; display: table; width: 100%; height: 100%;'><div style='display: table-cell; text-align: center; vertical-align: middle;'><i class='fa fa-plus' style='font-size: 40px;'></i></div></div></div>");
 						break;
 					case "settings" :
-						$("#editorcontent").html("<h2>Project Settings</h2><p>Project Description</p><input><p>Tags (separate them by comma)</p><input><div style='display: table; width: 100%; table-layout: fixed;'><div style='display: table-cell; vertical-align: top; padding-right: 10px;'><p>Default Tour Mode</p><select><option>Normal</option><option>Cardboard</option><option>Stereoscopic</option></select><p>Panorama Loading Text</p><input id='psloadingtext' value='" +currentprojectdata.settings.loadingtext+ "'></div><div style='display: table-cell; vertical-align: top;'><p>Main Panorama (First panorama to load)</p><select id='firstpanorama'>" +getPanoramasNameOption()+ "</select><p>Hide Panolens Control Buttons (bottom right)</p><select><option>Yes</option><option>No</option></select></div></div><button onclick='saveProjectSettings()'><i class='fa fa-floppy-o'></i> Save</button>");
+						$("#editorcontent").html("<h2>Project Settings</h2><p>Project Description</p><input placeholder='Short description'><p>Tags (separate them by comma)</p><input placeholder='Tags...'><div style='display: table; width: 100%; table-layout: fixed;'><div style='display: table-cell; vertical-align: top; padding-right: 10px;'><p>Default Tour Mode</p><select><option>Normal</option><option>Cardboard</option><option>Stereoscopic</option></select><p>Panorama Loading Text</p><input id='psloadingtext' placeholder='Loading text' value='" +currentprojectdata.settings.loadingtext+ "'></div><div style='display: table-cell; vertical-align: top;'><p>Main Panorama (First panorama to load)</p><select id='firstpanorama'>" +getPanoramasNameOption()+ "</select><p>Hide Panolens Control Buttons (bottom right)</p><select><option>Yes</option><option>No</option></select></div></div><button onclick='saveProjectSettings()'><i class='fa fa-floppy-o'></i> Save</button>");
 						break;
 					case "hotspots" :
 						var panoswithhots = "";
@@ -650,21 +661,89 @@
 			//HOTSPOTS Operations//
 			//Show add new action dialog
 			function hotShowAddNewAction(cid){
-				$("#hotscreen"+cid).hide().html("<div><h4>Select Action</h4></div><select><option>Choose one...</option><option>Open Panorama</option><option>Show Image</option><option>Play a Video</option><option>Open a PDF file</option><option>Open URL</option><option>Execute JavaScript code</option></select><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-floppy-o'></i> Save</div><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-times'></i> Close</div>").slideDown();
+				$("#hotscreen"+cid).hide().html("<div><h4>Select Action</h4></div><select id='haction"+cid+"' onchange=showactioncontent('"+cid+"')><option>Choose one...</option><option value=1>Open Panorama</option><option value=2>Show Image</option><option value=3>Play a Video</option><option value=3>Play an Audio</option><option value=5>Open a PDF file</option><option value=6>Open URL</option><option value=7>Execute JavaScript code</option></select><div id='hotactioncontent"+cid+"'></div><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-floppy-o'></i> Save</div><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-times'></i> Close</div>").slideDown();
 				$("#hothome" + cid).hide();
 			}
+			
+			//showactioncontent
+			function showactioncontent(cid){
+				var currentaction = parseInt($("#haction"+cid).val());
+				var acontent = "";
+				switch(currentaction){
+					case 1 :
+						acontent = "<p>Destination Panorama:</p><input placeholder='Click to choose...' readonly>";
+						break;
+					case 2 :
+						acontent = "<p>Image to open:</p><input placeholder='Click to choose...' readonly onclick='hchoose(1, \""+cid+"\");'>";
+						break;
+					case 3 :
+						acontent = "<p>Video to play:</p><input placeholder='Click to choose...' readonly onclick='hchoose(2, \""+cid+"\");'>";
+						break;
+					case 4 :
+						acontent = "<p>Audio to play:</p><input placeholder='Click to choose...' readonly onclick='hchoose(3, \""+cid+"\");'>";
+						break;
+					case 5 :
+						acontent = "<p>PDF file to open:</p><input placeholder='Click to choose...' readonly onclick='hchoose(4, \""+cid+"\");'>";
+						break;
+					case 6 :
+						acontent = "<p>URL to open:</p><input placeholder='https://example.com'>";
+						break;
+					case 7 :
+						acontent = "<p>JavaScript code to execute:</p><textarea placeholder='Write your JS here...'></textarea>";
+						break;
+				}
+				$("#hotactioncontent"+cid).html(acontent);
+			}
+			
 			//Show configs panel
 			function hotShowConfigs(cid){
 				var hotspoticon = "/imgs/hotspot.png";
 				$("#hothome" + cid).hide();
-				$("#hotscreen"+cid).hide().html("<h4>Configs</h4><p>Show title on hover</p><select><option>No</option><option>Yes</option></select><p>Current Hotspot icon<br>(Click to change):</p><div style='width: 92px; height: 92px; margin: 0 auto; margin-bottom: 20px; background: url("+wtmdata.projects[currentprojectindex].projectdir+hotspoticon+") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'></div><input value='hotspot.png' readonly><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-floppy-o'></i> Save</div><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-times'></i> Close</div>").slideDown();
+				$("#hotscreen"+cid).hide().html("<h4>Configs</h4><p>Current Hotspot icon<br>(Click to change):</p><div onclick='showhfilechooser(1, \""+cid+"\");' style='width: 92px; height: 92px; margin: 0 auto; margin-bottom: 20px; background: url("+wtmdata.projects[currentprojectindex].projectdir+hotspoticon+") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'></div><input value='hotspot.png' readonly onclick='showhfilechooser(1, \""+cid+"\");'><p>Show title on hover</p><select><option>No</option><option>Yes</option></select><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-floppy-o'></i> Save</div><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-times'></i> Close</div>").slideDown();
 			}
+			
 			//Go hot home
 			function hotGoHome(cid){
 				$("#hothome"+cid).hide().slideDown();
 				$("#hotscreen"+cid).hide();
 			}
 			
+			//hchoose for add actions
+			function hchoose(type, cid){
+				switch(type){
+					case 1 :
+						showItemChooser("Choose an Image", "images", function(){
+							showAlert("Done!", "Yessss");
+						});
+						break;
+					case 2 :
+						showItemChooser("Choose a Video", "videos", function(){
+							showAlert("Done!", "Yessss");
+						});
+						break;
+					case 3 :
+						showItemChooser("Choose an Audio", "audios", function(){
+							showAlert("Done!", "Yessss");
+						});
+						break;
+					case 4 :
+						showItemChooser("Choose a PDF", "pdf", function(){
+							showAlert("Done!", "Yessss");
+						});
+						break;
+				}
+			}
+			
+			//Show file chooser for hotspot
+			function showhfilechooser(type, cid){
+				switch(type){
+					case 1 :
+						showItemChooser("Choose an Image", "images", function(){
+							showAlert("Done!", "Yessss");
+						});
+						break;
+				}
+			}
 			
 			//Function for dynamically renaming hotspot title
 			function renameHotspotTitle(pidx, hidx){
