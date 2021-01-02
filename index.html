@@ -543,16 +543,16 @@
 						var panoramas = "<h2>Panorama Images</h2>";
 						for(var i = 0; i < currentprojectdata.panoramas.length; i++){
 							var itsmainpano = "";
-							var itsmainpanogreen = "background-color: #eba576;";
+							var itsmainpanogreen = "background-color: #eba576; color: black;";
 							var itsmainpanoaction = " onclick='setitasmainpano(" +i+ ")'";
 							var itsmainpanotrash = "";
 							if(currentprojectdata.panoramas[i].panofile == currentprojectdata.settings.firstpanorama){
 								itsmainpano = "<i class='fa fa-home'></i> ";
-								itsmainpanogreen = "background-color: #0d9e59;";
+								itsmainpanogreen = "background-color: #0d9e59; color: white;";
 								itsmainpanoaction = " onclick='showAlert(\"Main Panorama\", \"This panorama is already set as Main Panorama\");'";
 								itsmainpanotrash = " display: none;";
 							}
-							panoramas += "<div class='imgthumb' style='position: relative; background: url(" + wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[i].panofile + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'><span"+itsmainpanoaction+" style='"+itsmainpanogreen+" color: black; cursor: pointer; font-weight: bold; padding: 5px; font-size: 10px;'>" + itsmainpano + truncate(currentprojectdata.panoramas[i].panofile, 20) + "</span><div style='position: absolute; bottom: 0; right: 0;'><div onclick=\"showImage('"+currentprojectdata.panoramas[i].panofile+"', '" + wtmdata.projects[currentprojectindex].projectdir+"/panoramas/"+currentprojectdata.panoramas[i].panofile + "');\" class='greenbutton'><i class='fa fa-eye'></i></div><div onclick='removePanorama(" +i+ ")' class='redbutton' style='" +itsmainpanotrash+ "'><i class='fa fa-trash'></i></div></div></div>";
+							panoramas += "<div class='imgthumb' style='position: relative; background: url(" + wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[i].panofile + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'><span"+itsmainpanoaction+" style='"+itsmainpanogreen+" cursor: pointer; font-weight: bold; padding: 5px; font-size: 10px;'>" + itsmainpano + truncate(currentprojectdata.panoramas[i].panofile, 20) + "</span><div style='position: absolute; bottom: 0; right: 0;'><div onclick=\"showImage('"+currentprojectdata.panoramas[i].panofile+"', '" + wtmdata.projects[currentprojectindex].projectdir+"/panoramas/"+currentprojectdata.panoramas[i].panofile + "');\" class='greenbutton'><i class='fa fa-eye'></i></div><div onclick='removePanorama(" +i+ ")' class='redbutton' style='" +itsmainpanotrash+ "'><i class='fa fa-trash'></i></div></div></div>";
 						}
 						$("#editorcontent").html(panoramas + "<div class='imgthumb' onclick='addpanorama()'><div style='cursor: pointer; display: table; width: 100%; height: 100%;'><div style='display: table-cell; text-align: center; vertical-align: middle;'><i class='fa fa-plus' style='font-size: 40px;'></i></div></div></div>");
 						break;
@@ -568,7 +568,7 @@
 							}else{
 								for(var x = 0 ; x < currentprojectdata.panoramas[i].hotspots.length; x++){
 									var cid = currentprojectdata.panoramas[i].hotspots[x].hotspotid;
-									hotspotsofit = "<div class='hotspotholder'><div class='hotspottitle'><input onkeyup=renameHotspotTitle("+i+","+x+") id='hinput"+cid+"' value='" +currentprojectdata.panoramas[i].hotspots[x].title+ "'></div><div style='padding: 10px; white-space: normal; display: block; box-sizing: border-box;'><div id='hotscreen"+cid+"' style='display: none;'></div><div id='hothome"+cid+"'><div style='width: 92px; height: 92px; margin: 0 auto; margin-bottom: 20px; background: url("+wtmdata.projects[currentprojectindex].projectdir+"/imgs/hotspot.png) no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'></div><p>This Hotspot has no action yet. Click Plus button to add an action to it.</p></div></div><div><button style='min-width: 10px;' class='greenbutton' onclick='hotShowAddNewAction(\""+cid+"\")'><i class='fa fa-plus'></i></button><button style='min-width: 10px;' onclick='hotShowConfigs(\""+cid+"\")'><i class='fa fa-cogs'></i></button><button class='redbutton' style='min-width: 10px;'><i class='fa fa-trash'></i></button></div></div>" + hotspotsofit;
+									hotspotsofit = "<div class='hotspotholder'><div class='hotspottitle'><input onkeyup=renameHotspotTitle("+i+","+x+") id='hinput"+cid+"' value='" +currentprojectdata.panoramas[i].hotspots[x].title+ "'></div><div style='padding: 10px; white-space: normal; display: block; box-sizing: border-box;'><div id='hotscreen"+cid+"' style='display: none;'></div><div id='hothome"+cid+"'><div style='width: 92px; height: 92px; margin: 0 auto; margin-bottom: 20px; background: url("+wtmdata.projects[currentprojectindex].projectdir+"/imgs/hotspot.png) no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'></div><p>This Hotspot has no action yet. Click Plus button to add an action to it.</p></div></div><div><button style='min-width: 10px;' class='greenbutton' onclick='hotShowAddNewAction(\""+cid+"\")'><i class='fa fa-plus'></i></button><button style='min-width: 10px;' onclick='hotShowConfigs(\""+cid+"\")'><i class='fa fa-cogs'></i></button><button class='redbutton' style='min-width: 10px;' onclick=removehotspot('"+cid+"');><i class='fa fa-trash'></i></button></div></div>" + hotspotsofit;
 								}
 							}
 							
@@ -698,6 +698,24 @@
 						
 						hoteditor.webContents.openDevTools();
 					});
+				});
+			}
+			
+			//Removing Hotspot
+			function removehotspot(cid){
+				showYesNoAlert("Remove Hotspot", "Are you sure to remove this Hotspot?", function(){
+					var cp = currentprojectdata.panoramas;
+					for(var i = 0; i < cp.length; i++){
+						var cph = cp[i].hotspots;
+						for(var x = 0; x < cph.length; x++){
+							if(cph[x].hotspotid == cid){
+								currentprojectdata.panoramas[i].hotspots.splice(x, 1);
+								break;
+							}
+						}
+					}
+					updateWtmFile();
+					showeditorc("hotspots");
 				});
 			}
 			
