@@ -248,6 +248,8 @@
 					<div class="editortab" onclick="showeditorc('panoramas')"><i class="fa fa-camera" style="width: 20px;"></i> Panoramas</div>
 					<div class="editortab" onclick="showeditorc('hotspots')"><i class="fa fa-circle-thin" style="width: 20px;"></i> Hotspots</div>
 					<div class="editortab" onclick="showeditorc('imageassets')"><i class="fa fa-image" style="width: 20px;"></i> Image Assets</div>
+					<div class="editortab" onclick="showeditorc('videos')"><i class="fa fa-film" style="width: 20px;"></i> Video Files</div>
+					<div class="editortab" onclick="showeditorc('pdfs')"><i class="fa fa-file-pdf-o" style="width: 20px;"></i> PDF Documents</div>
 					<div class="editortab" onclick="showeditorc('settings')"><i class="fa fa-cog" style="width: 20px;"></i> Settings</div>
 				</div>
 				<div style="display: table-cell; vertical-align: top; padding-left: 20px;">
@@ -266,6 +268,8 @@
 		
 		<!-- top menu dim -->
 		<div id="topmenudim"></div>
+		
+		<div style="position: fixed; right: 0; bottom: 0; padding: 10px;"><a href="https://paypal.me/habibieamrullah" target="_blank"><img src="paypalwhite.png" style="width: 64px;"></a></div>
 		
 		<script>
 
@@ -449,7 +453,7 @@
 			function showMiniPage(type){
 				switch (type){
 					case "about" :
-						showAlert("About", "<h1>360 Web Tour Maker</h1><h3>Version 1.0.0</h3><p><br><a href='#' onclick=showMiniPage('donate')>Support The Development</a><br><a href='#'>Terms and Conditions</a><br><a href='https://ciihuy.com/'>Visit the Web</a></p>");
+						showAlert("About", "<h1>360 Web Tour Maker</h1><h3>Version 1.0.0</h3><p><br><a href='#' onclick=showMiniPage('donate')>Support The Development</a><br><a href='#'>Terms and Conditions</a><br><a href='https://3sixty.webappdev.my.id/'>Visit the Web</a></p>");
 						break;
 					case "donate" :
 						showAlert("Support The Development", "<p><img src='paypal.png' style='background-color: white; padding: 20px;'></p><p>This software is made for you for free. However, I expect any amount donations from users like you to keep me supported for maintenance and further development of this software.</p><p>Please send your donation to my PayPal account here: <a href='https://paypal.me/habibieamrullah'>https://paypal.me/habibieamrullah</a></p>");
@@ -549,7 +553,7 @@
 						$("#editorcontent").html(panoramas + "<div class='imgthumb' onclick='addpanorama()'><div style='cursor: pointer; display: table; width: 100%; height: 100%;'><div style='display: table-cell; text-align: center; vertical-align: middle;'><i class='fa fa-plus' style='font-size: 40px;'></i></div></div></div>");
 						break;
 					case "settings" :
-						$("#editorcontent").html("<h2>Project Settings</h2><p>Default Tour Mode</p><select><option>Normal</option><option>Cardboard</option><option>Stereoscopic</option></select><p>Panorama Loading Text</p><input id='psloadingtext' value='" +currentprojectdata.settings.loadingtext+ "'><p>Main Panorama (First panorama to load)</p><select id='firstpanorama'>" +getPanoramasNameOption()+ "</select><p>Hide Panolens Control Buttons (bottom right)</p><select><option>Yes</option><option>No</option></select><button onclick='saveProjectSettings()'><i class='fa fa-floppy-o'></i> Save</button>");
+						$("#editorcontent").html("<h2>Project Settings</h2><div style='display: table; width: 100%; table-layout: fixed;'><div style='display: table-cell; vertical-align: top; padding-right: 10px;'><p>Default Tour Mode</p><select><option>Normal</option><option>Cardboard</option><option>Stereoscopic</option></select><p>Panorama Loading Text</p><input id='psloadingtext' value='" +currentprojectdata.settings.loadingtext+ "'></div><div style='display: table-cell; vertical-align: top;'><p>Main Panorama (First panorama to load)</p><select id='firstpanorama'>" +getPanoramasNameOption()+ "</select><p>Hide Panolens Control Buttons (bottom right)</p><select><option>Yes</option><option>No</option></select></div></div><button onclick='saveProjectSettings()'><i class='fa fa-floppy-o'></i> Save</button>");
 						break;
 					case "hotspots" :
 						var panoswithhots = "";
@@ -580,6 +584,15 @@
 							
 						});
 						$("#editorcontent").html("<h2>Image Assets</h2>" + imagefiles + "</div><div class='imgthumb' onclick='addasset()'><div style='cursor: pointer; display: table; width: 100%; height: 100%;'><div style='display: table-cell; text-align: center; vertical-align: middle;'><i class='fa fa-plus' style='font-size: 40px;'></i>");
+						
+						break;
+					
+					case "videos" :
+						$("#editorcontent").html("<h2>Videos</h2><p>Coming soon...</p>");
+						break;
+					case "pdfs" :
+						$("#editorcontent").html("<h2>PDF Documents</h2><p>Coming soon...</p>");
+						break;
 				}
 				
 				limitHeight();
