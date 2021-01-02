@@ -82,15 +82,15 @@
 			viewer.addUpdateCallback(function(){});
 			
 			/*panoramas*/
-var newpanoramafileikicuxcukcuk = new PANOLENS.ImagePanorama( "temp/newpanoramafileikicuxcukcuk.jpg" );
-viewer.add( newpanoramafileikicuxcukcuk );
-newpanoramafileikicuxcukcuk.addEventListener('progress', function(e){
+var testpanorama = new PANOLENS.ImagePanorama( "temp/testpanorama.jpg" );
+viewer.add( testpanorama );
+testpanorama.addEventListener('progress', function(e){
 $("#loading").show();
 });
-newpanoramafileikicuxcukcuk.addEventListener('load', function(e){
+testpanorama.addEventListener('load', function(e){
 $("#loading").fadeOut();
 });
-newpanoramafileikicuxcukcuk.addEventListener('click', function(e){
+testpanorama.addEventListener('click', function(e){
 });
 
 
