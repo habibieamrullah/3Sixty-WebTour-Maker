@@ -103,7 +103,9 @@ kebonan.addEventListener('click', function(e){
 			var hpos;
 			$("body").on("click", function(e){
 				if(e.ctrlKey){
+					console.log("Ctrl Pressed");
 					hpos = $("#infospotloc").html();
+					console.log("Hpos value: " + hpos);
 					if(hpos != "")
 						initHotspotDialog();
 				}
