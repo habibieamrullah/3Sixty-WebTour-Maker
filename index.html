@@ -11,8 +11,8 @@
 		<!-- Insert this line above script imports  -->
 		<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
 				
-		<script src="jquery.js"></script>
-		<script src="imagedata.js"></script>
+		<script src="resources/panotemplate/jquery.js"></script>
+		<script src="resources/panotemplate/imagedata.js"></script>
 		
 		<!-- Insert this line after script imports -->
 		<script>if (window.module) module = window.module;</script>
@@ -361,7 +361,7 @@
 					var newwin = new BrowserWindow({ width: 1280, height : 720, title : "Project Preview" });
 					newwin.loadFile(ppath);
 					newwin.removeMenu();
-					newwin.webContents.openDevTools();
+					//newwin.webContents.openDevTools();
 					hideDim();
 				}, 2000);
 			}
@@ -1089,7 +1089,7 @@
 						hoteditor.loadFile(hotpath);
 						hoteditor.removeMenu();
 						
-						hoteditor.webContents.openDevTools();
+						//hoteditor.webContents.openDevTools();
 					});
 				});
 			}
