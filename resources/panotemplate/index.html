@@ -12,6 +12,7 @@
 		<!-- Insert this line above script imports  -->
 		<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
 		
+		<script src="imagedata.js"></script>
 		<script src="jquery.js"></script>
 		<script src="three.min.js"></script>
 		<script src="panolens.min.js"></script>
@@ -122,21 +123,24 @@
 					case 1 :
 						//Image
 						$("#tmpcontent").html("<img src='"+content+"' style='width: 100%;'>");
+						$("#tmp").fadeIn();
 						break;
 					case 2 :
 						//Video
 						$("#tmpcontent").html("<video id='webvideo' controls autoplay style='width: 100%; height: 100%;'><source src='" +content+ "' type='video/mp4'> Your browser does not support the video tag. </video>");
+						$("#tmp").fadeIn();
 						break;
 					case 3 :
 						//Audio
 						$("#tmpcontent").html("<audio controls style='width: 100%;'><source src='"+content+"' type='audio/ogg'>Your browser does not support the audio tag.</audio>");
+						$("#tmp").fadeIn();
 						break;
 					case 4 :
 						//PDF
 						$("#tmpcontent").html("<iframe src='pdfjs/web/viewer.html?file=../../"+content+"' style='width: 100%; height: 100%;'></iframe>");
+						$("#tmp").fadeIn();
 						break;
 				}
-				$("#tmp").fadeIn();
 			}
         </script>
 	</body>

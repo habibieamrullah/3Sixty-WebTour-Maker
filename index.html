@@ -392,15 +392,16 @@
 							
 							//pdata += "var infospot"+panovar+x+" = new PANOLENS.Infospot( 600, '"+hicon+"', false );\n\
 							//pdata += "var infospot"+panovar+x+" = new PANOLENS.Infospot( 512, PANOLENS.DataImage.Arrow, true );\n\
-							pdata += "var infospot"+panovar+x+" = new PANOLENS.Infospot( 512, "+hotspotIcons.def+", true );\n\
+							pdata += "var infospot"+panovar+x+" = new PANOLENS.Infospot( 512, hotspotIcons.def, true );\n\
 							infospot"+panovar+x+".position.set( "+arr[i].hotspots[x].position+" );\n\
 							"+panovar+".add(infospot"+panovar+x+");\n\r";
 							
 							//Does it have hover text?
 							if(arr[i].hotspots[x].stoh != undefined && arr[i].hotspots[x].stoh == 1){
-								pdata += "infospot"+panovar+x+".addHoverText( '"+arr[i].hotspots[x].title+"' );\n\r"
+								pdata += "infospot"+panovar+x+".addHoverText( '"+arr[i].hotspots[x].title+"' );\n\r";
 							}
 							
+							pdata += "infospot"+panovar+x+".addEventListener('click', function(){\n\r";
 							//Lets check if the infospot has actions in it
 							if(arr[i].hotspots[x].actions.length > 0){
 								var cactions = arr[i].hotspots[x].actions;
@@ -410,16 +411,20 @@
 									if(actiontype == 0){
 										var targetpanorama = cactions[y].target.split(".")[0];
 										targetpanorama = targetpanorama.split("/")[1];
-										pdata += "infospot"+panovar+x+".addEventListener( 'click', function(){\n\
-											viewer.setPanorama( "+targetpanorama+" );\n\
-										});\n\r";
+										pdata += "viewer.setPanorama( "+targetpanorama+" );\n\r";
 									}else{
-										pdata += "infospot"+panovar+x+".addEventListener( 'click', function(){\n\
-											showMedia("+actiontype+", '"+cactions[y].target+"');\n\
-										});\n\r";
+										pdata += "showMedia("+actiontype+", '"+cactions[y].target+"');\n\r";
 									}
 								}
+								
 							}
+							if(arr[i].hotspots[x].url != undefined && arr[i].hotspots[x].url != ""){
+								pdata += "window.open( '"+arr[i].hotspots[x].url+"', '_blank');\n\r";
+							}
+							if(arr[i].hotspots[x].js != undefined && arr[i].hotspots[x].js != ""){
+								pdata += arr[i].hotspots[x].js + "\n\r";
+							}
+							pdata += "});\n\r";
 							
 							/*
 							//Entoooooottt, problem nomor 2 lagi
@@ -690,20 +695,47 @@
 									}
 									
 									var currenthActions = "<p>This Hotspot has no action yet. Click Plus button to add an action to it.</p>";
+									
+									if(currentprojectdata.panoramas[i].hotspots[x].url != undefined && currentprojectdata.panoramas[i].hotspots[x].js != undefined){
+										currenthActions = "";
+									}
+									
+									if(currentprojectdata.panoramas[i].hotspots[x].url != undefined && currentprojectdata.panoramas[i].hotspots[x].url != ""){
+										hatype = "Open URL";
+										htarget = currentprojectdata.panoramas[i].hotspots[x].url;
+										currenthActions += "<div style='text-align: left;'><div style='font-style: italic; display: inline-block; background-color: black; color: white; padding: 5px; margin-top: 5px;'><i class='fa fa-arrow-circle-right'></i> "+hatype+"</div><div style='padding: 10px; border: 1px solid black;'><div><i class='fa fa-crosshairs'></i> " +htarget+ "</div><div style='color: gray; font-weight: bold; cursor: pointer; margin-top: 10px; display: inline-block;' onclick='removhurl(\""+cid+"\");'><i class='fa fa-trash'></i> Remove</div></div></div>";
+									}
+									
+									if(currentprojectdata.panoramas[i].hotspots[x].js != undefined && currentprojectdata.panoramas[i].hotspots[x].js != ""){
+										hatype = "Execute JavaScript";
+										htarget = "<span style='font-style: italic;'>Your JS Code...</span>";
+										currenthActions += "<div style='text-align: left;'><div style='font-style: italic; display: inline-block; background-color: black; color: white; padding: 5px; margin-top: 5px;'><i class='fa fa-arrow-circle-right'></i> "+hatype+"</div><div style='padding: 10px; border: 1px solid black;'><div><i class='fa fa-crosshairs'></i> " +htarget+ "</div><div style='color: gray; font-weight: bold; cursor: pointer; margin-top: 10px; display: inline-block;' onclick='removhjs(\""+cid+"\");'><i class='fa fa-trash'></i> Remove</div></div></div>";
+									}
+									
 									var hactions = currentprojectdata.panoramas[i].hotspots[x].actions;
 									if(hactions.length > 0){
 										currenthActions = "<p>Actions:</p>";
 										for(var y = 0; y < hactions.length; y++){
 											var hatype;
+											var htarget = hactions[y].target.split("/")[1];
+											
 											if(hactions[y].type == 0){
 												hatype = "Open Panorama";
 											}else if(hactions[y].type == 1){
 												hatype = "Show Image";
+											}else if(hactions[y].type == 2){
+												hatype = "Play Video File";
+											}else if(hactions[y].type == 3){
+												hatype = "Play Audio File";
+											}else if(hactions[y].type == 4){
+												hatype = "Show PDF File";
 											}
-											var htarget = hactions[y].target.split("/")[1];
+											
 											currenthActions += "<div style='text-align: left;'><div style='font-style: italic; display: inline-block; background-color: black; color: white; padding: 5px; margin-top: 5px;'><i class='fa fa-arrow-circle-right'></i> "+hatype+"</div><div style='padding: 10px; border: 1px solid black;'><div><i class='fa fa-crosshairs'></i> " +htarget+ "</div><div style='color: gray; font-weight: bold; cursor: pointer; margin-top: 10px; display: inline-block;' onclick='removhaction("+y+", \""+cid+"\");'><i class='fa fa-trash'></i> Remove</div></div></div>";
 										}
 									}
+									
+									
 									
 									//custom image taek
 									//hotspotsofit = "<div class='hotspotholder'><div class='hotspottitle'><input onkeyup=renameHotspotTitle("+i+","+x+") id='hinput"+cid+"' value='" +currentprojectdata.panoramas[i].hotspots[x].title+ "'></div><div style='padding: 10px; white-space: normal; display: block; box-sizing: border-box;'><div id='hotscreen"+cid+"' style='display: none;'></div><div id='hothome"+cid+"'><div onclick='changehotspoticon(\""+cid+"\");' style='width: 92px; height: 92px; margin: 0 auto; margin-bottom: 20px; background: url("+wtmdata.projects[currentprojectindex].projectdir+hotspoticon+") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'></div><div>"+currenthActions+"</div></div></div><div><button style='min-width: 20px;' class='greenbutton' onclick='hotShowAddNewAction(\""+cid+"\")'><i class='fa fa-plus'></i> Add Action</button><button class='redbutton' style='min-width: 20px;' onclick=removehotspot('"+cid+"');><i class='fa fa-trash'></i> Del.</button></div></div>" + hotspotsofit;
@@ -786,7 +818,7 @@
 			//HOTSPOTS Operations//
 			//Show add new action dialog
 			function hotShowAddNewAction(cid){
-				$("#hotscreen"+cid).hide().html("<div><h4>Select Action</h4></div><select id='haction"+cid+"' onchange=showactioncontent('"+cid+"')><option>Choose one...</option><option value=1>Open Panorama</option><option value=2>Show Image</option><option value=3>Play a Video</option><option value=4>Play an Audio</option><option value=5>Open a PDF file</option><option value=6>Open URL</option><option value=7>Execute JavaScript code</option></select><div id='hotactioncontent"+cid+"'></div><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-times'></i> Close</div>").show();
+				$("#hotscreen"+cid).hide().html("<div><h4>Select Action</h4></div><select id='haction"+cid+"' onchange=showactioncontent('"+cid+"')><option>Choose one...</option><option value=1>Open Panorama</option><option value=2>Show Image</option><option value=3>Play a Video</option><option value=4>Play an Audio</option><option value=5>Open a PDF file</option><option value=6>Open URL</option><option value=7>Execute JavaScript code</option></select><div id='hotactioncontent"+cid+"'></div><div class='button' onclick=showeditorc('hotspots') style='margin: 5px;'><i class='fa fa-floppy-o'></i> Save</div><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-times'></i> Close</div>").show();
 				$("#hothome" + cid).hide();
 			}
 			
@@ -794,6 +826,7 @@
 			function showactioncontent(cid){
 				var currentaction = parseInt($("#haction"+cid).val());
 				var acontent = "";
+				var res = isCidMatched(cid);				
 				switch(currentaction){
 					case 1 :
 						acontent = "<p>Destination Panorama:</p><input placeholder='Click to choose...' readonly onclick='hchoose(0, \""+cid+"\");'>";
@@ -811,10 +844,16 @@
 						acontent = "<p>PDF file to open:</p><input placeholder='Click to choose...' readonly onclick='hchoose(4, \""+cid+"\");'>";
 						break;
 					case 6 :
-						acontent = "<p>URL to open:</p><input placeholder='https://example.com'>";
+						var currenthurl = "";
+						if(currentprojectdata.panoramas[res.pano].hotspots[res.hot].url != undefined)
+							currenthurl = currentprojectdata.panoramas[res.pano].hotspots[res.hot].url;
+						acontent = "<p>URL to open:</p><input placeholder='https://example.com' id='hactionurlinput"+cid+"' onkeyup='savehactionurl(\""+cid+"\")' value='"+currenthurl+"'>";
 						break;
 					case 7 :
-						acontent = "<p>JavaScript code to execute:</p><textarea placeholder='Write your JS here...'></textarea>";
+						var currenthjs = "";
+						if(currentprojectdata.panoramas[res.pano].hotspots[res.hot].js != undefined)
+							currenthjs = currentprojectdata.panoramas[res.pano].hotspots[res.hot].js;
+						acontent = "<p>JavaScript code to execute:</p><textarea placeholder='Write your JS here...' id='hactionjsinput"+cid+"' onkeyup='savehactionjs(\""+cid+"\")'>"+currenthjs+"</textarea>";
 						break;
 				}
 				
@@ -846,6 +885,34 @@
 			function hotGoHome(cid){
 				$("#hothome"+cid).hide().show();
 				$("#hotscreen"+cid).hide();
+			}
+			
+			//save haction url
+			function savehactionurl(cid){
+				clearTimeout(tempTimeout);
+				tempTimeout = setTimeout(function(){
+					var urltoopen = $("#hactionurlinput"+cid).val();
+					if(urltoopen.indexOf("http") > -1){
+						console.log("Action URL: " + urltoopen);
+						var res = isCidMatched(cid);				
+						currentprojectdata.panoramas[res.pano].hotspots[res.hot].url = urltoopen;
+						updateWtmFile();
+					}
+				}, 1000);
+			}
+			
+			//save haction js
+			function savehactionjs(cid){
+				clearTimeout(tempTimeout);
+				tempTimeout = setTimeout(function(){
+					var jstorun = $("#hactionjsinput"+cid).val();
+					if(jstorun != ""){
+						console.log("Saving JS code: " + jstorun);
+						var res = isCidMatched(cid);
+						currentprojectdata.panoramas[res.pano].hotspots[res.hot].js = jstorun;
+						updateWtmFile();
+					}
+				}, 1000);
 			}
 			
 			//hchoose for add actions
@@ -949,6 +1016,22 @@
 			function removhaction(aindex, cid){
 				var res = isCidMatched(cid);
 				currentprojectdata.panoramas[res.pano].hotspots[res.hot].actions.splice(aindex, 1);
+				updateWtmFile();
+				showeditorc("hotspots");
+			}
+			
+			//Delete hotspot url
+			function removhurl(cid){
+				var res = isCidMatched(cid);
+				currentprojectdata.panoramas[res.pano].hotspots[res.hot].url = undefined;
+				updateWtmFile();
+				showeditorc("hotspots");
+			}
+			
+			//Delete hotspot url
+			function removhjs(cid){
+				var res = isCidMatched(cid);
+				currentprojectdata.panoramas[res.pano].hotspots[res.hot].js = undefined;
 				updateWtmFile();
 				showeditorc("hotspots");
 			}
