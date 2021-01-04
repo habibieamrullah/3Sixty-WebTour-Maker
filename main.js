@@ -12,7 +12,7 @@ function createWindow () {
 	})
 
 	win.loadFile('index.html')
-	//win.webContents.openDevTools();
+	win.webContents.openDevTools();
 	win.maximize();
 	win.removeMenu();
 	
