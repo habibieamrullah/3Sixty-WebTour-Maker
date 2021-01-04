@@ -196,6 +196,11 @@ button:hover{
 	padding: 20px;
 }
 
+#tutorials{
+	
+	overflow: auto;
+}
+
 
 #topmenudim{
 	position: fixed;

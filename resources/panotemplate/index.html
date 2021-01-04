@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>TITLE</title>
+		<title>3Sixty Project</title>
+		<!--projectdescription--><meta name="description" content="New 3Sixty Virtual Tour Project"><!--projectdescription-end-->
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<meta charset="utf-8">
 		<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
@@ -51,6 +52,7 @@
 				height: 100%;
 				overflow: hidden;
 				background-color: #000;
+				color; black;
 			}
 
 			a:link, a:visited{
@@ -85,7 +87,7 @@
 		</style>
 	</head>
 	<body id="body">
-	    <div id="container"></div>
+	    <div id="container" style="color: black;"></div>
     	<div id="loading" class="fullwrapper" style="display: table; width: 100%; height: 100%;">
     		<div style="display: table-cell; vertical-align: middle; text-align: center; color: white; font-size: 30px; padding: 50px;">
     			<!--loadingtext--><p>Please Wait...</p><!--loadingtext-end-->
@@ -99,12 +101,9 @@
     	<script>
 			
             var container = document.querySelector( '#container' );
-            var viewer = new PANOLENS.Viewer( { 
-                container: container ,
-                controlBar: false,  
-                output: 'console' ,
-                autoHideInfospot: false,
-            } );
+			/*panolens*/
+            var viewer = new PANOLENS.Viewer( { container: container , controlBar: false,  output: 'console' , autoHideInfospot: false, } );
+			/*panolens-end*/
 			
 			viewer.addUpdateCallback(function(){});
 			

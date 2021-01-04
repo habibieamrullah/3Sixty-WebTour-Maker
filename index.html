@@ -41,7 +41,7 @@
 			<div class="abitem">
 				Help
 				<div class="dropdown-content">
-					<div class="subabitem" onclick="showpage('tutorials')"><div style="display: inline-block; width: 190px;"><i class="fa fa-film" style="width: 30px;"></i> Tutorials</div><div style="display: inline-block; color: gray;">Ctrl+T</div></div>
+					<div class="subabitem" onclick="showpage('tutorials')"><div style="display: inline-block; width: 190px;"><i class="fa fa-book" style="width: 30px;"></i> Tutorials</div><div style="display: inline-block; color: gray;">Ctrl+T</div></div>
 					<div class="subabitem" onclick="showMiniPage('donate')"><div style="display: inline-block; width: 190px;"><i class="fa fa-paypal" style="width: 30px;"></i> Support The Dev.</div><div style="display: inline-block; color: gray;">Ctrl+S</div></div>
 					<div class="subabitem" onclick="showMiniPage('about')"><div style="display: inline-block; width: 190px;"><i class="fa fa-question" style="width: 30px;"></i> About</div><div style="display: inline-block; color: gray;">Ctrl+B</div></div>					
 				</div>
@@ -55,19 +55,41 @@
 		
 		<!-- Tutorials -->
 		<div class="page" id="tutorials">
-			<h1>Quick Start Tutorials</h1>
+			<h1>Tutorials</h1>
 			<div style="display: table; width: 100%; table-layout: fixed;">
-				<div style="display: table-cell; vertical-align: top;">
-					<h2>Creating New Project</h2>
+				<div style="display: table-cell; vertical-align: top; padding-right: 40px;">
+					<h2><i class="fa fa-book"></i> Creating New Project</h2>
 					<p>To create a new project, open 3Sixty. The first scren you see is where you can start making new project. You can also click File > Projects.</p>
 					<p>First you need to enter a project name. This project name will be used as your website title when it is running on web browsers.</p>
 					<p>The next step is to specify a folder where you want to save your project files. Make sure you are working on a directory that is free of empty spaces. Avoid using folders like for example: C:\Users\user name\Desktop\New folder, because it has empty spaces on "user name" and "New folder".</p>
 					<p>Recommended project folder path can be like this: C:\Users\David\Desktop\NewTour.</p>
-					<h2>Opening Existing project</h2>
-					<p>If you already worked with this software and you want to open your pevious project, press Ctrl+O to find it on your computer. Navigate to the main project folder, if it has WTMProject.wtm in it, it will be listed on the Recent Projects list.</p>
+					<h2><i class="fa fa-book"></i> Opening Existing project</h2>
+					<p>If you already worked with this software and you want to open your pevious project, press Ctrl+O to find it on your computer. Navigate to the main project folder then click Open. If it has WTMProject.wtm in it, it will be listed on the Recent Projects list.</p>
+					<p>Once your project has been listed on Recent Projects, you can click on the title to open it.</p>
+					<h2><i class="fa fa-book"></i> Removing a project from Recent Projects list</h2>
+					<p>You can not delete a project from 3Sixty. However, you can browse its location by clicking "Show in Explorer" then delete the files manually then click the red button "Remove from List" to remove it from the list.</p>
+					<h2><i class="fa fa-book"></i> Working with Project View</h2>
+					<p>By clicking a project title, you will see the Project View.</p>
+					<p>Project view has three main parts, the top part that has Back button on its left, and Run button on the right. Between them you can see the Project Title. You can click on it, and rename your Project Title then automatically it will saved after a few seconds. Below the Project Title you can see directory path of current project. You can click it to reveal it on Explorer window.</p>
+					<p>On the left part of main area on Project View, there are tabs: Panoramas, Hotspots, Image Assets, Video Files, Audio Files, PDF Documents and Settings. If you click one of them you will see its contents on right.</p>
+					<h2><i class="fa fa-book"></i> Panoramas</h2>
+					<p>Here you can add any panorama images to your project. Hit plus button to import a file. You can import normal equirectangular panorama image.</p>
+					<p>Each panorama file works as a scene inside your projects. That's why you can not re-import the same panorama file twice, otherwise 3Sixty will rename it after importing it.</p>
+					<p>Any imported panorama image file will be listed accordingly as a square box with image preview. Each has some buttons. At the top left part of each thumbnail you see the panorama file name. If it's marked as green it means that panorama is the main panorama that will be loaded first time when you run the tour. To make the other panoramas as main panorama, click its title and it will turned green.</p>
+					<p>At bottom right corner of each panorama thumbnails there are View and Trash buttons. You can click View button to see your panorama image in full, or click Trash button to remove it from your project. However you can not delete your main panorama file, at least it needs one panorama to be there. Be careful when deleting files, make sure you are not using it in your project at all.</p>
+					<h2><i class="fa fa-book"></i> Hotspots</h2>
+					<p>Hotspot is a clickable element that can be placed anywhere on your 360 scene.</p><p>Each panorama that you have in your project, you can add hotspots to it.</p>
+					<p>To add a hotspot, click Add New Hotspot button. Then you will see a new window to see around your 360 scene. Then press Ctrl button while clicking on an area that you wish to add the hotspot to it. Then a popup will appear. You can give it a name to make your hotspots more organised. Then click Add. Your new Hotspot has been added.</p>
+					<p>Your new hotspot has no action yet. It means, nothing will happen if you click the hotspot when you run your project. To add an action, click Add Action button on your hotspot. Then you will see 7 hotspot action options, each one will do a specific task.</p>
+					<h2><i class="fa fa-book"></i> Adding images, videos, audios and PDF documents</h2>
+					<p>After Panoramas and Hotspots, the next tabs are Image Assets, Video Files, Audio Files and PDF Documents. Click any one of those then you will see a plus button to add your files.</p>
+					<p>Remember currently 3Sixty supported files are limited to: jpg, jpeg and png for images; mp4 for videos, mp3 for audios; and pdf files.</p>
+					<h2><i class="fa fa-book"></i> Settings</h2>
+					<p>In this page you can set your project settings according your need. There are some available settings such as Project Description, Panorama Loading Text, Main Panorama to load at first time and enable or disable Panolens control Buttons on the bottom right of your virtual tour.</p>
 				</div>
 				<div style="display: table-cell; vertical-align: top; width: 30%;">
-					
+					<h2><i class="fa fa-youtube"></i> Video Tutorials</h2>
+					<img src="imgs/1.jpg" style="width: 100%">
 				</div>
 			</div>
 		</div>
@@ -289,7 +311,7 @@
 		<!-- top menu dim -->
 		<div id="topmenudim"></div>
 		
-		<div style="position: fixed; right: 0; bottom: 0; padding: 10px;"><a href="https://paypal.me/habibieamrullah" target="_blank"><img src="paypalwhite.png" style="width: 64px;"></a></div>
+		<div style="position: fixed; right: 0; bottom: 0; padding: 10px;"><a href="https://paypal.me/habibieamrullah" target="_blank"><img src="imgs/paypalwhite.png" style="width: 64px;"></a></div>
 		
 		<script>
 
@@ -317,11 +339,11 @@
 					for(var i = 0; i < wtmdata.projects.length; i++){
 						if (fs.existsSync(wtmdata.projects[i].projectdir)) {
 							
-							$("#recentprojects").prepend("<div class='projectlist'><div style='cursor: pointer;' onclick='editproject("+i+")'><div style='font-size: 20px;'>" +wtmdata.projects[i].projectname+ "</div><div style='font-size: 12px; color: #eba576;'>" +wtmdata.projects[i].projectdir+ "</div></div><div class='button' style='margin-bottom: 0px; font-size: 10px;' onclick=showInExplorer(" +i+ ")><i class='fa fa-folder'></i> Show in Explorer</div><div class='redbutton' style='margin-bottom: 0px; font-size: 10px;' onclick=removeFromProjectList(" +i+ ")><i class='fa fa-trash'></i> Remove from list</div></div>");
+							$("#recentprojects").prepend("<div class='projectlist'><div style='cursor: pointer;' onclick='editproject("+i+")'><div style='font-size: 20px;'>" +wtmdata.projects[i].projectname+ "</div><div style='font-size: 12px; color: #eba576;'>" +wtmdata.projects[i].projectdir+ "</div></div><div class='button' style='margin-bottom: 0px; font-size: 10px;' onclick=showInExplorer(" +i+ ")><i class='fa fa-folder'></i> Show in Explorer</div><div class='redbutton' style='margin-bottom: 0px; font-size: 10px;' onclick=removeFromProjectList(" +i+ ")><i class='fa fa-trash'></i> Remove from List</div></div>");
 							
 						}else{
 							
-							$("#recentprojects").prepend("<div class='projectlist'><div style='color: #e76d6d; font-style: italic;'><div style='font-size: 20px;'><i class='fa fa-warning'></i> " +wtmdata.projects[i].projectname+ " (Not Found)</div><div style='font-size: 12px; color: #e76d6d;'>" +wtmdata.projects[i].projectdir+ "</div></div><div class='redbutton' style='margin-bottom: 0px; font-size: 10px;' onclick=removeFromProjectList(" +i+ ")><i class='fa fa-trash'></i> Remove from list</div></div>");
+							$("#recentprojects").prepend("<div class='projectlist'><div style='color: #e76d6d; font-style: italic;'><div style='font-size: 20px;'><i class='fa fa-warning'></i> " +wtmdata.projects[i].projectname+ " (Not Found)</div><div style='font-size: 12px; color: #e76d6d;'>" +wtmdata.projects[i].projectdir+ "</div></div><div class='redbutton' style='margin-bottom: 0px; font-size: 10px;' onclick=removeFromProjectList(" +i+ ")><i class='fa fa-trash'></i> Remove from List</div></div>");
 							
 						}
 					}
@@ -591,10 +613,10 @@
 			function showMiniPage(type){
 				switch (type){
 					case "about" :
-						showAlert("About", "<h1>3Sixty Web Tour Maker</h1><h3>Version 1.0.0</h3><p><br><a href='#' onclick=showMiniPage('donate')>Support The Development</a><br><a href='https://3sixty.webappdev.my.id/'>Visit the Web</a></p><p>3Sixty Web Tour Maker is made with:</p><div style='background-color: white;'><img src='poweredby.png' style='width: 100%;'></div>");
+						showAlert("About", "<h1>3Sixty Web Tour Maker</h1><h3>Version 1.0.0</h3><p><br><a href='#' onclick=showMiniPage('donate')>Support The Development</a><br><a href='https://3sixty.webappdev.my.id/'>Visit the Web</a></p><p>3Sixty Web Tour Maker is made with:</p><div style='background-color: white;'><img src='imgs/poweredby.png' style='width: 100%;'></div>");
 						break;
 					case "donate" :
-						showAlert("Support The Development", "<p><img src='paypal.png' style='background-color: white; padding: 20px;'></p><p>This software is made for you for free. However, I expect any amount donations from users like you to keep me supported for maintenance and further development of this software.</p><p>Please send your donation to my PayPal account here: <a href='https://paypal.me/habibieamrullah'>https://paypal.me/habibieamrullah</a></p>");
+						showAlert("Support The Development", "<p><img src='imgs/paypal.png' style='background-color: white; padding: 20px;'></p><p>This software is made for you for free. However, I expect any amount donations from users like you to keep me supported for maintenance and further development of this software.</p><p>Please send your donation to my PayPal account here: <a href='https://paypal.me/habibieamrullah'>https://paypal.me/habibieamrullah</a></p>");
 						break;
 				}
 			}
@@ -630,6 +652,7 @@
 						loadRecentProjects();
 						break;
 				}
+				limitHeight();
 			}
 			
 			//Function to generate random characters
@@ -638,7 +661,7 @@
 				var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 				var charactersLength = characters.length;
 				for ( var i = 0; i < length; i++ ) {
-				result += characters.charAt(Math.floor(Math.random() * charactersLength));
+					result += characters.charAt(Math.floor(Math.random() * charactersLength));
 				}
 				return result;
 			}
@@ -1515,6 +1538,7 @@
 			function limitHeight(){
 				$("#recentprojects").css({ "height" : (innerHeight - 75) + "px", "overflow" : "auto" });
 				$("#editorcontent").css({ "height" : (innerHeight-200) + "px" });
+				$("#tutorials").css({ "height" : (innerHeight-100) + "px" });
 			}
 			
 			$(window).resize(function(){
