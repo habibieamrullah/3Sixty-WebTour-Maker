@@ -55,8 +55,21 @@
 		
 		<!-- Tutorials -->
 		<div class="page" id="tutorials">
-			<h1>Video Tutorials</h1>
-			<p>Visit my channel yaaaa...</p>
+			<h1>Quick Start Tutorials</h1>
+			<div style="display: table; width: 100%; table-layout: fixed;">
+				<div style="display: table-cell; vertical-align: top;">
+					<h2>Creating New Project</h2>
+					<p>To create a new project, open 3Sixty. The first scren you see is where you can start making new project. You can also click File > Projects.</p>
+					<p>First you need to enter a project name. This project name will be used as your website title when it is running on web browsers.</p>
+					<p>The next step is to specify a folder where you want to save your project files. Make sure you are working on a directory that is free of empty spaces. Avoid using folders like for example: C:\Users\user name\Desktop\New folder, because it has empty spaces on "user name" and "New folder".</p>
+					<p>Recommended project folder path can be like this: C:\Users\David\Desktop\NewTour.</p>
+					<h2>Opening Existing project</h2>
+					<p>If you already worked with this software and you want to open your pevious project, press Ctrl+O to find it on your computer. Navigate to the main project folder, if it has WTMProject.wtm in it, it will be listed on the Recent Projects list.</p>
+				</div>
+				<div style="display: table-cell; vertical-align: top; width: 30%;">
+					
+				</div>
+			</div>
 		</div>
 		
 		<!-- What is -->
@@ -172,6 +185,7 @@
 											"title" : newprojectname,
 											"panoramas" : [ { panofile : "testpanorama.jpg", hotspots : [] }],
 											"settings" : {
+												"description" : "New 3Sixty Virtual Tour Project",
 												"loadingtext" : "Loading...",
 												"firstpanorama" : "testpanorama.jpg",
 											},
@@ -577,7 +591,7 @@
 			function showMiniPage(type){
 				switch (type){
 					case "about" :
-						showAlert("About", "<h1>3Sixty Web Tour Maker</h1><h3>Version 1.0.0</h3><p><br><a href='#' onclick=showMiniPage('donate')>Support The Development</a><br><a href='#'>Terms and Conditions</a><br><a href='https://3sixty.webappdev.my.id/'>Visit the Web</a></p><p>3Sixty Web Tour Maker is made with:</p><div style='background-color: white;'><img src='poweredby.png' style='width: 100%;'></div>");
+						showAlert("About", "<h1>3Sixty Web Tour Maker</h1><h3>Version 1.0.0</h3><p><br><a href='#' onclick=showMiniPage('donate')>Support The Development</a><br><a href='https://3sixty.webappdev.my.id/'>Visit the Web</a></p><p>3Sixty Web Tour Maker is made with:</p><div style='background-color: white;'><img src='poweredby.png' style='width: 100%;'></div>");
 						break;
 					case "donate" :
 						showAlert("Support The Development", "<p><img src='paypal.png' style='background-color: white; padding: 20px;'></p><p>This software is made for you for free. However, I expect any amount donations from users like you to keep me supported for maintenance and further development of this software.</p><p>Please send your donation to my PayPal account here: <a href='https://paypal.me/habibieamrullah'>https://paypal.me/habibieamrullah</a></p>");
@@ -676,7 +690,11 @@
 						$("#editorcontent").html(panoramas + "<div class='imgthumb' onclick='addpanorama()'><div style='cursor: pointer; display: table; width: 100%; height: 100%;'><div style='display: table-cell; text-align: center; vertical-align: middle;'><i class='fa fa-plus' style='font-size: 40px;'></i></div></div></div>");
 						break;
 					case "settings" :
-						$("#editorcontent").html("<h2>Project Settings</h2><p>Project Description</p><input placeholder='Short description'><p>Tags (separate them by comma)</p><input placeholder='Tags...'><div style='display: table; width: 100%; table-layout: fixed;'><div style='display: table-cell; vertical-align: top; padding-right: 10px;'><p>Default Tour Mode</p><select><option>Normal</option><option>Cardboard</option><option>Stereoscopic</option></select><p>Panorama Loading Text</p><input id='psloadingtext' placeholder='Loading text' value='" +currentprojectdata.settings.loadingtext+ "'></div><div style='display: table-cell; vertical-align: top;'><p>Main Panorama (First panorama to load)</p><select id='firstpanorama'>" +getPanoramasNameOption()+ "</select><p>Hide Panolens Control Buttons (bottom right)</p><select><option>Yes</option><option>No</option></select></div></div><button onclick='saveProjectSettings()'><i class='fa fa-floppy-o'></i> Save</button>");
+						var cbsetting = "";
+						if(currentprojectdata.settings.controls == 1)
+							cbsetting = " selected";
+						$("#editorcontent").html("<h2>Project Settings</h2><div style='display: table; width: 100%; table-layout: fixed;'><div style='display: table-cell; vertical-align: top; padding-right: 10px;'><p>Project Description</p><input placeholder='Short description' id='psdescription' value='" +currentprojectdata.settings.description+ "'><p>Panorama Loading Text</p><input id='psloadingtext' placeholder='Loading text' value='" +currentprojectdata.settings.loadingtext+ "'></div><div style='display: table-cell; vertical-align: top;'><p>Main Panorama (First panorama to load)</p><select id='firstpanorama'>" +getPanoramasNameOption()+ "</select><p>Show Panolens Control Buttons (bottom right)</p><select id='pscontrols'><option value=0>No</option><option value=1"+cbsetting+">Yes</option></select></div></div><button onclick='saveProjectSettings()'><i class='fa fa-floppy-o'></i> Save</button>");
+						//<p>Default Tour Mode</p><select><option>Normal</option><option>Cardboard</option><option>Stereoscopic</option></select>
 						break;
 					case "hotspots" :
 						var panoswithhots = "";
@@ -1197,21 +1215,41 @@
 			}
 			
 			function saveProjectSettings(){
+				showDim("Saving project...");
 				var newtitle = $("#psloadingtext").val();
+				var newdescription = $("#psdescription").val();
 				var firstpanorama = $("#firstpanorama").val();
+				var newcontrols = parseInt($("#pscontrols").val());
 				currentprojectdata.settings = {
 					loadingtext : newtitle,
 					firstpanorama : firstpanorama,
+					description : newdescription,
+					controls : newcontrols,
 				};
 				updateWtmFile();
 				fs.readFile(wtmdata.projects[currentprojectindex].projectdir + "/index.html", 'utf8', function (err, data) {
 					if (err) { return console.log(err); }
+					
+					//Update loading text
 					var newhtml = data.split("<!--loadingtext--\>")[0] +"<!--loadingtext--\>"+ newtitle +"<!--loadingtext-end--\>"+ data.split("<!--loadingtext-end--\>")[1];
-					newhtml = newhtml.split("/*panoramas*/")[0] +"/*panoramas*/\n\r"+ generatePanoramas(currentprojectdata.panoramas) +"\n\r/*panoramas-end*/"+ data.split("/*panoramas-end*/")[1];
+					
+					//Updating panoramas (no need, as it handled separately
+					//newhtml = newhtml.split("/*panoramas*/")[0] +"/*panoramas*/\n\r"+ generatePanoramas(currentprojectdata.panoramas) +"\n\r/*panoramas-end*/"+ newhtml.split("/*panoramas-end*/")[1];
+					
+					//Update project description
+					newhtml = newhtml.split("<!--projectdescription--\>")[0] +"<!--projectdescription--\><meta name=\"description\" content=\""+newdescription+"\"><!--projectdescription-end--\>"+ newhtml.split("<!--projectdescription-end--\>")[1];
+					
+					//Update panolens settings
+					var cbsetting = "false";
+					if(newcontrols == 1)
+						cbsetting = "true";
+					newhtml = newhtml.split("/*panolens*/")[0] +"/*panolens*/\n\r"+ 
+					"var viewer = new PANOLENS.Viewer( { container: container , controlBar: "+cbsetting+",  output: 'console' , autoHideInfospot: true, } );" +
+					"\n\r/*panolens-end*/"+ newhtml.split("/*panolens-end*/")[1];
+					
 					fs.writeFile(wtmdata.projects[currentprojectindex].projectdir + "/index.html", newhtml, function (err) {
 						if (err) return console.log(err);
 						showAlert("Project Settings", "Project Settings has been updated successfully.");
-						
 					});
 				});
 			}
