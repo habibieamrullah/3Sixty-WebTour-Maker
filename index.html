@@ -786,7 +786,7 @@
 			//HOTSPOTS Operations//
 			//Show add new action dialog
 			function hotShowAddNewAction(cid){
-				$("#hotscreen"+cid).hide().html("<div><h4>Select Action</h4></div><select id='haction"+cid+"' onchange=showactioncontent('"+cid+"')><option>Choose one...</option><option value=1>Open Panorama</option><option value=2>Show Image</option><option value=3>Play a Video</option><option value=4>Play an Audio</option><option value=5>Open a PDF file</option><option value=6>Open URL</option><option value=7>Execute JavaScript code</option></select><div id='hotactioncontent"+cid+"'></div><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-floppy-o'></i> Save</div><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-times'></i> Close</div>").show();
+				$("#hotscreen"+cid).hide().html("<div><h4>Select Action</h4></div><select id='haction"+cid+"' onchange=showactioncontent('"+cid+"')><option>Choose one...</option><option value=1>Open Panorama</option><option value=2>Show Image</option><option value=3>Play a Video</option><option value=4>Play an Audio</option><option value=5>Open a PDF file</option><option value=6>Open URL</option><option value=7>Execute JavaScript code</option></select><div id='hotactioncontent"+cid+"'></div><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-times'></i> Close</div>").show();
 				$("#hothome" + cid).hide();
 			}
 			
@@ -817,7 +817,9 @@
 						acontent = "<p>JavaScript code to execute:</p><textarea placeholder='Write your JS here...'></textarea>";
 						break;
 				}
+				
 				$("#hotactioncontent"+cid).html(acontent);
+				
 			}
 			
 			//Show configs panel
@@ -881,12 +883,22 @@
 						break;
 					case 3 :
 						showItemChooser(cid, "Choose an Audio", "audios", function(){
-							showAlert("Done!", "Yessss... chosen: " + tempSourceFile);
+							var res = isCidMatched(cid);							
+							currentprojectdata.panoramas[res.pano].hotspots[res.hot].actions.push({ type : 3, target : tempSourceFile });
+							console.log("Action added");
+							updateWtmFile();
+							showeditorc("hotspots");
+							hideDim();
 						});
 						break;
 					case 4 :
 						showItemChooser(cid, "Choose a PDF", "pdf", function(){
-							showAlert("Done!", "Yessss... chosen: " + tempSourceFile);
+							var res = isCidMatched(cid);							
+							currentprojectdata.panoramas[res.pano].hotspots[res.hot].actions.push({ type : 4, target : tempSourceFile });
+							console.log("Action added");
+							updateWtmFile();
+							showeditorc("hotspots");
+							hideDim();
 						});
 						break;
 				}
