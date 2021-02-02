@@ -59,6 +59,7 @@
 			<div style="display: table; width: 100%; table-layout: fixed;">
 				<div style="display: table-cell; vertical-align: top; padding-right: 40px;">
 					<h2><i class="fa fa-book"></i> Creating New Project</h2>
+					<a href="https://youtu.be/ZbKQ8qHgBH8"><img src="imgs/1.png" style="width: 40%; margin-left: 20px; float: right;"></a>
 					<p>To create a new project, open 3Sixty. The first scren you see is where you can start making new project. You can also click File > Projects.</p>
 					<p>First you need to enter a project name. This project name will be used as your website title when it is running on web browsers.</p>
 					<p>The next step is to specify a folder where you want to save your project files. Make sure you are working on a directory that is free of empty spaces. Avoid using folders like for example: C:\Users\user name\Desktop\New folder, because it has empty spaces on "user name" and "New folder".</p>
@@ -217,7 +218,7 @@
 											if (err) return console.log(err);
 											console.log('Tadaaaa! New project is created!');
 
-											const srcDir = "./resources/panotemplate";
+											const srcDir =  __dirname + "/resources/panotemplate";
 											const destDir = newprojectdir;
 											fse.copySync(srcDir, destDir);
 											
@@ -394,7 +395,7 @@
 				showDim("Building...");
 				setTimeout(function(){
 					var ppath = wtmdata.projects[idx].projectdir + "/index.html";
-					var newwin = new BrowserWindow({ width: 1280, height : 720, title : "Project Preview" });
+					var newwin = new BrowserWindow({ width: 1280, height : 720, title : "Project Preview", icon: "3Sixty.ico", });
 					newwin.loadFile(ppath);
 					newwin.removeMenu();
 					//newwin.webContents.openDevTools();
@@ -1087,6 +1088,7 @@
 							width: 1280, 
 							height : 720, 
 							title : "Add New Hotspot", 
+							icon: "3Sixty.ico",
 							webPreferences : { 
 								nodeIntegration: true,
 								enableRemoteModule: true,

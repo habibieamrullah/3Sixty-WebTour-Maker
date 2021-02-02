@@ -5,6 +5,7 @@ function createWindow () {
 		width: 1280,
 		height: 720,
 		frame: false,
+		icon: "3Sixty.ico",
 		webPreferences: {
 			nodeIntegration: true,
 			enableRemoteModule: true,
@@ -12,7 +13,7 @@ function createWindow () {
 	})
 
 	win.loadFile('index.html')
-	win.webContents.openDevTools();
+	//win.webContents.openDevTools();
 	win.maximize();
 	win.removeMenu();
 	

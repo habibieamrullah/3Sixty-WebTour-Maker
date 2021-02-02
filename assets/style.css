@@ -344,19 +344,19 @@ a:hover{
 /* SCROLLBAR STYLING */
 /* width */
 ::-webkit-scrollbar {
-	width: 6px;
-	height: 6px;
+	width: 12px;
+	height: 12px;
 }
 /* Track */
 ::-webkit-scrollbar-track {
-	background: inherit; 
+	background: #2c3643; 
 }
 /* Handle */
 ::-webkit-scrollbar-thumb {
-	background: #eba576; 
+	background: #0d9e59; 
 	transition: background .5s;
 }
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-	background: #ff6600; 
+	background: #00e075; 
 }
