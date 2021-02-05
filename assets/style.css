@@ -56,7 +56,7 @@ body{
 	margin: 0px;
 	padding: 0px;
 	padding-top: 30px;
-	overflow: hidden;
+	overflow: auto;
 }
 
 h1, h2, h3, h4, h5, p{
@@ -359,4 +359,29 @@ a:hover{
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
 	background: #00e075; 
+}
+
+
+/* SCROLLBAR STYLING */
+/* width */
+body::-webkit-scrollbar {
+	width: 12px;
+	height: 12px;
+	display: none;
+}
+/* Track */
+body::-webkit-scrollbar-track {
+	background: #2c3643; 
+	display: none;
+}
+/* Handle */
+body::-webkit-scrollbar-thumb {
+	background: #0d9e59; 
+	transition: background .5s;
+	display: none;
+}
+/* Handle on hover */
+body::-webkit-scrollbar-thumb:hover {
+	background: #00e075; 
+	display: none;
 }
