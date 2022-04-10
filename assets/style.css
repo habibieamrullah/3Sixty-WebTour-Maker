@@ -344,8 +344,8 @@ a:hover{
 /* SCROLLBAR STYLING */
 /* width */
 ::-webkit-scrollbar {
-	width: 12px;
-	height: 12px;
+	width: 0.5em;
+	height: 0.5em;
 }
 /* Track */
 ::-webkit-scrollbar-track {
@@ -365,8 +365,8 @@ a:hover{
 /* SCROLLBAR STYLING */
 /* width */
 body::-webkit-scrollbar {
-	width: 12px;
-	height: 12px;
+	width: 0.5em;
+	height: 0.5em;
 	display: none;
 }
 /* Track */
@@ -384,4 +384,27 @@ body::-webkit-scrollbar-thumb {
 body::-webkit-scrollbar-thumb:hover {
 	background: #00e075; 
 	display: none;
+}
+
+#debugwindow{
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	height: 256px;
+	width: 512px;
+	background-color: rgba(0,0,0,.75);
+	color: lime;
+	font-family: courier;
+	overflow: auto;
+	padding: 1em;
+	font-size: 10px;
+}
+
+.pluginbar{
+	padding: 1em;
+	transition: all 500ms;
+}
+
+.pluginbar:hover{
+	background-color: #505a6c;
 }

@@ -83,15 +83,15 @@
 			viewer.addUpdateCallback(function(){});
 			
 			/*panoramas*/
-var pier = new PANOLENS.ImagePanorama( "temp/pier.jpg" );
-viewer.add( pier );
-pier.addEventListener('progress', function(e){
+var testpanorama = new PANOLENS.ImagePanorama( "temp/testpanorama.jpg" );
+viewer.add( testpanorama );
+testpanorama.addEventListener('progress', function(e){
 $("#loading").show();
 });
-pier.addEventListener('load', function(e){
+testpanorama.addEventListener('load', function(e){
 $("#loading").fadeOut();
 });
-pier.addEventListener('click', function(e){
+testpanorama.addEventListener('click', function(e){
 });
 
 

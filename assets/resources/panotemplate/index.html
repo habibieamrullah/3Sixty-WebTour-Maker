@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>3Sixty Project</title>
-		<!--projectdescription--><meta name="description" content="New 3Sixty Virtual Tour Project"><!--projectdescription-end-->
+		<title>Ayam Petok</title>
+		<!--projectdescription--><meta name="description" content="Baruuuuurururuurru"><!--projectdescription-end-->
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<meta charset="utf-8">
 		<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
@@ -28,21 +28,21 @@
 			/* SCROLLBAR STYLING */
 			/* width */
 			::-webkit-scrollbar {
-				width: 6px;
-				height: 6px;
+				width: 0.25em;
+				height: 0.25em;
 			}
 			/* Track */
 			::-webkit-scrollbar-track {
-				background: inherit; 
+				background: #2c3643; 
 			}
 			/* Handle */
 			::-webkit-scrollbar-thumb {
-				background: #eba576; 
+				background: #0d9e59; 
 				transition: background .5s;
 			}
 			/* Handle on hover */
 			::-webkit-scrollbar-thumb:hover {
-				background: #ff6600; 
+				background: #00e075; 
 			}
 
 
@@ -79,7 +79,7 @@
 				left: 0; 
 				right: 0;
 				bottom: 0;
-				padding: 100px;
+				padding: 3em;
 				background-color: rgba(0,0,0,.5);
 				backdrop-filter: blur(5px);
 				display: none;
@@ -90,24 +90,67 @@
 	    <div id="container" style="color: black;"></div>
     	<div id="loading" class="fullwrapper" style="display: table; width: 100%; height: 100%;">
     		<div style="display: table-cell; vertical-align: middle; text-align: center; color: white; font-size: 30px; padding: 50px;">
-    			<!--loadingtext--><p>Please Wait...</p><!--loadingtext-end-->
+    			<!--loadingtext-->Loading...<!--loadingtext-end-->
     		</div>
     	</div>
 		
 		<div id="tmp">
-			<div style="width: 100%; height: 100%; overflow: auto; box-sizing: border-box; position: relative;" id="tmpcontent"></div>
-			<div style="position: absolute; top: 0; right: 0; padding: 10px; color: red; font-size: 20px; z-index: 10;" onclick="hideTemp()"><i class="fa fa-times"></i></div>
+			<div style="width: 100%; height: 100%; overflow: hidden; overflow-y: auto; box-sizing: border-box; position: relative;" id="tmpcontent"></div>
+			<div class="mediaclosebutton" onclick="hideTemp()"><i class="fa fa-times-circle"></i></div>
 		</div>
     	<script>
 			
             var container = document.querySelector( '#container' );
 			/*panolens*/
-            var viewer = new PANOLENS.Viewer( { container: container , controlBar: false,  output: 'console' , autoHideInfospot: false, } );
-			/*panolens-end*/
+var viewer = new PANOLENS.Viewer( { container: container , controlBar: false,  output: 'console' , autoHideInfospot: false, } );
+/*panolens-end*/
 			
 			viewer.addUpdateCallback(function(){});
 			
-			/*panoramas*/			/*panoramas-end*/
+			/*panoramas*/
+var tunnel = new PANOLENS.ImagePanorama( "panoramas/tunnel.jpg" );
+			tunnel.addEventListener('progress', function(e){
+				$("#loading").show();
+			});
+			tunnel.addEventListener('load', function(e){
+				$("#loading").fadeOut();
+			});
+			tunnel.addEventListener('click', function(e){
+			});
+
+var infospottunnel0 = new PANOLENS.Infospot( 512, hotspotIcons[0].data, true );
+				infospottunnel0.position.set( 2113.36, -793.32, -4455.65 );
+				tunnel.add(infospottunnel0);
+infospottunnel0.addEventListener('click', function(){
+viewer.setPanorama( planet );
+});
+viewer.add( tunnel );
+var planet = new PANOLENS.ImagePanorama( "panoramas/planet.jpg" );
+			planet.addEventListener('progress', function(e){
+				$("#loading").show();
+			});
+			planet.addEventListener('load', function(e){
+				$("#loading").fadeOut();
+			});
+			planet.addEventListener('click', function(e){
+			});
+
+var infospotplanet0 = new PANOLENS.Infospot( 512, hotspotIcons[11].data, true );
+				infospotplanet0.position.set( -3265.92, 384.60, -3760.88 );
+				planet.add(infospotplanet0);
+infospotplanet0.addEventListener('click', function(){
+viewer.setPanorama( tunnel );
+});
+var infospotplanet1 = new PANOLENS.Infospot( 512, hotspotIcons[0].data, true );
+				infospotplanet1.position.set( -1022.12, -308.42, -4881.25 );
+				planet.add(infospotplanet1);
+infospotplanet1.addEventListener('click', function(){
+showMedia(1, 'images/WhatsAppImage2022-04-03at5.46.05PM.jpeg');
+});
+viewer.add( planet );
+$(document).ready(function(){ viewer.setPanorama( planet ); });
+
+/*panoramas-end*/
             
 			
 			function hideTemp(){
@@ -136,7 +179,7 @@
 						break;
 					case 4 :
 						//PDF
-						$("#tmpcontent").html("<iframe src='pdfjs/web/viewer.html?file=../../"+content+"' style='width: 100%; height: 100%;'></iframe>");
+						$("#tmpcontent").html("<iframe src='pdfjs/web/viewer.html?file=../../"+content+"' style='width: 100%; height: 99%;'></iframe>");
 						$("#tmp").fadeIn();
 						break;
 				}
