@@ -8,7 +8,21 @@ function showIconChooser(cid, title){
 		itemstochoose += "<div onclick='setHotspotIcon(\""+cid+"\", "+i+")' style='display: inline-block; margin-right: 10px; margin-bottom: 10px; text-align: center; cursor: pointer;'><div><img src='" +hotspotIcons[i].data+ "' style='height: 32px;'></div></div>";
 	}
 	
-	$("#dimmessage").html("").html("<div style='width: 100%; max-width: 720px; height: 100%; margin: 0 auto;'><div style='background-color: #2c3643; color: white; padding: 10px;'><i class='fa fa-question-circle'></i> " +title+ "</div><div style='padding: 30px; background-color: #3d4855; font-size: 14px; font-weight: normal;'><div style='box-sizing: border-box; width: 100%; height: "+(innerHeight-400)+"px; overflow: auto;'>"+itemstochoose+"</div><button onclick='hideDim()' style='margin-left: 10px; margin-top: 20px; margin-bottom: 0px;'><i class='fa fa-times'></i> Close</button></div></div>");
+	var customhotspots = "";
+	var workingdir = wtmdata.projects[currentprojectindex].projectdir + "/customhotspots/";
+	if (!fs.existsSync(workingdir)){
+		fs.mkdirSync(workingdir);
+	}
+	fs.readdirSync(workingdir).forEach(file =>{
+		if(file.split(".")[file.split(".").length-1] == "jpg" || file.split(".")[file.split(".").length-1] == "jpeg" || file.split(".")[file.split(".").length-1] == "png"){
+			
+			customhotspots += "<div onclick='setHotspotIcon(\""+cid+"\", "+i+")' style='display: inline-block; margin-right: 10px; margin-bottom: 10px; text-align: center; cursor: pointer;'><div><img src='" + workingdir + file+ "' style='height: 48px;'></div></div>";
+			
+		}
+		
+	});
+	
+	$("#dimmessage").html("").html("<div style='width: 100%; max-width: 720px; height: 100%; margin: 0 auto;'><div style='background-color: #2c3643; color: white; padding: 10px;'><i class='fa fa-question-circle'></i> " +title+ "</div><div style='padding: 30px; background-color: #3d4855; font-size: 14px; font-weight: normal;'><div style='box-sizing: border-box; width: 100%; height: "+(innerHeight-400)+"px; overflow: auto;'><p>Default Icons:</p><div>"+itemstochoose+"</div><p>Custom Icons:</p><div>" + customhotspots + "</div></div><button onclick='hideDim()' style='margin-left: 10px; margin-top: 20px; margin-bottom: 0px;'><i class='fa fa-times'></i> Close</button></div></div>");
 	$("#dim").show();
 	$("#loading").hide();
 	
@@ -33,7 +47,7 @@ function chShowHotspotIcons(){
 		}
 		
 	});
-	$("#editorcontent").html("<h2>Custom Hotspot Icons</h2>" + imagefiles + "<div class='imgthumb' onclick='addImageasset()'><div style='cursor: pointer; display: table; width: 100%; height: 100%;'><div style='display: table-cell; text-align: center; vertical-align: middle;'><i class='fa fa-plus' style='font-size: 40px;'></i></div></div></div>");
+	$("#editorcontent").html("<h2>Custom Hotspot Icons</h2>" + imagefiles + "<div class='imgthumb' onclick='chAddImageasset()'><div style='cursor: pointer; display: table; width: 100%; height: 100%;'><div style='display: table-cell; text-align: center; vertical-align: middle;'><i class='fa fa-plus' style='font-size: 40px;'></i></div></div></div>");
 }
 
 //Adding new image asset
@@ -49,6 +63,7 @@ function chAddImageasset(){
 		
 	});
 }
+
 //Removing image asset
 function chRemoveImageasset(f){
 	showDim("Removing the file. Please wait...");
