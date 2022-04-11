@@ -1,3 +1,5 @@
+var apppath = require('electron').remote.app.getAppPath();
+
 var wtmdata = {
 	projects : [],
 };
@@ -282,7 +284,7 @@ function setHotspotIcon(cid, idx){
 function showMiniPage(type){
 	switch (type){
 		case "about" :
-			showAlert("About", "<h1>3Sixty Web Tour Maker</h1><h3>Version 1.1.0</h3><p>Made with:</p><div style='background-color: white;'><img src='imgs/poweredby.png' style='width: 100%;'></div><p style='margin-top: 20px;'>Developed by</p><a href='https://webappdev.id/'><img src='imgs/webappdev.png' style='width: 100%'></a><p><a href='#' onclick=showMiniPage('donate')>Support The Development</a><br><a href='https://3sixty.webappdev.my.id/'>Visit 3Sixty Website</a></p>");
+			showAlert("About", "<h1>3Sixty Web Tour Maker</h1><h3>Version 1.1.1</h3><p>Made with:</p><div style='background-color: white;'><img src='imgs/poweredby.png' style='width: 100%;'></div><p style='margin-top: 20px;'>Developed by</p><a href='https://webappdev.id/'><img src='imgs/webappdev.png' style='width: 100%'></a><p><a href='#' onclick=showMiniPage('donate')>Support The Development</a><br><a href='https://3sixty.webappdev.my.id/'>Visit 3Sixty Website</a></p>");
 			break;
 		case "donate" :
 			showAlert("Support The Development", "<p><img src='imgs/paypal.png' style='background-color: white; padding: 20px;'></p><p>This software is made for you for free. However, I expect any amount donations from users like you to keep me supported for maintenance and further development of this software.</p><p>Please send your donation to my PayPal account here: <a href='https://paypal.me/habibieamrullah'>https://paypal.me/habibieamrullah</a></p>");
@@ -1244,18 +1246,20 @@ window.console = console;
 //Scan for plugins and initialize
 function ScanForPlugins(){
 	
-	fs.readdir("plugins", function (err, files) {
+	console.log("Current app path: " + apppath);
+	
+	fs.readdir(apppath + "\\plugins", function (err, files) {
 		//handling error
 		if (err) {
 			return console.log('Unable to scan directory: ' + err);
 		} 
 		//listing all files using forEach
 		files.forEach(function (file) {
-			var stats = fs.statSync("plugins\\" + file);
+			var stats = fs.statSync(apppath + "\\plugins\\" + file);
 			if(stats.isDirectory()){
 				console.log("Plugin directory found: " + file);
 				
-				fs.readFile("plugins\\" + file + "\\plugininfo.txt", 'utf8', function (err, data) {
+				fs.readFile(apppath + "\\plugins\\" + file + "\\plugininfo.txt", 'utf8', function (err, data) {
 					if(err){
 						console.log("Plugin " + file + " is invalid");
 						return;
@@ -1286,7 +1290,7 @@ function ScanForPlugins(){
 
 //Enable Plugin
 function EnablePlugin(p){
-	fs.readFile("plugins\\" + p + "\\plugininfo.txt", 'utf8', function (err, data) {
+	fs.readFile(apppath + "\\plugins\\" + p + "\\plugininfo.txt", 'utf8', function (err, data) {
 		if(err){
 			console.log("Plugin " + p + " is invalid");
 			return;
@@ -1294,7 +1298,7 @@ function EnablePlugin(p){
 		
 		data = data.replace("status-disabled", "status-enabled");
 		
-		fs.writeFile("plugins\\" + p + "\\plugininfo.txt", data, function (err) {
+		fs.writeFile(apppath + "\\plugins\\" + p + "\\plugininfo.txt", data, function (err) {
 			if (err) return console.log(err);
 			
 			reloadApp();
@@ -1304,7 +1308,7 @@ function EnablePlugin(p){
 
 //Disable Plugin
 function DisablePlugin(p){
-	fs.readFile("plugins\\" + p + "\\plugininfo.txt", 'utf8', function (err, data) {
+	fs.readFile(apppath + "\\plugins\\" + p + "\\plugininfo.txt", 'utf8', function (err, data) {
 		if(err){
 			console.log("Plugin " + p + " is invalid");
 			return;
@@ -1312,7 +1316,7 @@ function DisablePlugin(p){
 		
 		data = data.replace("status-enabled", "status-disabled");
 		
-		fs.writeFile("plugins\\" + p + "\\plugininfo.txt", data, function (err) {
+		fs.writeFile(apppath + "\\plugins\\" + p + "\\plugininfo.txt", data, function (err) {
 			if (err) return console.log(err);
 			
 			reloadApp();
