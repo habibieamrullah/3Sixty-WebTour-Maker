@@ -92,7 +92,7 @@ function previewProject(idx){
 }
 
 function generatePanoramas(arr){
-	var pdata = "";
+	var pdata = "";	
 	if(arr.length > 0){
 		for(var i = 0; i < arr.length; i++){
 			var panovar = arr[i].panofile.split(".")[0];
@@ -132,7 +132,7 @@ function generatePanoramas(arr){
 						if(actiontype == 0){
 							var targetpanorama = cactions[y].target.split(".")[0];
 							targetpanorama = targetpanorama.split("/")[1];
-							pdata += "ChangePanorama('"+targetpanorama+"' );\n\r";
+							pdata += "ChangePanorama('"+targetpanorama+"');\n\r";
 						}else{
 							pdata += "showMedia("+actiontype+", '"+cactions[y].target+"');\n\r";
 						}
@@ -152,10 +152,10 @@ function generatePanoramas(arr){
 			
 			//Adding the infospot to the stage
 			pdata += "viewer.add( "+panovar+" );\n\r";
-			console.log("JS Code for this panorama has been added: " + panovar);
+			//console.log("JS Code for this panorama has been added: " + panovar);
 		}
 		
-		pdata += "$(document).ready(function(){ ChangePanorama('"+currentprojectdata.settings.firstpanorama.split(".")[0]+" '); });\n";
+		pdata += "$(document).ready(function(){ ChangePanorama('" + remSpaces(currentprojectdata.settings.firstpanorama.split(".")[0]) + "'); });\n";
 		
 	}
 	return pdata;
@@ -206,10 +206,10 @@ function showItemChooser(cid, title, dir, fn){
 		}
 		function extokay(dir, ext){
 			if(dir == "images"){
-				if(ext == "jpg" || ext == "jpeg" || ext == "png")
+				if(ext == "JPG" || ext == "jpg" || ext == "jpeg" || ext == "png")
 					return true;
 			}else if(dir == "panoramas"){
-				if(ext == "jpg" || ext == "jpeg" || ext == "png")
+				if(ext == "JPG" || ext == "jpg" || ext == "jpeg" || ext == "png")
 					return true;
 			}else if(dir == "videos"){
 				if(ext == "mp4")
@@ -227,7 +227,7 @@ function showItemChooser(cid, title, dir, fn){
 		
 		function fthumb(fname){
 			var ext = fname.split(".")[fname.split(".").length-1];
-			if( ext == "jpg" || ext == "jpeg" || ext == "png" ){
+			if( ext == "JPG" || ext == "jpg" || ext == "jpeg" || ext == "png" ){
 				return "<div style='margin-bottom: 10px;'><img src='" + workingdir + "/" + fname + "' style='height: 96px'></div>";
 			}else if(ext == "mp4"){
 				return "<div style='margin-bottom: 10px;'><i class='fa fa-film' style='font-size: 60px;'></i></div>";
@@ -284,7 +284,7 @@ function setHotspotIcon(cid, idx){
 function showMiniPage(type){
 	switch (type){
 		case "about" :
-			showAlert("About", "<h1>3Sixty Web Tour Maker</h1><h3>Version 1.1.1</h3><p>Made with:</p><div style='background-color: white;'><img src='imgs/poweredby.png' style='width: 100%;'></div><p style='margin-top: 20px;'>Developed by</p><a href='https://webappdev.id/'><img src='imgs/webappdev.png' style='width: 100%'></a><p><a href='#' onclick=showMiniPage('donate')>Support The Development</a><br><a href='https://3sixty.webappdev.my.id/'>Visit 3Sixty Website</a></p>");
+			showAlert("About", "<h1>3Sixty Web Tour Maker</h1><h3>Version 1.1.2</h3><p>Made with:</p><div style='background-color: white;'><img src='imgs/poweredby.png' style='width: 100%;'></div><p style='margin-top: 20px;'>Developed by</p><a href='https://webappdev.id/'><img src='imgs/webappdev.png' style='width: 100%'></a><p><a href='#' onclick=showMiniPage('donate')>Support The Development</a><br><a href='https://3sixty.webappdev.my.id/'>Visit 3Sixty Website</a></p>");
 			break;
 		case "donate" :
 			showAlert("Support The Development", "<p><img src='imgs/paypal.png' style='background-color: white; padding: 20px;'></p><p>This software is made for you for free. However, I expect any amount donations from users like you to keep me supported for maintenance and further development of this software.</p><p>Please send your donation to my PayPal account here: <a href='https://paypal.me/habibieamrullah'>https://paypal.me/habibieamrullah</a></p>");
@@ -401,7 +401,7 @@ function showeditorc(type){
 				fs.mkdirSync(workingdir);
 			}
 			fs.readdirSync(workingdir).forEach(file =>{
-				if(file.split(".")[file.split(".").length-1] == "jpg" || file.split(".")[file.split(".").length-1] == "jpeg" || file.split(".")[file.split(".").length-1] == "png"){
+				if(file.split(".")[file.split(".").length-1] == "JPG" || file.split(".")[file.split(".").length-1] == "jpg" || file.split(".")[file.split(".").length-1] == "jpeg" || file.split(".")[file.split(".").length-1] == "png"){
 					imagefiles += "<div class='imgthumb' style='position: relative; background: url(" + wtmdata.projects[currentprojectindex].projectdir+"/images/"+file + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'><span style='background-color: black; color: white; font-weight: bold; padding: 5px; font-size: 10px;'>" + truncate(file, 20) + "</span><div style='position: absolute; bottom: 0; right: 0;'><div onclick=\"showImage('"+file+"', '" + wtmdata.projects[currentprojectindex].projectdir+"/images/"+file + "');\" class='greenbutton'><i class='fa fa-eye'></i></div><div onclick=removeImageasset('"+wtmdata.projects[currentprojectindex].projectdir+"/images/"+file+"') class='redbutton'><i class='fa fa-trash'></i></div></div></div>";
 				}
 				
@@ -692,6 +692,7 @@ function addNewHotspotFor(idx){
 			panoname+".addEventListener('progress', function(e){\n" +
 				"$(\"#loading\").show();\n" +
 			"});\n" + 
+			
 			panoname+".addEventListener('load', function(e){\n" +
 				"$(\"#loading\").fadeOut();\n" + 
 			"});\n" + 
@@ -711,6 +712,7 @@ function addNewHotspotFor(idx){
 					enableRemoteModule: true,
 				} 
 			});
+			hoteditor.webContents.openDevTools();
 			hoteditor.loadFile(hotpath);
 			hoteditor.removeMenu();
 			
@@ -739,7 +741,7 @@ function removehotspot(cid){
 
 //Adding new image asset
 function addImageasset(){
-	pointToFile(["jpg", "jpeg", "png"], function(){
+	pointToFile(["JPG", "jpg", "jpeg", "png"], function(){
 		showDim("Adding new file...");
 		setTimeout(function(){
 			tempDestinationDirectory = wtmdata.projects[currentprojectindex].projectdir + "/images/";
@@ -818,6 +820,7 @@ function removePdffile(f){
 function setitasmainpano(idx){
 	currentprojectdata.settings.firstpanorama = currentprojectdata.panoramas[idx].panofile;
 	updateWtmFile();
+	console.log("New home panorama has been set: " + currentprojectdata.panoramas[idx].panofile);
 	showeditorc("panoramas");
 }
 
@@ -837,8 +840,13 @@ function saveProjectSettings(){
 	fs.readFile(wtmdata.projects[currentprojectindex].projectdir + "/index.html", 'utf8', function (err, data) {
 		if (err) { return console.log(err); }
 		
+		
+		
 		//Update loading text
 		var newhtml = data.split("<!--loadingtext--\>")[0] +"<!--loadingtext--\>"+ newtitle +"<!--loadingtext-end--\>"+ data.split("<!--loadingtext-end--\>")[1];
+		
+		//Update project title
+		newhtml = newhtml.split("<!--projecttitle--\>")[0] +"<!--projecttitle--\><title\>WAKWAKKKKKKKKK"+ currentprojectdata.title +"</title\><!--projecttitle-end--\>"+ newhtml.split("<!--projecttitle-end--\>")[1];
 		
 		//Updating panoramas (no need, as it handled separately
 		//newhtml = newhtml.split("/*panoramas*/")[0] +"/*panoramas*/\n\r"+ generatePanoramas(currentprojectdata.panoramas) +"\n\r/*panoramas-end*/"+ newhtml.split("/*panoramas-end*/")[1];
@@ -879,7 +887,7 @@ function addpanorama(){
 	dialog.showOpenDialog({
 		properties: ['openFile'],
 		filters : [{
-			name : 'Images', extensions : ['jpg', 'gif'],
+			name : 'Images', extensions : ['jpg', 'jpeg', 'png', 'gif'],
 		}]
 	}).then(result => {
 		//Get the new panorama file path
@@ -916,6 +924,10 @@ function generateHTMLPanoramas(){
 	fs.readFile(wtmdata.projects[currentprojectindex].projectdir + "/index.html", 'utf8', function (err, data) {
 		if (err) { return console.log(err); }
 		var newhtml = data.split("/*panoramas*/")[0] +"/*panoramas*/\n\r"+ generatePanoramas(currentprojectdata.panoramas) +"\n\r/*panoramas-end*/"+ data.split("/*panoramas-end*/")[1];
+		
+		//Update project title
+		newhtml = newhtml.split("<!--projecttitle--\>")[0] +"<!--projecttitle--\><title\>"+ currentprojectdata.title +"</title\><!--projecttitle-end--\>"+ newhtml.split("<!--projecttitle-end--\>")[1];
+		
 		fs.writeFile(wtmdata.projects[currentprojectindex].projectdir + "/index.html", newhtml, function (err) {
 			if (err) return console.log(err);
 			console.log("Done regenerating new HTML after adding new panorama.");
@@ -957,6 +969,7 @@ function renamecurrentproject(){
 				}
 				var projectinfo = JSON.parse(data);
 				projectinfo.title = newtitle;
+				currentprojectdata.title = newtitle;
 				//Then replace the WTM data with the updated one
 				fs.writeFile(wtmdata.projects[currentprojectindex].projectdir + "/WTMProject.wtm", JSON.stringify(projectinfo), function (err) {
 					if (err) return console.log(err);
@@ -967,14 +980,17 @@ function renamecurrentproject(){
 							return false;
 						}							
 						//Then manipulate and place the new content
-						var newhtml = data.split("<title>")[0] + "<title>" +newtitle+ "</title>" + data.split("</title>")[1];
-						fs.writeFile(wtmdata.projects[currentprojectindex].projectdir + "/index.html", newhtml, function (err) {
-							if (err) return console.log(err);
-							//If everything is done, save it!
-							wtmdata.projects[currentprojectindex].projectname = newtitle;
-							saveWtmdata();
-							showAlert("Project Title Change", "New project title has been updated.");
-						});
+						var newhtml = data.split("<title\>")[0] + "<title>" +newtitle+ "</title>" + data.split("</title\>")[1];
+						saveWtmdata();
+						setTimeout(function(){
+							fs.writeFile(wtmdata.projects[currentprojectindex].projectdir + "/index.html", newhtml, function (err) {
+								if (err) return console.log(err);
+								//If everything is done, save it!
+								wtmdata.projects[currentprojectindex].projectname = newtitle;
+								showAlert("Project Title Change", "New project title has been updated.");
+							});
+						}, 1000);
+						
 					});
 				});
 			});
@@ -985,7 +1001,19 @@ function renamecurrentproject(){
 //Remove spaces
 function remSpaces(txt){
 	//txt.replace(/\s+/g, '').toLowerCase()
-	return txt.replace(/\s+/g, '');
+	txt = txt.replace(/-/g, "");
+	txt = txt.replace(/\s+/g, '');
+	if(isNumeric(txt)){
+		txt = "pano3sixty" + txt;
+	}
+	return txt;
+}
+
+//check if string is numeric
+function isNumeric(str) {
+  if (typeof str != "string") return false // we only process strings!  
+  return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+         !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
 }
 
 //FILE SYSTEM FUNCTIONS//

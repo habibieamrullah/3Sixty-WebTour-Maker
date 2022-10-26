@@ -83,15 +83,15 @@
 			viewer.addUpdateCallback(function(){});
 			
 			/*panoramas*/
-var VR2 = new PANOLENS.ImagePanorama( "temp/VR2.jpg" );
-viewer.add( VR2 );
-VR2.addEventListener('progress', function(e){
+var Interior2 = new PANOLENS.ImagePanorama( "temp/Interior2.jpeg" );
+viewer.add( Interior2 );
+Interior2.addEventListener('progress', function(e){
 $("#loading").show();
 });
-VR2.addEventListener('load', function(e){
+Interior2.addEventListener('load', function(e){
 $("#loading").fadeOut();
 });
-VR2.addEventListener('click', function(e){
+Interior2.addEventListener('click', function(e){
 });
 
 

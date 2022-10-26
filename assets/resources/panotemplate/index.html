@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>Ayam Petok</title>
+		<!--projecttitle--><title>3Sixty Virtual Tour</title><!--projecttitle-end-->
 		<!--projectdescription--><meta name="description" content="Baruuuuurururuurru"><!--projectdescription-end-->
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<meta charset="utf-8">
@@ -119,7 +119,7 @@
 				$("#loading").show();
 			});
 			tunnel.addEventListener('load', function(e){
-				$("#loading").fadeOut();
+				//$("#loading").fadeOut();
 			});
 			tunnel.addEventListener('click', function(e){
 			});
@@ -248,16 +248,19 @@
 			function ChangePanorama(panorama){
 				currentPanorama = panorama;
 				HideInfospots(); 
-				//$("#loading").fadeIn();
+				$("#loading").fadeIn();
 				//$(".customhotspot").fadeOut();
 				setTimeout(function(){
 					viewer.setPanorama(window[panorama]);
-				}, 500);
+				}, 100);
 				setTimeout(function(){
 					$("#" + panorama).fadeIn();
-				}, 1500);
+					$("#loading").fadeOut();
+				}, 1000);
 				
 			}
+			
+			
 			
 			function HideInfospots(){
 				$(".customhotspot").fadeOut();

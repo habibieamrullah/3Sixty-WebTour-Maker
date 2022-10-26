@@ -271,7 +271,7 @@ function generatePanoramas(arr){
 				$(\"#loading\").show();\n\
 			});\n\
 			"+panovar+".addEventListener('load', function(e){\n\
-				$(\"#loading\").fadeOut();\n\
+				//$(\"#loading\").fadeOut();\n\
 			});\n\
 			"+panovar+".addEventListener('click', function(e){\n\
 			});\n\r\n\r";
@@ -340,7 +340,7 @@ function generatePanoramas(arr){
 			console.log("JS Code for this panorama has been added: " + panovar);
 		}
 		
-		pdata += "$(document).ready(function(){ ChangePanorama('"+currentprojectdata.settings.firstpanorama.split(".")[0]+" '); });\n";
+		pdata += "$(document).ready(function(){ ChangePanorama('" + remSpaces(currentprojectdata.settings.firstpanorama.split(".")[0]) + "'); });\n";
 		
 	}
 	return pdata;
