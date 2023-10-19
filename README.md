@@ -17,7 +17,7 @@ npm install --save fs-extra
 
 npm install --save remote
 
-To build as Windows executable program, you need to install Electron Packager: npm install -D electron-packager 
+To build as Windows executable program, you need to install Electron Packager: npm install --save electron-packager 
 
 Run this command to compile: electron-packager ./ YourAppName --platform=win32 --arch=x64 --icon=./icon.ico
 
