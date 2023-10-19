@@ -19,7 +19,7 @@ npm install --save remote
 
 To build as Windows executable program, you need to install Electron Packager: npm install -g electron-packager 
 
-Run this command to compile: electron-packager ./ YourAppName --platform=win32 --arch=x64 --icon=./icon.ico
+Run this command to compile: electron-packager ./ 3Sixty v1.1.3 --platform=win32 --arch=x64 --icon=./icon.ico
 
 Check out this oerview tutorial about how to use it: https://youtu.be/ZbKQ8qHgBH8
 
