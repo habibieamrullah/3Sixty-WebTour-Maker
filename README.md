@@ -1,4 +1,4 @@
-# 360WebTourMaker
+# 360 Web Panorama Viewer Virtual Tour Maker
 Free Web Panorama Tour Maker Software
 
 This software is built with Electron, using awesome JavaScript libraries such as Panolens, Three.js and the legendary jQuery.
