@@ -83,15 +83,16 @@
 			viewer.addUpdateCallback(function(){});
 			
 			/*panoramas*/
-var Interior2 = new PANOLENS.ImagePanorama( "temp/Interior2.jpeg" );
-viewer.add( Interior2 );
-Interior2.addEventListener('progress', function(e){
-$("#loading").show();
+var IMG_20231010_085550_00_457 = new PANOLENS.ImagePanorama( "temp/IMG_20231010_085550_00_457.jpg" );
+viewer.add( IMG_20231010_085550_00_457 );
+IMG_20231010_085550_00_457.addEventListener('progress', onProgress);
+IMG_20231010_085550_00_457.addEventListener('load', function(e){
+endLoading();
 });
-Interior2.addEventListener('load', function(e){
-$("#loading").fadeOut();
+IMG_20231010_085550_00_457.addEventListener('enter', function(e){
+endLoading();
 });
-Interior2.addEventListener('click', function(e){
+IMG_20231010_085550_00_457.addEventListener('click', function(e){
 });
 
 
@@ -132,6 +133,31 @@ Interior2.addEventListener('click', function(e){
 			}
 			
 			$("#dim").fadeOut();
+			
+			var stilloading = true;
+			function onProgress ( event ) {
+				
+				progress = event.progress.loaded / event.progress.total * 100;
+				console.log("Loading panorama: " + progress + " ... ");
+				$("#loadingperc").html(Math.ceil(progress) + "%");
+				if(Math.ceil(progress) >= 100){
+					endLoading();
+					stilloading = false;
+				}else{
+					stilloading = true;
+					$("#loading").show();
+				}
+			}
+			
+			function endLoading(){
+				if(stilloading == false){
+					setTimeout(function(){
+						$("#loading").fadeOut();
+					}, 1500);
+					
+				}
+			}
+			
 			
         </script>
 	</body>

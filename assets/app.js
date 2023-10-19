@@ -97,11 +97,12 @@ function generatePanoramas(arr){
 		for(var i = 0; i < arr.length; i++){
 			var panovar = arr[i].panofile.split(".")[0];
 			pdata += "var "+panovar+" = new PANOLENS.ImagePanorama( \"panoramas/" + arr[i].panofile + "\" );\n\
-			"+panovar+".addEventListener('progress', function(e){\n\
-				$(\"#loading\").show();\n\
-			});\n\
+			"+panovar+".addEventListener('progress', onProgress);\n\
 			"+panovar+".addEventListener('load', function(e){\n\
-				$(\"#loading\").fadeOut();\n\
+				endLoading();\n\
+			});\n\
+			"+panovar+".addEventListener('enter', function(e){\n\
+				endLoading();\n\
 			});\n\
 			"+panovar+".addEventListener('click', function(e){\n\
 			});\n\r\n\r";
@@ -689,13 +690,16 @@ function addNewHotspotFor(idx){
 		var newhtml = data.split("/*panoramas*/")[0] +"/*panoramas*/\n\r" + 
 		"var "+panoname+" = new PANOLENS.ImagePanorama( \"temp/" + panofile + "\" );\n" +
 			"viewer.add( "+panoname+" );\n" +
-			panoname+".addEventListener('progress', function(e){\n" +
-				"$(\"#loading\").show();\n" +
-			"});\n" + 
+			panoname+".addEventListener('progress', onProgress);\n" + 
 			
 			panoname+".addEventListener('load', function(e){\n" +
-				"$(\"#loading\").fadeOut();\n" + 
+				"endLoading();\n" + 
 			"});\n" + 
+			
+			panoname+".addEventListener('enter', function(e){\n" +
+				"endLoading();\n" + 
+			"});\n" + 
+			
 			panoname+".addEventListener('click', function(e){\n" +
 			"});\n\r\n\r" +
 		"\n\r/*panoramas-end*/" + data.split("/*panoramas-end*/")[1];
@@ -846,7 +850,7 @@ function saveProjectSettings(){
 		var newhtml = data.split("<!--loadingtext--\>")[0] +"<!--loadingtext--\>"+ newtitle +"<!--loadingtext-end--\>"+ data.split("<!--loadingtext-end--\>")[1];
 		
 		//Update project title
-		newhtml = newhtml.split("<!--projecttitle--\>")[0] +"<!--projecttitle--\><title\>WAKWAKKKKKKKKK"+ currentprojectdata.title +"</title\><!--projecttitle-end--\>"+ newhtml.split("<!--projecttitle-end--\>")[1];
+		newhtml = newhtml.split("<!--projecttitle--\>")[0] +"<!--projecttitle--\><title\>"+ currentprojectdata.title +"</title\><!--projecttitle-end--\>"+ newhtml.split("<!--projecttitle-end--\>")[1];
 		
 		//Updating panoramas (no need, as it handled separately
 		//newhtml = newhtml.split("/*panoramas*/")[0] +"/*panoramas*/\n\r"+ generatePanoramas(currentprojectdata.panoramas) +"\n\r/*panoramas-end*/"+ newhtml.split("/*panoramas-end*/")[1];

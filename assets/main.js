@@ -8,6 +8,7 @@ function createWindow () {
 		icon: "icon.ico",
 		webPreferences: {
 			nodeIntegration: true,
+			contextIsolation: false,
 			enableRemoteModule: true,
 		}
 	})

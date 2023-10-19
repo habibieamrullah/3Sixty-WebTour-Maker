@@ -101,6 +101,7 @@
 		<div id="loading" class="fullwrapper" style="display: table; width: 100%; height: 100%;">
     		<div style="display: table-cell; vertical-align: middle; text-align: center; color: white; font-size: 30px; padding: 50px;">
     			<!--loadingtext-->Loading...<!--loadingtext-end-->
+				<div id="loadingperc" style="font-size:12px;"></div>
     		</div>
     	</div>
 		
@@ -115,11 +116,9 @@
 			
 			/*panoramas*/
 var tunnel = new PANOLENS.ImagePanorama( "panoramas/tunnel.jpg" );
-			tunnel.addEventListener('progress', function(e){
-				$("#loading").show();
-			});
+			tunnel.addEventListener('progress',onProgress);
 			tunnel.addEventListener('load', function(e){
-				//$("#loading").fadeOut();
+				$("#loading").fadeOut();
 			});
 			tunnel.addEventListener('click', function(e){
 			});
@@ -132,9 +131,7 @@
 });
 viewer.add( tunnel );
 var planet = new PANOLENS.ImagePanorama( "panoramas/planet.jpg" );
-			planet.addEventListener('progress', function(e){
-				$("#loading").show();
-			});
+			planet.addEventListener('progress', onProgress);
 			planet.addEventListener('load', function(e){
 				$("#loading").fadeOut();
 			});
@@ -158,6 +155,33 @@
 
 /*panoramas-end*/
             
+			var stilloading = true;
+			function onProgress ( event ) {
+				
+				progress = event.progress.loaded / event.progress.total * 100;
+				console.log("Loading panorama: " + progress + " ... ");
+				$("#loadingperc").html(Math.ceil(progress) + "%");
+				if(Math.ceil(progress) >= 100){
+					endLoading();
+					stilloading = false;
+
+				}else{
+				    clearTimeout(elTimer);
+					stilloading = true;
+					$("#loading").show();
+				}
+			}
+			
+			var elTimer;
+			function endLoading(){
+			    clearTimeout(elTimer);
+				if(stilloading == false){
+					elTimer = setTimeout(function(){
+						$("#loading").fadeOut();
+					}, 750);
+					
+				}
+			}
 			
 			function hideTemp(){
 				$("#tmp").fadeOut();
@@ -255,10 +279,11 @@
 				}, 100);
 				setTimeout(function(){
 					$("#" + panorama).fadeIn();
-					$("#loading").fadeOut();
 				}, 1000);
 				
 			}
+			
+			
 			
 			
 			
