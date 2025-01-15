@@ -193,7 +193,8 @@ button:hover{
 
 
 .page{
-	padding: 20px;
+	padding: 1em;
+	height: 100%;
 }
 
 #tutorials{
@@ -398,6 +399,8 @@ body::-webkit-scrollbar-thumb:hover {
 	overflow: auto;
 	padding: 1em;
 	font-size: 10px;
+	backdrop-filter: blur(5px);
+	webkit-backdrop-filter: blur(5px);
 }
 
 .pluginbar{
@@ -407,4 +410,19 @@ body::-webkit-scrollbar-thumb:hover {
 
 .pluginbar:hover{
 	background-color: #505a6c;
+}
+
+
+
+#mapbgimage{
+	width:100%;
+}
+
+#mapwrapper{
+	position: relative;
+}
+
+.mappin{
+	position: absolute;
+	
 }

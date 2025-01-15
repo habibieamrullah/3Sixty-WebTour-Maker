@@ -67,10 +67,13 @@
 		</div>
 		
 		<div style="position: fixed; top: 0; left: 0; right: 0; text-align: center; padding: 20px; background-color: #2c3643;">
-			Press Ctrl + Click on any area you wish to add the new Hotspot.
+			Press Ctrl + Click on any area you wish to add a new hotspot / reposition an existing hotspot.
 		</div>
 		
     	<script>
+		
+			var editinghotspot = false;
+			var editinghotspotidx = 0;
 			
             var container = document.querySelector( '#container' );
             var viewer = new PANOLENS.Viewer( { 
@@ -83,16 +86,16 @@
 			viewer.addUpdateCallback(function(){});
 			
 			/*panoramas*/
-var IMG_20231010_085550_00_457 = new PANOLENS.ImagePanorama( "temp/IMG_20231010_085550_00_457.jpg" );
-viewer.add( IMG_20231010_085550_00_457 );
-IMG_20231010_085550_00_457.addEventListener('progress', onProgress);
-IMG_20231010_085550_00_457.addEventListener('load', function(e){
+var testpanorama = new PANOLENS.ImagePanorama( "temp/testpanorama.jpg" );
+viewer.add( testpanorama );
+testpanorama.addEventListener('progress', onProgress);
+testpanorama.addEventListener('load', function(e){
 endLoading();
 });
-IMG_20231010_085550_00_457.addEventListener('enter', function(e){
+testpanorama.addEventListener('enter', function(e){
 endLoading();
 });
-IMG_20231010_085550_00_457.addEventListener('click', function(e){
+testpanorama.addEventListener('click', function(e){
 });
 
 
@@ -107,8 +110,15 @@ IMG_20231010_085550_00_457.addEventListener('click', function(e){
 					console.log("Ctrl Pressed");
 					hpos = $("#infospotloc").html();
 					console.log("Hpos value: " + hpos);
-					if(hpos != "")
-						initHotspotDialog();
+					if(hpos != ""){
+						if(!editinghotspot){
+							initHotspotDialog();
+						}else{
+							ipcRenderer.send("infospotlocationupdated", { title : editinghotspotidx, position : hpos });
+							var window = remote.getCurrentWindow();
+							window.close();
+						}
+					}
 				}
 			});
 		

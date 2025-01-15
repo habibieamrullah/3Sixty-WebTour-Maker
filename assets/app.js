@@ -59,13 +59,19 @@ function removeFromProjectList(index){
 function showInExplorer(idx){
 	
 	var dir = wtmdata.projects[idx].projectdir;
-	
+
 	if(dir.indexOf(" ") > -1){
 		showAlert("White Space Problem", "This project folder contains white space(s). Please manually explore and find it on your computer:<br>" + dir);
 	}else{
 		console.log("Trying to open in dir: " + dir);
 		require('child_process').exec('start "" ' + dir);
 	}
+	
+}
+
+function browseInExplorer(dir){
+	dir = apppath + "\\" + dir;
+	require('child_process').exec('start "" ' + dir);
 }
 
 function isProjectExist(title, dir){
@@ -79,6 +85,7 @@ function isProjectExist(title, dir){
 loadRecentProjects();
 
 function previewProject(idx){
+	
 	generateHTMLPanoramas();
 	showDim("Building...");
 	setTimeout(function(){
@@ -87,7 +94,10 @@ function previewProject(idx){
 		newwin.loadFile(ppath);
 		newwin.removeMenu();
 		//newwin.webContents.openDevTools();
+		
 		hideDim();
+		
+		
 	}, 2000);
 }
 
@@ -156,7 +166,10 @@ function generatePanoramas(arr){
 			//console.log("JS Code for this panorama has been added: " + panovar);
 		}
 		
+		
 		pdata += "$(document).ready(function(){ ChangePanorama('" + remSpaces(currentprojectdata.settings.firstpanorama.split(".")[0]) + "'); });\n";
+		
+		
 		
 	}
 	return pdata;
@@ -285,7 +298,7 @@ function setHotspotIcon(cid, idx){
 function showMiniPage(type){
 	switch (type){
 		case "about" :
-			showAlert("About", "<h1>3Sixty Web Tour Maker</h1><h3>Version 1.1.2</h3><p>Made with:</p><div style='background-color: white;'><img src='imgs/poweredby.png' style='width: 100%;'></div><p style='margin-top: 20px;'>Developed by</p><a href='https://webappdev.id/'><img src='imgs/webappdev.png' style='width: 100%'></a><p><a href='#' onclick=showMiniPage('donate')>Support The Development</a><br><a href='https://3sixty.webappdev.my.id/'>Visit 3Sixty Website</a></p>");
+			showAlert("About", "<h1>3Sixty Web Tour Maker</h1><h3>Version 1.2.2</h3><p>Made with:</p><div style='background-color: white;'><img src='imgs/poweredby.png' style='width: 100%;'></div><p style='margin-top: 20px;'>Developed by</p><a href='https://webappdev.id/'><img src='imgs/webappdev.png' style='width: 100%'></a><p><a href='#' onclick=showMiniPage('donate')>Support The Development</a><br><a href='https://3sixty.webappdev.my.id/'>Visit 3Sixty Website</a></p>");
 			break;
 		case "donate" :
 			showAlert("Support The Development", "<p><img src='imgs/paypal.png' style='background-color: white; padding: 20px;'></p><p>This software is made for you for free. However, I expect any amount donations from users like you to keep me supported for maintenance and further development of this software.</p><p>Please send your donation to my PayPal account here: <a href='https://paypal.me/habibieamrullah'>https://paypal.me/habibieamrullah</a></p>");
@@ -352,6 +365,9 @@ function editproject(idx){
 	currentprojectindex = idx;
 	showpage("projecteditor");
 	$("#currentprojecttitle").val(wtmdata.projects[idx].projectname);
+	if(wtmdata.projects[idx].projectdir.indexOf(" ") > 0){
+		showAlert("Whitespace Warning", "Your project directory contains whitespace(s) that will cause some problem. Please remove empty spaces and reload the app.");
+	}
 	$("#currentprojectdir").html("<i class='fa fa-folder' style='width: 30px;'></i>" + wtmdata.projects[idx].projectdir).attr({ "onclick" : "showInExplorer(" + idx + ")" });
 	$("#currentprojectrunbutton").attr({ "onclick" : "previewProject("+idx+")" });
 	fs.readFile(wtmdata.projects[idx].projectdir + "/WTMProject.wtm", 'utf8', function (err, data) {
@@ -365,8 +381,107 @@ function editproject(idx){
 	});
 }
 
+//tour map functions
+
+//set tour map bg image
+function setTourMapImage(){
+	showItemChooser(0, "Choose an Image as your map", "images", function(){
+		/*
+		var res = isCidMatched(cid);							
+		currentprojectdata.panoramas[res.pano].hotspots[res.hot].actions.push({ type : 1, target : tempSourceFile });
+		console.log("Action added");
+		updateWtmFile();
+		showeditorc("hotspots");
+		hideDim();
+		*/
+		currentprojectdata.tourmap = {
+			image : tempSourceFile,
+			scale : 0.75,
+			hotspots : [],
+		};
+		updateWtmFile();
+		hideDim();
+		showeditorc("tourmap");
+		//alert("tadaa! " + tempSourceFile);
+	});
+}
+
+//add tour map hotspot icon dialog
+function addTourMapHotspotDialog(){
+	showItemChooser(0, "Choose an Image as your hotpsot", "images", function(){
+		currentprojectdata.tourmap.hotspots.push({
+			image : tempSourceFile,
+			posX : 0,
+			posY : 0,
+			actions : [],
+			destpano : "",
+		});
+		updateWtmFile();
+		hideDim();
+		showeditorc("tourmap");
+		//alert("tadaa! " + tempSourceFile);
+	});
+}
+
+//update map pin positions after drag 
+function updateMapPinPositions(){
+	for(var i = 0; i < currentprojectdata.tourmap.hotspots.length; i++){
+		currentprojectdata.tourmap.hotspots[i].posX = (parseFloat($(".mappin").eq(i).css("left")) / (parseInt($("#mapwrapper").css("width"))) * 100 );
+		currentprojectdata.tourmap.hotspots[i].posY = (parseFloat($(".mappin").eq(i).css("top")) / (parseInt($("#mapwrapper").css("height"))) * 100 );
+		
+	}
+	updateWtmFile();
+}
+
+//show map pin action dialog
+function showMapPinActions(pinid){
+	showItemChooser(0, "Choose Destination Panorama", "panoramas", function(){
+		currentprojectdata.tourmap.hotspots[pinid].destpano = tempSourceFile;
+		updateWtmFile();
+		hideDim();
+	});
+}
+
+//delete tour Map
+function delTourMap(){
+	currentprojectdata.tourmap = "";
+	updateWtmFile();
+	showeditorc("tourmap");
+	
+}
+
+//generate editor content
+var isOnTourmap = false;
 function showeditorc(type){
+	isOnTourmap = false;
 	switch(type){
+		case "tourmap" : 
+			isOnTourmap = true;
+			$("#editorcontent").html("<h2>Tour Map</h2><div id='tourmapcontent'></div>");
+			
+			if(currentprojectdata.tourmap === undefined || currentprojectdata.tourmap == ""){
+				$("#tourmapcontent").html("<p>You don't have any tour map yet.</p><button class='greenbutton' onclick='setTourMapImage()'><i class='fa fa-plus'></i> Create Tour Map</button>");
+			}else{
+				
+				var maphotspots = "";
+				for(var i = 0; i < currentprojectdata.tourmap.hotspots.length; i++){
+					maphotspots += "<img class='mappin' src='"+wtmdata.projects[currentprojectindex].projectdir + "/" +currentprojectdata.tourmap.hotspots[i].image+"' style='top: "+currentprojectdata.tourmap.hotspots[i].posY+"%; left: "+currentprojectdata.tourmap.hotspots[i].posX+"%' ondblclick='showMapPinActions("+i+")'>";
+				}
+				
+				$("#tourmapcontent").html("<div class='greenbutton' onclick='addTourMapHotspotDialog()'><i class='fa fa-plus'></i> Add Hotspot</div><div id='mapwrapper'><img id='mapbgimage' src='"+ wtmdata.projects[currentprojectindex].projectdir + "/" + currentprojectdata.tourmap.image+"'>"+maphotspots+"</div><button onclick='delTourMap();'><i class='fa fa-trash'></i> Delete Tour Map</button>");
+				
+				resizetourmap();
+				$( ".mappin").draggable({
+					stop:function(){
+						updateMapPinPositions();
+						//alert($(".mappin").eq(0).css("top"));
+					}
+				});
+				
+			}
+			
+			break;
+			
 		case "panoramas" :
 			var panoramas = "<h2>Panorama Images</h2>";
 			for(var i = 0; i < currentprojectdata.panoramas.length; i++){
@@ -388,7 +503,10 @@ function showeditorc(type){
 			var cbsetting = "";
 			if(currentprojectdata.settings.controls == 1)
 				cbsetting = " selected";
-			$("#editorcontent").html("<h2>Project Settings</h2><div style='display: table; width: 100%; table-layout: fixed;'><div style='display: table-cell; vertical-align: top; padding-right: 10px;'><p>Project Description</p><input placeholder='Short description' id='psdescription' value='" +currentprojectdata.settings.description+ "'><p>Panorama Loading Text</p><input id='psloadingtext' placeholder='Loading text' value='" +currentprojectdata.settings.loadingtext+ "'></div><div style='display: table-cell; vertical-align: top;'><p>Main Panorama (First panorama to load)</p><select id='firstpanorama'>" +getPanoramasNameOption()+ "</select><p>Show Panolens Control Buttons (bottom right)</p><select id='pscontrols'><option value=0>No</option><option value=1"+cbsetting+">Yes</option></select></div></div><button onclick='saveProjectSettings()'><i class='fa fa-floppy-o'></i> Save</button>");
+			var panolistmenu = "";
+			if(currentprojectdata.settings.panolistmenu == 1)
+				panolistmenu = " selected";
+			$("#editorcontent").html("<h2>Project Settings</h2><div style='display: table; width: 100%; table-layout: fixed;'><div style='display: table-cell; vertical-align: top; padding-right: 10px;'><p>Project Description</p><input placeholder='Short description' id='psdescription' value='" +currentprojectdata.settings.description+ "'><p>Panorama Loading Text</p><input id='psloadingtext' placeholder='Loading text' value='" +currentprojectdata.settings.loadingtext+ "'><p>Show Panorama List Menu</p><select id='panolistmenu'><option value=0>No</option><option value=1"+panolistmenu+">Yes</option></select></div><div style='display: table-cell; vertical-align: top;'><p>Main Panorama (First panorama to load)</p><select id='firstpanorama'>" +getPanoramasNameOption()+ "</select><p>Show Panolens Control Buttons (bottom right)</p><select id='pscontrols'><option value=0>No</option><option value=1"+cbsetting+">Yes</option></select></div></div><button onclick='saveProjectSettings()'><i class='fa fa-floppy-o'></i> Save</button>");
 			//<p>Default Tour Mode</p><select><option>Normal</option><option>Cardboard</option><option>Stereoscopic</option></select>
 			break;
 		case "hotspots" :
@@ -515,7 +633,7 @@ function hotShowConfigs(cid){
 	$("#hothome" + cid).hide();
 	
 	
-	$("#hotscreen"+cid).hide().html("<h4>Configs</h4><p>Current Hotspot icon<br>(Click to change):</p><div onclick='changehotspoticon(\""+cid+"\");' style='width: 92px; height: 92px; margin: 0 auto; margin-bottom: 20px; background: url("+projectdir+hotspoticon+") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'></div><input value='"+hotspotfilename+"' readonly onclick='changehotspoticon(\""+cid+"\");'><p>Show title on hover</p><select id='showtitleonhover"+cid+"' onchange='applyshowtoh(\""+cid+"\")'><option value=0>No</option><option value=1"+stoh+">Yes</option></select><p>Current Hotspot location<br>(Click the input below to change)</p><input value='"+currenthotspot.position+"' readonly><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-floppy-o'></i> Save</div><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-times'></i> Close</div>").show();
+	$("#hotscreen"+cid).hide().html("<h4>Configs</h4><p>Current Hotspot icon<br>(Click to change):</p><div onclick='changehotspoticon(\""+cid+"\");' style='width: 92px; height: 92px; margin: 0 auto; margin-bottom: 20px; background: url("+projectdir+hotspoticon+") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'></div><input value='"+hotspotfilename+"' readonly onclick='changehotspoticon(\""+cid+"\");'><!--<p>Show title on hover</p><select id='showtitleonhover"+cid+"' onchange='applyshowtoh(\""+cid+"\")'><option value=0>No</option><option value=1"+stoh+">Yes</option></select>--><p>Current Hotspot location<br>(Click the input below to change)</p><input value='"+currenthotspot.position+"' readonly><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-floppy-o'></i> Save</div><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-times'></i> Close</div>").show();
 }
 
 //Go hot home
@@ -716,7 +834,56 @@ function addNewHotspotFor(idx){
 					enableRemoteModule: true,
 				} 
 			});
-			hoteditor.webContents.openDevTools();
+			//hoteditor.webContents.openDevTools();
+			hoteditor.loadFile(hotpath);
+			hoteditor.removeMenu();
+			
+			//hoteditor.webContents.openDevTools();
+		});
+	});
+}
+
+//Re-positioning hotspot
+function reSetHotspotPosition(pidx, hidx){
+	//showAlert("Repositioning hotspot", "zzz");
+	currentpanoramaindex = pidx;
+	var hotpath = __dirname + "/hotspotmaker.html";
+	var panofile = currentprojectdata.panoramas[pidx].panofile;
+	var panoname = panofile.split(".")[0];
+	//Let's copy current panorama file to temp panorama directory
+	fse.copySync(wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + panofile, __dirname + '/temp/' + panofile);
+	fs.readFile(hotpath, 'utf8', function (err, data) {
+		if (err) { return console.log(err); }
+		var newhtml = data.split("/*panoramas*/")[0] +"/*panoramas*/\n\r" + 
+		"var "+panoname+" = new PANOLENS.ImagePanorama( \"temp/" + panofile + "\" );\n" +
+			"viewer.add( "+panoname+" );\n" +
+			panoname+".addEventListener('progress', onProgress);\n" + 
+			
+			panoname+".addEventListener('load', function(e){\n" +
+				"endLoading();\n" + 
+			"});\n" + 
+			
+			panoname+".addEventListener('enter', function(e){\n" +
+				"endLoading();\n" + 
+			"});\n" + 
+			
+			panoname+".addEventListener('click', function(e){\n" +
+			"});editinghotspot=true; editinghotspotidx = "+hidx+"\n\r\n\r" +
+		"\n\r/*panoramas-end*/" + data.split("/*panoramas-end*/")[1];
+		fs.writeFile(hotpath, newhtml, function (err) {
+			if (err) return console.log(err);
+			
+			var hoteditor = new BrowserWindow({ 
+				width: 1280, 
+				height : 720, 
+				title : "Add New Hotspot", 
+				icon: "3Sixty.ico",
+				webPreferences : { 
+					nodeIntegration: true,
+					enableRemoteModule: true,
+				} 
+			});
+			//hoteditor.webContents.openDevTools();
 			hoteditor.loadFile(hotpath);
 			hoteditor.removeMenu();
 			
@@ -834,17 +1001,19 @@ function saveProjectSettings(){
 	var newdescription = $("#psdescription").val();
 	var firstpanorama = $("#firstpanorama").val();
 	var newcontrols = parseInt($("#pscontrols").val());
+	var panolistmenu = parseInt($("#panolistmenu").val());
 	currentprojectdata.settings = {
 		loadingtext : newtitle,
 		firstpanorama : firstpanorama,
 		description : newdescription,
 		controls : newcontrols,
+		panolistmenu : panolistmenu,
 	};
 	updateWtmFile();
 	fs.readFile(wtmdata.projects[currentprojectindex].projectdir + "/index.html", 'utf8', function (err, data) {
 		if (err) { return console.log(err); }
 		
-		
+		var toglobalwrite = true;
 		
 		//Update loading text
 		var newhtml = data.split("<!--loadingtext--\>")[0] +"<!--loadingtext--\>"+ newtitle +"<!--loadingtext-end--\>"+ data.split("<!--loadingtext-end--\>")[1];
@@ -866,10 +1035,47 @@ function saveProjectSettings(){
 		"var viewer = new PANOLENS.Viewer( { container: container , controlBar: "+cbsetting+",  output: 'console' , autoHideInfospot: false, } );" +
 		"\n\r/*panolens-end*/"+ newhtml.split("/*panolens-end*/")[1];
 		
-		fs.writeFile(wtmdata.projects[currentprojectindex].projectdir + "/index.html", newhtml, function (err) {
-			if (err) return console.log(err);
-			showAlert("Project Settings", "Project Settings has been updated successfully.");
-		});
+		
+		//Update show or dont show panormas list
+		if(currentprojectdata.settings.panolistmenu == 1){
+			//get panolist js code from file
+			fs.readFile(apppath + "\\jsfiles\\panolist.js", 'utf8', function (err, panolistdata) {
+				if (err) { return console.log(err); }
+			
+				//check, has panolist block or not and insert code
+				if(newhtml.indexOf("<!--panolist-->") > -1){
+					console.log("Panolist block found.");
+					newhtml = newhtml.split("<!--panolist-->")[0] + "<!--panolist--><script>" +panolistdata+ "</script><!--panolist-end-->" + newhtml.split("<!--panolist-end-->")[1];
+				}else{
+					console.log("Panolist block not found.");
+					newhtml = newhtml.split("</body>")[0] + "<!--panolist--><script>" +panolistdata+ "</script><!--panolist-end--></body>" + newhtml.split("</body>")[1];
+				}
+				
+				toglobalwrite = false;
+				//write to file
+				fs.writeFile(wtmdata.projects[currentprojectindex].projectdir + "/index.html", newhtml, function (err) {
+					if (err) return console.log(err);
+					
+				});
+				
+			});
+			
+		}else{
+			if(newhtml.indexOf("<!--panolist-->") > -1){
+				newhtml = newhtml.split("<!--panolist-->")[0] + newhtml.split("<!--panolist-end-->")[1];
+			}
+		}
+		
+		
+		//write to file
+		if(toglobalwrite){
+			fs.writeFile(wtmdata.projects[currentprojectindex].projectdir + "/index.html", newhtml, function (err) {
+				if (err) return console.log(err);
+				
+			});
+		}
+		
+		showAlert("Project Settings", "Project Settings has been updated successfully.");
 	});
 }
 
@@ -1146,6 +1352,11 @@ $(".page").on("click", function(){
 
 showpage("projects");
 
+function pleaseSupport(){
+	showAlert("Support the developer", "Please purchase the No Ads plugin to remove ads and support the developer. <a href='https://creativeshop.ciihuy.com/product/remove-ads-plugin-for-3sixty-virtual-tour-maker/'>Click here to purchase</a>.");
+	
+}
+
 $(document).ready(function(){
 	
 	$("body").fadeIn();
@@ -1160,24 +1371,60 @@ $(document).ready(function(){
 	$( function() {
 		$( "#debugwindow" ).draggable();
 		$( "#dimmessage" ).draggable();
+		
 	});
 	
 	ScanForPlugins();
+	setTimeout(function(){
+		pleaseSupport();
+	},1500);
 	
 });
 
 
+
+
 function limitHeight(){
-	$("#recentprojects").css({ "height" : (innerHeight - 75) + "px", "overflow" : "auto" });
-	$("#editorcontent").css({ "height" : (innerHeight-200) + "px" });
-	$("#tutorials").css({ "height" : (innerHeight-100) + "px" });
+	$("#recentprojects").css({ "height" : (innerHeight - (innerHeight/3) - 100) + "px", "overflow" : "auto" });
+	$("#editorcontent").css({ "height" : (innerHeight-(innerHeight/3) - 100) + "px" });
+	$("#tutorials").css({ "height" : (innerHeight-(innerHeight/3) - 100) + "px" });
 }
 
 $(window).resize(function(){
 	limitHeight();
+	if(isOnTourmap){
+		showeditorc("tourmap");
+		setTimeout(function(){
+			resizetourmap();
+		},1000);		
+	}
+	
+	
 });
 
-
+//resize tour map elements
+function resizetourmap(){
+	$("#mapwrapper").width(innerWidth*mapwidth);
+	
+	/*
+	$("#centered").css({
+		"margin-left" : ((innerWidth - $("#wrapper").width())/2) + "px",
+		"margin-top" : ((innerHeight - $("#wrapper").height())/2) + "px",
+	});
+	*/
+	
+	var pinwidth = 0.05; //5 percent
+	var mapwidth = 0.60; //80 percent of innerWidth
+	$(".mappin").css({ 
+		"width" : $("#mapbgimage").width() * pinwidth + "px" 
+	});
+	/*
+	$(".mappin").css({
+		"margin-left" : "-" + ($(".mappin").width() / 2) + "px",
+		"margin-top" : "-" + ($(".mappin").height() / 2) + "px",
+	});
+	*/
+}
 
 
 //Hide Debug Window
@@ -1251,6 +1498,14 @@ $(document).on('click', 'a[href^="http"]', function(event) {
 //Electron Bridge
 ipcRenderer.on("setnewinfospotlocation", (event, arg)=>{
 	currentprojectdata.panoramas[currentpanoramaindex].hotspots.push({ "hotspotid" : randomblah(10), "title" : arg.title, "position" : arg.position, "actions" : [] });
+	updateWtmFile();
+	//generateHTMLPanoramas();
+	showeditorc("hotspots");
+});
+
+//Electron Bridge 2
+ipcRenderer.on("updateinfospotlocation", (event, arg)=>{
+	currentprojectdata.panoramas[currentpanoramaindex].hotspots[arg.title].position = arg.position;
 	updateWtmFile();
 	//generateHTMLPanoramas();
 	showeditorc("hotspots");
@@ -1373,30 +1628,23 @@ function ReloadEditorHotspots(){
 						hotspoticon = "/" + currentprojectdata.panoramas[i].hotspots[x].icon;
 				}
 				
-				var currenthActions = "<p>This Hotspot has no action yet. Click Plus button to add an action to it.</p>";
+				var currenthActions = "<p>Actions:</p>";
+				var currenthActions2 = "";
+				var htarget = "";
 				
+				/*
 				if(currentprojectdata.panoramas[i].hotspots[x].url != undefined || currentprojectdata.panoramas[i].hotspots[x].js != undefined){
 					currenthActions = "<p>Actions:</p>";
 				}
+				*/
 				
-				if(currentprojectdata.panoramas[i].hotspots[x].url != undefined && currentprojectdata.panoramas[i].hotspots[x].url != ""){
-					hatype = "Open URL";
-					htarget = currentprojectdata.panoramas[i].hotspots[x].url;
-					currenthActions += "<div style='text-align: left;'><div style='font-style: italic; display: inline-block; background-color: black; color: white; padding: 5px; margin-top: 5px;'><i class='fa fa-arrow-circle-right'></i> "+hatype+"</div><div style='padding: 10px; border: 1px solid black;'><div><i class='fa fa-crosshairs'></i> " +htarget+ "</div><div style='color: gray; font-weight: bold; cursor: pointer; margin-top: 10px; display: inline-block;' onclick='removhurl(\""+cid+"\");'><i class='fa fa-trash'></i> Remove</div></div></div>";
-				}
-				
-				if(currentprojectdata.panoramas[i].hotspots[x].js != undefined && currentprojectdata.panoramas[i].hotspots[x].js != ""){
-					hatype = "Execute JavaScript";
-					htarget = "<span style='font-style: italic;'>Your JS Code...</span>";
-					currenthActions += "<div style='text-align: left;'><div style='font-style: italic; display: inline-block; background-color: black; color: white; padding: 5px; margin-top: 5px;'><i class='fa fa-arrow-circle-right'></i> "+hatype+"</div><div style='padding: 10px; border: 1px solid black;'><div><i class='fa fa-crosshairs'></i> " +htarget+ "</div><div style='color: gray; font-weight: bold; cursor: pointer; margin-top: 10px; display: inline-block;' onclick='removhjs(\""+cid+"\");'><i class='fa fa-trash'></i> Remove</div></div></div>";
-				}
 				
 				var hactions = currentprojectdata.panoramas[i].hotspots[x].actions;
 				if(hactions.length > 0){
-					currenthActions = "<p>Actions:</p>";
+					//currenthActions = "<p>Actions:</p>";
 					for(var y = 0; y < hactions.length; y++){
 						var hatype;
-						var htarget = hactions[y].target.split("/")[1];
+						htarget = hactions[y].target.split("/")[1];
 						
 						if(hactions[y].type == 0){
 							hatype = "Open Panorama";
@@ -1408,17 +1656,31 @@ function ReloadEditorHotspots(){
 							hatype = "Play Audio File";
 						}else if(hactions[y].type == 4){
 							hatype = "Show PDF File";
+						}else if(hactions[y].type == 5){
+							hatype = "Blah";
 						}
 						
 						currenthActions += "<div style='text-align: left;'><div style='font-style: italic; display: inline-block; background-color: black; color: white; padding: 5px; margin-top: 5px;'><i class='fa fa-arrow-circle-right'></i> "+hatype+"</div><div style='padding: 10px; border: 1px solid black;'><div><i class='fa fa-crosshairs'></i> " +htarget+ "</div><div style='color: gray; font-weight: bold; cursor: pointer; margin-top: 10px; display: inline-block;' onclick='removhaction("+y+", \""+cid+"\");'><i class='fa fa-trash'></i> Remove</div></div></div>";
 					}
 				}
 				
+				if(currentprojectdata.panoramas[i].hotspots[x].url != undefined && currentprojectdata.panoramas[i].hotspots[x].url != ""){
+					hatype = "Open URL";
+					htarget = currentprojectdata.panoramas[i].hotspots[x].url;
+					currenthActions2 += "<div style='text-align: left;'><div style='font-style: italic; display: inline-block; background-color: black; color: white; padding: 5px; margin-top: 5px;'><i class='fa fa-arrow-circle-right'></i> "+hatype+"</div><div style='padding: 10px; border: 1px solid black;'><div><i class='fa fa-crosshairs'></i> " +htarget+ "</div><div style='color: gray; font-weight: bold; cursor: pointer; margin-top: 10px; display: inline-block;' onclick='removhurl(\""+cid+"\");'><i class='fa fa-trash'></i> Remove</div></div></div>";
+				}
+				
+				if(currentprojectdata.panoramas[i].hotspots[x].js != undefined && currentprojectdata.panoramas[i].hotspots[x].js != ""){
+					hatype = "Execute JavaScript";
+					htarget = "<span style='font-style: italic;'>Your JS Code...</span>";
+					currenthActions2 += "<div style='text-align: left;'><div style='font-style: italic; display: inline-block; background-color: black; color: white; padding: 5px; margin-top: 5px;'><i class='fa fa-arrow-circle-right'></i> "+hatype+"</div><div style='padding: 10px; border: 1px solid black;'><div><i class='fa fa-crosshairs'></i> " +htarget+ "</div><div style='color: gray; font-weight: bold; cursor: pointer; margin-top: 10px; display: inline-block;' onclick='removhjs(\""+cid+"\");'><i class='fa fa-trash'></i> Remove</div></div></div>";
+				}
+				
 				var hiconidx = 0;
 				if(currentprojectdata.panoramas[i].hotspots[x].icon != undefined)
 					hiconidx = currentprojectdata.panoramas[i].hotspots[x].icon;
 				
-				hotspotsofit = "<div class='hotspotholder'><div class='hotspottitle'><input onkeyup=renameHotspotTitle("+i+","+x+") id='hinput"+cid+"' value='" +currentprojectdata.panoramas[i].hotspots[x].title+ "'></div><div style='padding: 10px; white-space: normal; display: block; box-sizing: border-box;'><div id='hotscreen"+cid+"' style='display: none;'></div><div id='hothome"+cid+"'><div onclick='changehotspoticon(\""+cid+"\");' style='width: 92px; height: 92px; margin: 0 auto; margin-top: 10px; margin-bottom: 10px; background: url("+hotspotIcons[hiconidx].data+") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'></div><div>"+currenthActions+"</div></div></div><div align='right'><button style='min-width: 20px;' class='greenbutton' onclick='hotShowAddNewAction(\""+cid+"\")'><i class='fa fa-plus'></i> Action</button><button class='redbutton' style='min-width: 20px;' onclick=removehotspot('"+cid+"');><i class='fa fa-trash'></i> Del.</button></div></div>" + hotspotsofit;
+				hotspotsofit = "<div class='hotspotholder'><div class='hotspottitle'><input onkeyup=renameHotspotTitle("+i+","+x+") id='hinput"+cid+"' value='" +currentprojectdata.panoramas[i].hotspots[x].title+ "'></div><div style='padding: 10px; white-space: normal; display: block; box-sizing: border-box;'><div id='hotscreen"+cid+"' style='display: none;'></div><div id='hothome"+cid+"'><div onclick='changehotspoticon(\""+cid+"\");' style='width: 92px; height: 92px; margin: 0 auto; margin-top: 10px; margin-bottom: 10px; background: url("+hotspotIcons[hiconidx].data+") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'></div><div>"+currenthActions+currenthActions2+"</div></div></div><div align='right'><button style='min-width: 20px;' class='greenbutton' onclick='hotShowAddNewAction(\""+cid+"\")'><i class='fa fa-plus'></i> Action</button><button class='redbutton' style='min-width: 20px;' onclick=removehotspot('"+cid+"');><i class='fa fa-trash'></i> Del.</button></div></div>" + hotspotsofit;
 				
 				// config button -> <button style='min-width: 20px;' onclick='hotShowConfigs(\""+cid+"\")'><i class='fa fa-cogs'></i> Conf.</button>
 			}

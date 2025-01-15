@@ -1,3 +1,3 @@
-Custom Hotspots|1.0.0|1.1.0|Habibie (webappdev.id)|https://webappdev.id/|
-Enables you to use any image file as a 64 by 64 pixels custom hotspot icon. It will add a custom Hotspot Icons menu button on your project sidebar. Click it to see your custom hotspot image gallery. Add any image to it and use it as your custom hotspot.
+Custom Hotspots|1.1.0|1.2.2|Habibie (webappdev.my.id)|https://webappdev.my.id/|
+Enables you to use any image file as a 64 by 64 pixels custom hotspot icon. It will add a custom Hotspot Icons menu button on your project sidebar. Click it to see your custom hotspot image gallery. Add any image to it and use it as your custom hotspot. IMPORTANT: Custom image hotspots made with this plugin will not work on VR (cardboard/stereoscopic) modes. 
 |status-enabled

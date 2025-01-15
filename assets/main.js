@@ -10,16 +10,21 @@ function createWindow () {
 			nodeIntegration: true,
 			contextIsolation: false,
 			enableRemoteModule: true,
+			webviewTag: true,
 		}
 	})
 
 	win.loadFile('index.html')
-	//win.webContents.openDevTools();
+	win.webContents.openDevTools();
 	win.maximize();
 	win.removeMenu();
 	
 	ipcMain.on("infospotlocationreceived", (evt, arg) => {
 		win.webContents.send("setnewinfospotlocation", arg);
+	});
+	
+	ipcMain.on("infospotlocationupdated", (evt, arg) => {
+		win.webContents.send("updateinfospotlocation", arg);
 	});
 
 }
@@ -34,7 +39,9 @@ app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow()
   }
-})
+});
+
+
 
 ipcMain.on('quitprogram', (evt, arg) => {
 	app.quit();

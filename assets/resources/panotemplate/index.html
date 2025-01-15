@@ -270,6 +270,7 @@
 			
 			var currentPanorama;
 			function ChangePanorama(panorama){
+			if(panorama != currentPanorama){
 				currentPanorama = panorama;
 				HideInfospots(); 
 				$("#loading").fadeIn();
@@ -280,8 +281,8 @@
 				setTimeout(function(){
 					$("#" + panorama).fadeIn();
 				}, 1000);
-				
 			}
+		}
 			
 			
 			
