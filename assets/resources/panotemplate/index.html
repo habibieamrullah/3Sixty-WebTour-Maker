@@ -270,19 +270,19 @@
 			
 			var currentPanorama;
 			function ChangePanorama(panorama){
-			if(panorama != currentPanorama){
-				currentPanorama = panorama;
-				HideInfospots(); 
-				$("#loading").fadeIn();
-				//$(".customhotspot").fadeOut();
-				setTimeout(function(){
-					viewer.setPanorama(window[panorama]);
-				}, 100);
-				setTimeout(function(){
-					$("#" + panorama).fadeIn();
-				}, 1000);
+				if(panorama != currentPanorama){
+					currentPanorama = panorama;
+					HideInfospots(); 
+					$("#loading").show();
+					//$(".customhotspot").fadeOut();
+					setTimeout(function(){
+						viewer.setPanorama(window[panorama]);
+					}, 100);
+					setTimeout(function(){
+						$("#" + panorama).fadeIn();
+					}, 1000);
+				}
 			}
-		}
 			
 			
 			
