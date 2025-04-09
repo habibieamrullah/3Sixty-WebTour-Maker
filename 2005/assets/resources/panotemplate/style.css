@@ -1,0 +1,186 @@
+body{
+    font-family: 'Dosis', sans-serif;
+    background-color: #4a4a4a;
+    color: white;
+    padding: 0;
+    margin: 0;
+    min-height: 100%;
+}
+
+a{
+    color: inherit;
+}
+
+.alert{
+    padding: 15px;
+    background-color: black;
+    border-radius: 5px;
+    margin: 30px;
+    color: white;
+    font-weight: bold;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+}
+
+/* Super Admin */
+
+.satopbar{
+    position: sticky;
+	top: 0;
+	z-index: 1;
+	background-color: black;
+	color: white;
+	display: table;
+	width: 100%;
+}
+
+.satopbar div{
+    padding: 12px;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.satopbar a{
+    text-decoration: none;
+}
+
+.sabody{
+    padding: 50px;
+}
+
+#leftdrawer{
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    color: black;
+    background-color: white;
+    padding-top: 40px;
+    overflow: auto;
+    min-width: 128px;
+}
+
+#leftdrawer div{
+    padding: 5px;
+    padding-left: 12px;
+    border-bottom: 1px solid gray;
+    cursor: pointer;
+    transition: background-color .3s;
+}
+
+#leftdrawer div:hover{
+    background-color: black;
+    color: white;
+}
+
+#leftdrawer a{
+    text-decoration: none;
+}
+
+#dimmer{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: none;
+    background-color: rgba(0,0,0,.5);
+}
+
+table {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+table, th, td {
+	border: 1px solid black;
+	font-size: 14px;
+}
+
+th{
+	text-align: center;
+	font-weight: bold;
+	background-color: white;
+	color: black;
+}
+
+th, td{
+	padding: 10px;
+}
+
+tr{
+    transition: background-color .3s;
+}
+
+tr:hover{
+	background-color: #545454;
+	color: white;
+}
+
+.mainwrapper{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: table;
+    width: 100%;
+    height: 100%;
+    
+    background: url(loginbg.jpg) no-repeat fixed center; 
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+}
+
+.lbwrapper{
+    display: table-cell;
+    vertical-align: middle;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    padding: 20px;
+}
+
+.loginblock{
+    padding: 50px;
+    background-color: white;
+    width: 100%;
+    max-width: 400px;
+    color: black;
+    display: inline-block;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.loginbutton{
+    background-color: #f11602;
+    color: white;
+    font-weight: bold;
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+
+input{
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    border-radius: 4px;
+    border: 1px solid #c0c0c0;
+}
+
+.mediaclosebutton{
+	cursor: pointer; position: absolute; top: 0; right: 0; padding: 10px; color: red; font-size: 20px; z-index: 10;
+	transition: all 500ms;
+}
+
+.mediaclosebutton:hover{
+	color: white;
+}
