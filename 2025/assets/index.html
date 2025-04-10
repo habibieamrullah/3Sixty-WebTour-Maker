@@ -3,8 +3,9 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>3Sixty - 360 Panorama Virtual Tour Maker</title>
-		<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
-		
+		<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://applulbayt.ciihuy.com; script-src-elem 'self' 'unsafe-inline' https://applulbayt.ciihuy.com;">
+
+
 		<link rel="stylesheet" type="text/css" href="css/font-awesome.css">
 		<link rel="stylesheet" type="text/css" href="style.css">
 		
@@ -15,6 +16,7 @@
 		<script src="resources/panotemplate/js/jquery.js"></script>
 		<script src="resources/panotemplate/js/imagedata.js"></script>
 		<script src="jquery-ui.js"></script>
+		
 		
 		<!-- Insert this line after script imports -->
 		<script>if (window.module) module = window.module;</script>
@@ -119,8 +121,8 @@
 			
 			<!-- What is -->
 			<div class="page" id="whatis">
-				<h1>What is 360 Web Tour Maker</h1>
-				<p>360 Web Tour Maker is a 100% free desktop software built for you to make a 360 panorama virtual tour for web.</p>
+				<h1>What is 360 Virtual Tour Maker</h1>
+				<p>360 Web Virtual Maker is a 100% free desktop software built for you to make a 360 panorama virtual tour for web.</p>
 				<p>This software is made with so many wonderful open source technologies such as HTML5, JavaScript, jQuery, three.js, panolens and so on.</p>
 			</div>
 			
@@ -346,6 +348,25 @@
 		</div>
 		
 		<!-- ads placeholder -->
+		<div id="advertisementwebview" style="position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;">
+			<h5 style="text-align: center; color: white;">ADVERTISEMENT</h5>
+			<div id="ciihuybanner">ciihuy2020</div>
+			<script>
+				var banners = []
+				$.get("https://imhere.ciihuy.com/ciihuybannerads/index.php", function(data){
+					banners = data.split(",");
+					initBanners();
+				});
+				function initBanners(){
+					var rn = Math.floor(Math.random() * banners.length);
+					$("#ciihuybanner").html("<a href='https://imhere.ciihuy.com/ciihuybannerads/index.php?clickad="+banners[rn]+"'><img id='cb' src='https://imhere.ciihuy.com/ciihuybannerads/uploads/"+banners[rn]+"' style='width: 100%;'></a>");
+					$("#cb").click();
+					setTimeout(function(){
+						initBanners();
+					},600000);
+				}
+			</script>
+		</div>
 		
 		<!-- loading and alert dim -->
 		<div id="dim">
@@ -371,7 +392,9 @@
 			<div id="debugwindowcontent"></div>
 		</div>
 		
+		<!--
 		<div style="position: fixed; right: 0; bottom: 0; padding: 10px;"><a href="https://paypal.me/habibieamrullah" target="_blank"><img src="imgs/paypalwhite.png" style="width: 64px;"></a></div>
+		-->
 		
 		<script src="app.js"></script>
 

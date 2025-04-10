@@ -117,7 +117,7 @@ function generatePanoramas(arr) {
 			for (var x = 0; x < arr[i].hotspots.length; x++) {
 				var hicon = arr[i].hotspots[x].icon !== undefined ? arr[i].hotspots[x].icon : 0;
 
-				pdata += "	addHotspot('imgs/hotspot.png', new THREE.Vector3("+arr[i].hotspots[x].position.split(',')[0]+", "+arr[i].hotspots[x].position.split(',')[1]+", " + arr[i].hotspots[x].position.split(',')[2] + "), () => {\n";
+				pdata += "	addHotspot('imgs/default.png', new THREE.Vector3("+arr[i].hotspots[x].position.split(',')[0]+", "+arr[i].hotspots[x].position.split(',')[1]+", " + arr[i].hotspots[x].position.split(',')[2] + "), () => {\n";
 
 				if (arr[i].hotspots[x].actions.length > 0) {
 					var cactions = arr[i].hotspots[x].actions;
@@ -278,10 +278,13 @@ function setHotspotIcon(cid, idx){
 function showMiniPage(type){
 	switch (type){
 		case "about" :
-			showAlert("About", "<h1>3Sixty Web Tour Maker</h1><h3>Version 1.5.0</h3><p>Made with:</p><div style='background-color: white;'><img src='imgs/poweredby.png' style='width: 100%;'></div><p style='margin-top: 20px;'>Developed by</p><a href='https://webappdev.id/'><img src='imgs/webappdev.png' style='width: 100%'></a><p><a href='#' onclick=showMiniPage('donate')>Support The Development</a><br><a href='https://3sixty.webappdev.my.id/'>Visit 3Sixty Website</a></p>");
+			showAlert("About", "<h1>3Sixty Virtual Tour Maker</h1><h3>Version 1.5.0</h3><p>Made with:</p><div style='background-color: white;'><img src='imgs/poweredby.png' style='width: 100%;'></div><p style='margin-top: 20px;'>Developed by</p><a href='https://webappdev.id/'><img src='imgs/webappdev.png' style='width: 100%'></a><p><a href='#' onclick=showMiniPage('donate')>Support The Development</a><br><a href='https://3sixty.webappdev.my.id/'>Visit 3Sixty Website</a></p>");
 			break;
 		case "donate" :
 			showAlert("Support The Development", "<p><img src='imgs/paypal.png' style='background-color: white; padding: 20px;'></p><p>This software is made for you for free. However, I expect any amount donations from users like you to keep me supported for maintenance and further development of this software.</p><p>Please send your donation to my PayPal account here: <a href='https://paypal.me/habibieamrullah'>https://paypal.me/habibieamrullah</a></p>");
+			break;
+		case "tourmap" :
+			showAlert("How to use Tour Map", "<div style='text-align: left;'><p>You can use Tour Map for navigation between panorama scenes.</p><p>- Double click your Hotspot to add an Action<br>- X+Click to delete Hotspot<br>- Currently there is no feature to resize Hotspot icon; so use your own image editor to resize the hotspot icons you are using related to the Tour Map background image.<p></div>");
 			break;
 	}
 }
@@ -446,10 +449,10 @@ function showeditorc(type){
 				
 				var maphotspots = "";
 				for(var i = 0; i < currentprojectdata.tourmap.hotspots.length; i++){
-					maphotspots += "<img class='mappin' src='"+wtmdata.projects[currentprojectindex].projectdir + "/" +currentprojectdata.tourmap.hotspots[i].image+"' style='top: "+currentprojectdata.tourmap.hotspots[i].posY+"%; left: "+currentprojectdata.tourmap.hotspots[i].posX+"%' ondblclick='showMapPinActions("+i+")'>";
+					maphotspots += "<img class='mappin' id='mappin"+i+"' src='"+wtmdata.projects[currentprojectindex].projectdir + "/" +currentprojectdata.tourmap.hotspots[i].image+"' style='top: "+currentprojectdata.tourmap.hotspots[i].posY+"%; left: "+currentprojectdata.tourmap.hotspots[i].posX+"%' ondblclick='showMapPinActions("+i+")'>";
 				}
 				
-				$("#tourmapcontent").html("<div class='greenbutton' onclick='addTourMapHotspotDialog()'><i class='fa fa-plus'></i> Add Hotspot</div><div id='mapwrapper'><img id='mapbgimage' src='"+ wtmdata.projects[currentprojectindex].projectdir + "/" + currentprojectdata.tourmap.image+"'>"+maphotspots+"</div><div>*Double click your hotspot to add an action.</div><button onclick='delTourMap();'><i class='fa fa-trash'></i> Delete Tour Map</button>");
+				$("#tourmapcontent").html("<div><button class='greenbutton' onclick='addTourMapHotspotDialog()'><i class='fa fa-plus'></i> Add Hotspot</button><button onclick=showMiniPage('tourmap'); style='margin-left: 0.5em;'><i class='fa fa-question-circle'></i> How To</button><button onclick='delTourMap();' style='margin-left: 0.5em;'><i class='fa fa-trash'></i> Delete Tour Map</button></div><div id='mapwrapper'><img id='mapbgimage' src='"+ wtmdata.projects[currentprojectindex].projectdir + "/" + currentprojectdata.tourmap.image+"'>"+maphotspots+"</div>");
 				
 				resizetourmap();
 				$( ".mappin").draggable({
@@ -457,6 +460,30 @@ function showeditorc(type){
 						updateMapPinPositions();
 						//alert($(".mappin").eq(0).css("top"));
 					}
+				});
+				
+				let xKeyDown = false;
+
+				$(document).on('keydown', function(e) {
+					if (e.key.toLowerCase() === 'x') {
+					  xKeyDown = true;
+					}
+				});
+
+				$(document).on('keyup', function(e) {
+					if (e.key.toLowerCase() === 'x') {
+					  xKeyDown = false;
+					}
+				});
+
+				$(".mappin").on('click', function() {
+				  if (xKeyDown) {
+					var mappinid = $(this).attr("id").replace("mappin", "");
+					mappinid = parseInt(mappinid); // pastikan jadi angka
+					currentprojectdata.tourmap.hotspots.splice(mappinid, 1); // hapus 1 item di index tsb
+					$(this).remove(); // hapus elemen dari DOM
+					updateWtmFile(); // simpan perubahan
+				  }
 				});
 				
 			}
@@ -600,7 +627,7 @@ function showactioncontent(cid){
 //Show configs panel
 function hotShowConfigs(cid){
 	var projectdir = wtmdata.projects[currentprojectindex].projectdir;
-	var hotspoticon = "/imgs/hotspot.png";
+	var hotspoticon = "/imgs/default.png";
 	var res = isCidMatched(cid);
 	var currenthotspot = currentprojectdata.panoramas[res.pano].hotspots[res.hot];
 	if(currenthotspot.icon != undefined && currenthotspot.icon != ""){
@@ -1007,6 +1034,7 @@ function setitasmainpano(idx){
 	showeditorc("panoramas");
 }
 
+var toglobalwrite = true;
 function saveProjectSettings(){
 	showDim("Saving project...");
 	var newtitle = $("#psloadingtext").val();
@@ -1025,7 +1053,7 @@ function saveProjectSettings(){
 	fs.readFile(wtmdata.projects[currentprojectindex].projectdir + "/index.html", 'utf8', function (err, data) {
 		if (err) { return console.log(err); }
 		
-		var toglobalwrite = true;
+		toglobalwrite = true;
 		
 		//Update loading text
 		var newhtml = data.split("<!--loadingtext--\>")[0] +"<!--loadingtext--\>"+ newtitle +"<!--loadingtext-end--\>"+ data.split("<!--loadingtext-end--\>")[1];
@@ -1072,6 +1100,7 @@ function saveProjectSettings(){
 			}
 		}
 		
+		updatePanolistNavigation(newhtml, true);
 		
 		//write to file
 		if(toglobalwrite){
@@ -1083,6 +1112,51 @@ function saveProjectSettings(){
 		
 		showAlert("Project Settings", "Project Settings has been updated successfully.");
 	});
+}
+
+function updatePanolistNavigation(newhtml, isSaveSettings){
+	if(currentprojectdata.settings.panolistmenu == 1){
+			
+		//generate panolist data;
+		var panothumbs = "";
+		for(var i = 0; i < currentprojectdata.panoramas.length; i++){
+			panothumbs += "<div onclick=switchPanorama('" +currentprojectdata.panoramas[i].panofile+ "');><img src='panoramas/" + currentprojectdata.panoramas[i].panofile + "' style='height: 3em; padding: 0.5em;'></div>";
+		}
+		const panolistdata = "<div style='position: fixed; top: 0; left: 0; z-index: 1;'><div style='padding: 0.5em;' onclick=$('#panolist').toggle()><i class='fa fa-bars'></i></div></div><div id='panolist' style='display: none; position: fixed; top: 0; left: 0; bottom: 0; background-color: rgba(0,0,0,.85); backdrop-filter: blur(5px); overflow: auto; z-index: 1;'><div onclick=$(\'#panolist\').toggle() style='padding: 0.5em; position: sticky; top: 0; background-color: black;'><i class='fa fa-chevron-left'></i> Hide</div>"+panothumbs+"</div>";
+
+
+		var panolistscript = '$("body").append("'+panolistdata+'")';
+		
+		//check, has panolist block or not and insert code
+		if(newhtml.indexOf("<!--panolist-->") > -1){
+			console.log("Panolist block found.");
+			newhtml = newhtml.split("<!--panolist-->")[0] + "<!--panolist--><script>" +panolistscript+ "</script><!--panolist-end-->" + newhtml.split("<!--panolist-end-->")[1];
+		}else{
+			console.log("Panolist block not found.");
+			newhtml = newhtml.split("</body>")[0] + "<!--panolist--><script>" +panolistscript+ "</script><!--panolist-end--></body>" + newhtml.split("</body>")[1];
+		}
+		
+		if(!isSaveSettings){
+			return newhtml;
+		}else{
+			toglobalwrite = false;
+			//write to file
+			fs.writeFile(wtmdata.projects[currentprojectindex].projectdir + "/index.html", newhtml, function (err) {
+				if (err) return console.log(err);
+				
+			});
+		}
+		
+		
+	}else{
+		if(!isSaveSettings){
+			return newhtml;
+		}else{
+			if(newhtml.indexOf("<!--panolist-->") > -1){
+				newhtml = newhtml.split("<!--panolist-->")[0] + newhtml.split("<!--panolist-end-->")[1];
+			}
+		}
+	}
 }
 
 function getPanoramasNameOption(){
@@ -1199,11 +1273,12 @@ function generateHTMLPanoramas(){
 			
 			if(currentprojectdata.tourmap.hotspots.length > 0){
 				for(var i = 0; i < currentprojectdata.tourmap.hotspots.length; i++){
+					var tmhaction = "";
 					tourmapicons += '<img class=\"tmpin\" style=\"position: absolute; top:'+currentprojectdata.tourmap.hotspots[i].posY+'%; left:'+currentprojectdata.tourmap.hotspots[i].posX+'%;\" src=\"'+currentprojectdata.tourmap.hotspots[i].image+'\" onclick=tmOpenPano(\"'+currentprojectdata.tourmap.hotspots[i].destpano+'\")>';
 				}
 			}
 			
-			tourmapcode = "function tmOpenPano(pn){switchPanorama(pn);destroyTourMap();};\n\rfunction destroyTourMap(){ $('#tourmap').remove(); };\n\rfunction showTourmap(){ $('body').append('<div id=\"tourmap\" style=\"position: fixed; left: 0; right: 0; bottom: 0; top: 0; background-color: rgba(0,0,0,.9);\"><div id=\"tmcentered\"><div id=\"tmwrapper\" style=\"position: relative;\"><img id=\"tmbgimage\" src=\""+ currentprojectdata.tourmap.image +"\" style=\"width: 100%;\">"+tourmapicons+"</div></div><div onclick=destroyTourMap(); style=\"position: fixed; top: 0; right: 0; padding: 1em;\"><i class=\"fa fa-times\"></i></div></div>');\n\rsetTimeout(function(){resizePins();},250);};\n\r$('body').append('<div onclick=showTourmap(); style=\"position: fixed; top: 0; right: 0; padding: 1em;\"><i class=\"fa fa-map\"></i></div>');\n\rvar pinwidth=0.05;\n\rvar mapwidth=0.75;\n\rfunction resizePins(){$('#tmwrapper').width(innerWidth*mapwidth);\n\r$('#tmcentered').css({'margin-left':((innerWidth-$('#tmwrapper').width())/2)+'px','margin-top':((innerHeight-$('#tmwrapper').height())/2)+'px',});$('.tmpin').css({'width':$('#tmbgimage').width()*pinwidth+'px'});};\n\r$(window).on('resize',function(){resizePins();});\n\r$(document).ready(resizePins());";
+			tourmapcode = "function tmOpenPano(pn){if(pn !=''){switchPanorama(pn);destroyTourMap();}};\n\rfunction destroyTourMap(){ $('#tourmap').remove(); };\n\rfunction showTourmap(){ $('body').append('<div id=\"tourmap\" style=\"z-index: 12; position: fixed; left: 0; right: 0; bottom: 0; top: 0; background-color: rgba(0,0,0,.9);\"><div id=\"tmcentered\"><div id=\"tmwrapper\" style=\"position: relative;\"><img id=\"tmbgimage\" src=\""+ currentprojectdata.tourmap.image +"\" style=\"width: 100%;\">"+tourmapicons+"</div></div><div onclick=destroyTourMap(); style=\"position: fixed; top: 0; right: 0; padding: 1em;\"><i class=\"fa fa-times\"></i></div></div>');\n\rsetTimeout(function(){resizePins();},250);};\n\r$('body').append('<div onclick=showTourmap(); style=\"position: fixed; top: 0; right: 0; padding: 1em;\"><i class=\"fa fa-map\"></i></div>');\n\rvar pinwidth=0.05;\n\rvar mapwidth=0.75;\n\rfunction resizePins(){$('#tmwrapper').width(innerWidth*mapwidth);\n\r$('#tmcentered').css({'margin-left':((innerWidth-$('#tmwrapper').width())/2)+'px','margin-top':((innerHeight-$('#tmwrapper').height())/2)+'px',});$('.tmpin').css({'width':$('#tmbgimage').width()*pinwidth+'px'});};\n\r$(window).on('resize',function(){resizePins();});\n\r$(document).ready(resizePins());";
 			
 		}
 	
@@ -1213,9 +1288,16 @@ function generateHTMLPanoramas(){
 		//inject tourmap code
 		newhtml = newhtml.split("/*customjs*/")[0] +"/*customjs*/\n\r"+ tourmapcode + "\n\r/*customjs-end*/"+ data.split("/*customjs-end*/")[1];
 		
+		
+		
 		//Update project title
 		newhtml = newhtml.split("<!--projecttitle--\>")[0] +"<!--projecttitle--\><title\>"+ currentprojectdata.title +"</title\><!--projecttitle-end--\>"+ newhtml.split("<!--projecttitle-end--\>")[1];
 		
+		
+		//update panolist navigation
+		newhtml = updatePanolistNavigation(newhtml, false);
+		
+		//write to file
 		fs.writeFile(wtmdata.projects[currentprojectindex].projectdir + "/index.html", newhtml, function (err) {
 			if (err) return console.log(err);
 			console.log("Done regenerating new HTML after adding new panorama.");
@@ -1463,9 +1545,12 @@ $(document).ready(function(){
 
 
 function limitHeight(){
-	$("#recentprojects").css({ "height" : (innerHeight - (innerHeight/3) - 100) + "px", "overflow" : "auto" });
-	$("#editorcontent").css({ "height" : (innerHeight-(innerHeight/3) - 100) + "px" });
-	$("#tutorials").css({ "height" : (innerHeight-(innerHeight/3) - 100) + "px" });
+	$("#recentprojects").css({ "height" : (innerHeight - 20) + "px", "overflow" : "auto" });
+	$("#editorcontent").css({ "height" : (innerHeight - 200) + "px" });
+	$("#tutorials").css({ "height" : (innerHeight - 20) + "px" });
+	$("#maincontentwrapper").css({ "height" : (innerHeight - 50) + "px" });
+	//alert("Resized by plugin");
+	//alert("Size is: " + $("#editorcontent").height());
 }
 
 $(window).resize(function(){
@@ -1699,7 +1784,7 @@ function ReloadEditorHotspots(){
 		}else{
 			for(var x = 0 ; x < currentprojectdata.panoramas[i].hotspots.length; x++){
 				var cid = currentprojectdata.panoramas[i].hotspots[x].hotspotid;
-				var hotspoticon = "/imgs/hotspot.png";
+				var hotspoticon = "/imgs/default.png";
 				
 				if(currentprojectdata.panoramas[i].hotspots[x].icon != undefined){
 					if(currentprojectdata.panoramas[i].hotspots[x].icon != "")
