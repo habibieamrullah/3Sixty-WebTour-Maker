@@ -1,55 +1,54 @@
-//Image Data
 var hotspotIcons = [
 	{
 		name : 'default',
-		data :'imgs/default.png',
+		data :'default.png',
 	},
 	{
 		name : 'tilted',
+		data : 'tilted.png',
 	},
-		data : 'imgs/tilted.png',
 	{
 		name : 'arrowdown',
-		data : 'imgs/arrowdown.png',
+		data : 'arrowdown.png',
 	},
 	{
 		name : 'arrowleft',
-		data : 'imgs/arrowleft.png',
+		data : 'arrowleft.png',
 	},
 	{
 		name : 'arrowright',
-		data : 'imgs/arrowright.png',
+		data : 'arrowright.png',
 	},
 	{
 		name : 'arrowup',
-		data : 'imgs/arrowup.png',
+		data : 'arrowup.png',
 	},
 	{
 		name : 'chevronforward',
-		data : 'imgs/chevronforward.png',
+		data : 'chevronforward.png',
 	},
 	{
 		name : 'chevronleft',
-		data : 'imgs/chevronleft.png',
+		data : 'chevronleft.png',
 	},
 	{
 		name : 'chevronright',
-		data : 'imgs/chevronright.png',
+		data : 'chevronright.png',
 	},
 	{
 		name : 'chevrontilted',
-		data : 'imgs/chevrontilted.png',	
+		data : 'chevrontilted.png',	
 	},
 	{
 		name : 'chevronup',
-		data : 'imgs/chevronup.png',
+		data : 'chevronup.png',
 	},
 	{
 		name : 'white',
-		data : 'imgs/white.png',
+		data : 'white.png',
 	},
 	{
 		name : 'whitetilted',
-		data : 'imgs/whitetilted.png',
+		data : 'whitetilted.png',
 	},
 ];

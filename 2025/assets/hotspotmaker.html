@@ -168,7 +168,7 @@
 			
 			/*initfunction*/
 
-		let currentPanorama = 'testpanoramaJdeiO.jpg';
+		let currentPanorama = 'testpanorama.jpg';
 		function init() {
 			const container = document.getElementById('container');
 
@@ -193,13 +193,13 @@
 			const geometry = new THREE.SphereGeometry(500, 60, 40);
 			geometry.scale(-1, 1, 1);
 
-			const texture = new THREE.TextureLoader().load('E:/xampp/htdocs/projects/three/panoramas/testpanoramaJdeiO.jpg');
+			const texture = new THREE.TextureLoader().load('E:/xampp/htdocs/projects/three/panoramas/testpanorama.jpg');
 			const material = new THREE.MeshBasicMaterial({ map: texture });
 
 			panoramaMesh = new THREE.Mesh(geometry, material);
 			scene.add(panoramaMesh);
 
-			loadHotspotsFor('testpanoramaJdeiO.jpg');
+			loadHotspotsFor('testpanorama.jpg');
 
 			window.addEventListener('resize', onWindowResize);
 			renderer.domElement.addEventListener('wheel', onMouseWheel, { passive: false });
@@ -208,6 +208,7 @@
 			renderer.domElement.addEventListener('pointermove', onPointerMove, false);
 		}
 		
+editinghotspot=true; editinghotspotidx = 0
 /*initfunction-end*/
 
 			function onMouseWheel(e) {

@@ -117,7 +117,7 @@ function generatePanoramas(arr) {
 			for (var x = 0; x < arr[i].hotspots.length; x++) {
 				var hicon = arr[i].hotspots[x].icon !== undefined ? arr[i].hotspots[x].icon : 0;
 
-				pdata += "	addHotspot('imgs/default.png', new THREE.Vector3("+arr[i].hotspots[x].position.split(',')[0]+", "+arr[i].hotspots[x].position.split(',')[1]+", " + arr[i].hotspots[x].position.split(',')[2] + "), () => {\n";
+				pdata += "	addHotspot('images/"+hicon+"', new THREE.Vector3("+arr[i].hotspots[x].position.split(',')[0]+", "+arr[i].hotspots[x].position.split(',')[1]+", " + arr[i].hotspots[x].position.split(',')[2] + "), () => {\n";
 
 				if (arr[i].hotspots[x].actions.length > 0) {
 					var cactions = arr[i].hotspots[x].actions;
@@ -249,15 +249,31 @@ function showItemChooser(cid, title, dir, fn){
 //Showing hotspot icon chooser
 function showIconChooser(cid, title){
 
+	/*
 	var itemstochoose = "";
 	
 	for(var i = 0; i < hotspotIcons.length; i++){
-		itemstochoose += "<div onclick='setHotspotIcon(\""+cid+"\", "+i+")' style='display: inline-block; margin-right: 10px; margin-bottom: 10px; text-align: center; cursor: pointer;'><div><img src='" +wtmdata.projects[currentprojectindex].projectdir + "/" + hotspotIcons[i].data+ "' style='height: 96px;'></div><div style='font-size: 10px;'>" + hotspotIcons[i].name + "</div></div>";
+		itemstochoose += "<div onclick='setHotspotIcon(\""+cid+"\", \""+hotspotIcons[i].data+"\")' style='display: inline-block; margin-right: 10px; margin-bottom: 10px; text-align: center; cursor: pointer;'><div><img src='" +wtmdata.projects[currentprojectindex].projectdir + "/images/" + hotspotIcons[i].data+ "' style='height: 96px;'></div><div style='font-size: 10px;'>" + hotspotIcons[i].name + "</div></div>";
 	}
 	
 	$("#dimmessage").html("").html("<div style='width: 100%; max-width: 720px; height: 100%; margin: 0 auto;'><div style='background-color: #2c3643; color: white; padding: 10px;'><i class='fa fa-question-circle'></i> " +title+ "</div><div style='padding: 30px; background-color: #3d4855; font-size: 14px; font-weight: normal;'><div style='box-sizing: border-box; width: 100%; height: "+(innerHeight-400)+"px; overflow: auto;'>"+itemstochoose+"</div><button onclick='hideDim()' style='margin-left: 10px; margin-top: 20px; margin-bottom: 0px;'><i class='fa fa-times'></i> Close</button></div></div>");
 	$("#dim").show();
 	$("#loading").hide();
+	*/
+	
+	showItemChooser(0, "Choose an Image as your Hotspot Icon", "images", function(){
+		/*
+		var res = isCidMatched(cid);							
+		currentprojectdata.panoramas[res.pano].hotspots[res.hot].actions.push({ type : 1, target : tempSourceFile });
+		console.log("Action added");
+		updateWtmFile();
+		showeditorc("hotspots");
+		hideDim();
+		*/
+		
+		//alert("tadaa! " + tempSourceFile);
+		setHotspotIcon(cid, tempSourceFile.replace("images/", ""));
+	});
 }
 
 //Set chosen item after showing the item chooser
@@ -627,7 +643,7 @@ function showactioncontent(cid){
 //Show configs panel
 function hotShowConfigs(cid){
 	var projectdir = wtmdata.projects[currentprojectindex].projectdir;
-	var hotspoticon = "/imgs/default.png";
+	var hotspoticon = "default.png";
 	var res = isCidMatched(cid);
 	var currenthotspot = currentprojectdata.panoramas[res.pano].hotspots[res.hot];
 	if(currenthotspot.icon != undefined && currenthotspot.icon != ""){
@@ -873,7 +889,7 @@ function addNewHotspotFor(idx){
 					enableRemoteModule: true,
 				} 
 			});
-			hoteditor.webContents.openDevTools();
+			//hoteditor.webContents.openDevTools();
 			hoteditor.loadFile(hotpath);
 			hoteditor.removeMenu();
 			
@@ -888,27 +904,58 @@ function reSetHotspotPosition(pidx, hidx){
 	currentpanoramaindex = pidx;
 	var hotpath = __dirname + "/hotspotmaker.html";
 	var panofile = currentprojectdata.panoramas[pidx].panofile;
+	var panopath = wtmdata.projects[currentprojectindex].projectdir + "/panoramas/";
 	var panoname = panofile.split(".")[0];
 	//Let's copy current panorama file to temp panorama directory
 	fse.copySync(wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + panofile, __dirname + '/temp/' + panofile);
 	fs.readFile(hotpath, 'utf8', function (err, data) {
 		if (err) { return console.log(err); }
-		var newhtml = data.split("/*panoramas*/")[0] +"/*panoramas*/\n\r" + 
-		"var "+panoname+" = new PANOLENS.ImagePanorama( \"temp/" + panofile + "\" );\n" +
-			"viewer.add( "+panoname+" );\n" +
-			panoname+".addEventListener('progress', onProgress);\n" + 
-			
-			panoname+".addEventListener('load', function(e){\n" +
-				"endLoading();\n" + 
-			"});\n" + 
-			
-			panoname+".addEventListener('enter', function(e){\n" +
-				"endLoading();\n" + 
-			"});\n" + 
-			
-			panoname+".addEventListener('click', function(e){\n" +
-			"});editinghotspot=true; editinghotspotidx = "+hidx+"\n\r\n\r" +
-		"\n\r/*panoramas-end*/" + data.split("/*panoramas-end*/")[1];
+		var newhtml = data.split("/*initfunction*/")[0] +"/*initfunction*/\n\r" + 
+		
+		`
+		let currentPanorama = '${panofile}';
+		function init() {
+			const container = document.getElementById('container');
+
+			scene = new THREE.Scene();
+
+			camera = new THREE.PerspectiveCamera(targetFov, container.clientWidth / container.clientHeight, 0.1, 1000);
+			camera.position.set(0, 0, 0.1);
+
+			renderer = new THREE.WebGLRenderer({ antialias: true });
+			renderer.setSize(container.clientWidth, container.clientHeight);
+			container.appendChild(renderer.domElement);
+
+			controls = new THREE.OrbitControls(camera, renderer.domElement);
+			controls.enableZoom = true;
+			controls.minDistance = 0.1;
+			controls.maxDistance = 5;
+			controls.enablePan = false;
+			controls.rotateSpeed = -0.3;
+			controls.enableDamping = true;
+			controls.dampingFactor = 0.1;
+
+			const geometry = new THREE.SphereGeometry(500, 60, 40);
+			geometry.scale(-1, 1, 1);
+
+			const texture = new THREE.TextureLoader().load('${panopath}${panofile}');
+			const material = new THREE.MeshBasicMaterial({ map: texture });
+
+			panoramaMesh = new THREE.Mesh(geometry, material);
+			scene.add(panoramaMesh);
+
+			loadHotspotsFor('${panofile}');
+
+			window.addEventListener('resize', onWindowResize);
+			renderer.domElement.addEventListener('wheel', onMouseWheel, { passive: false });
+			renderer.domElement.addEventListener('touchstart', handleTouchStart, { passive: false });
+			renderer.domElement.addEventListener('touchmove', handleTouchMove, { passive: false });
+			renderer.domElement.addEventListener('pointermove', onPointerMove, false);
+		}
+		`
+		
+		 +
+		"\n\reditinghotspot=true; editinghotspotidx = "+hidx+"\n\r/*initfunction-end*/" + data.split("/*initfunction-end*/")[1];
 		fs.writeFile(hotpath, newhtml, function (err) {
 			if (err) return console.log(err);
 			
@@ -1606,7 +1653,7 @@ function ShowDebugWindow(){
 
 //Open Dev Console
 function OpenDevConsole(){
-	app.webContents.openDevTools();
+	//app.webContents.openDevTools();
 }
 
 
@@ -1660,7 +1707,7 @@ $(document).on('click', 'a[href^="http"]', function(event) {
 
 //Electron Bridge
 ipcRenderer.on("setnewinfospotlocation", (event, arg)=>{
-	currentprojectdata.panoramas[currentpanoramaindex].hotspots.push({ "hotspotid" : randomblah(10), "title" : arg.title, "position" : arg.position, "actions" : [] });
+	currentprojectdata.panoramas[currentpanoramaindex].hotspots.push({ "hotspotid" : randomblah(10), "title" : arg.title, "position" : arg.position, "actions" : [], icon : "default.png" });
 	updateWtmFile();
 	//generateHTMLPanoramas();
 	showeditorc("hotspots");
@@ -1784,7 +1831,7 @@ function ReloadEditorHotspots(){
 		}else{
 			for(var x = 0 ; x < currentprojectdata.panoramas[i].hotspots.length; x++){
 				var cid = currentprojectdata.panoramas[i].hotspots[x].hotspotid;
-				var hotspoticon = "/imgs/default.png";
+				var hotspoticon = "default.png";
 				
 				if(currentprojectdata.panoramas[i].hotspots[x].icon != undefined){
 					if(currentprojectdata.panoramas[i].hotspots[x].icon != "")
@@ -1839,11 +1886,11 @@ function ReloadEditorHotspots(){
 					currenthActions2 += "<div style='text-align: left;'><div style='font-style: italic; display: inline-block; background-color: black; color: white; padding: 5px; margin-top: 5px;'><i class='fa fa-arrow-circle-right'></i> "+hatype+"</div><div style='padding: 10px; border: 1px solid black;'><div><i class='fa fa-crosshairs'></i> " +htarget+ "</div><div style='color: gray; font-weight: bold; cursor: pointer; margin-top: 10px; display: inline-block;' onclick='removhjs(\""+cid+"\");'><i class='fa fa-trash'></i> Remove</div></div></div>";
 				}
 				
-				var hiconidx = 0;
+				var hiconidx = "default.png";
 				if(currentprojectdata.panoramas[i].hotspots[x].icon != undefined)
 					hiconidx = currentprojectdata.panoramas[i].hotspots[x].icon;
 				
-				hotspotsofit = "<div class='hotspotholder'><div class='hotspottitle'><input onkeyup=renameHotspotTitle("+i+","+x+") id='hinput"+cid+"' value='" +currentprojectdata.panoramas[i].hotspots[x].title+ "'></div><div style='padding: 10px; white-space: normal; display: block; box-sizing: border-box;'><div id='hotscreen"+cid+"' style='display: none;'></div><div id='hothome"+cid+"'><div onclick='changehotspoticon(\""+cid+"\");' style='width: 92px; height: 92px; margin: 0 auto; margin-top: 10px; margin-bottom: 10px; background: url("+wtmdata.projects[currentprojectindex].projectdir + '/' + hotspotIcons[hiconidx].data+") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'></div><div>"+currenthActions+currenthActions2+"</div></div></div><div align='right'><button style='min-width: 20px;' class='greenbutton' onclick='hotShowAddNewAction(\""+cid+"\")'><i class='fa fa-plus'></i> Action</button><button class='redbutton' style='min-width: 20px;' onclick=removehotspot('"+cid+"');><i class='fa fa-trash'></i> Del.</button></div></div>" + hotspotsofit;
+				hotspotsofit = "<div class='hotspotholder'><div class='hotspottitle'><input onkeyup=renameHotspotTitle("+i+","+x+") id='hinput"+cid+"' value='" +currentprojectdata.panoramas[i].hotspots[x].title+ "'></div><div style='padding: 10px; white-space: normal; display: block; box-sizing: border-box;'><div id='hotscreen"+cid+"' style='display: none;'></div><div id='hothome"+cid+"'><div onclick='changehotspoticon(\""+cid+"\");' style='width: 92px; height: 92px; margin: 0 auto; margin-top: 10px; margin-bottom: 10px; background: url("+wtmdata.projects[currentprojectindex].projectdir + '/images/' + hiconidx +") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'></div><div>"+currenthActions+currenthActions2+"</div></div></div><div align='right'><button style='min-width: 20px;' class='greenbutton' onclick='hotShowAddNewAction(\""+cid+"\")'><i class='fa fa-plus'></i> Action</button><button style='min-width: 20px;' onclick='reSetHotspotPosition("+i+","+x+")'><i class='fa fa-pencil'></i> Position</button><button class='redbutton' style='min-width: 20px;' onclick=removehotspot('"+cid+"');><i class='fa fa-trash'></i> Del.</button></div></div>" + hotspotsofit;
 				
 				// config button -> <button style='min-width: 20px;' onclick='hotShowConfigs(\""+cid+"\")'><i class='fa fa-cogs'></i> Conf.</button>
 			}
