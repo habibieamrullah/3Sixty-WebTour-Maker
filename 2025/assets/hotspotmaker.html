@@ -135,7 +135,7 @@
 			//fungsi menambahkan hotspot dengan ctrl klik
 
 			renderer.domElement.addEventListener('pointerdown', (event) => {
-				if (event.ctrlKey && event.button === 0) { // Ctrl + klik kiri
+				if ((event.ctrlKey || event.metaKey) && event.button === 0) { // Ctrl + klik kiri
 					const mouseClick = new THREE.Vector2(
 						(event.clientX / window.innerWidth) * 2 - 1,
 						-(event.clientY / window.innerHeight) * 2 + 1
@@ -168,7 +168,7 @@
 			
 			/*initfunction*/
 
-		let currentPanorama = 'testpanorama.jpg';
+		let currentPanorama = 'newpano2.jpg';
 		function init() {
 			const container = document.getElementById('container');
 
@@ -193,13 +193,13 @@
 			const geometry = new THREE.SphereGeometry(500, 60, 40);
 			geometry.scale(-1, 1, 1);
 
-			const texture = new THREE.TextureLoader().load('E:/xampp/htdocs/projects/three/panoramas/testpanorama.jpg');
+			const texture = new THREE.TextureLoader().load('/Users/mhabibieamrullah/Desktop/uhuu/panoramas/newpano2.jpg');
 			const material = new THREE.MeshBasicMaterial({ map: texture });
 
 			panoramaMesh = new THREE.Mesh(geometry, material);
 			scene.add(panoramaMesh);
 
-			loadHotspotsFor('testpanorama.jpg');
+			loadHotspotsFor('newpano2.jpg');
 
 			window.addEventListener('resize', onWindowResize);
 			renderer.domElement.addEventListener('wheel', onMouseWheel, { passive: false });
@@ -208,7 +208,6 @@
 			renderer.domElement.addEventListener('pointermove', onPointerMove, false);
 		}
 		
-editinghotspot=true; editinghotspotidx = 0
 /*initfunction-end*/
 
 			function onMouseWheel(e) {
@@ -288,8 +287,8 @@
 
 			
 			var hpos;
-			$("body").on("click", function(e){
-				if(e.ctrlKey){
+			$("body").on("click", function(e) {
+				if (e.ctrlKey || e.metaKey) {
 					setTimeout(function(){
 						console.log("Ctrl Pressed");
 						hpos = $("#infospotloc").html();

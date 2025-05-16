@@ -165,13 +165,16 @@
 						</div>
 						-->
 						<script>
+						
+							const path = require('path');
+	
 							var newprojectname = "";
 							var newprojectdir = "";
 							function chooseprojectdir(){
 								newprojectname = $("#newprojectname").val();
 								if(newprojectname != ""){
 									dialog.showOpenDialog({
-										properties: ['openDirectory']
+                                        properties: ['openDirectory', 'createDirectory'] 
 									}).then(result => {
 										newprojectdir = result.filePaths[0];
 										if(newprojectdir != undefined){
@@ -189,38 +192,41 @@
 								
 							}
 							
-							function openproject(){
-								var openedprojectdir = "";
+							function openproject() {
+    							var openedprojectdir = "";
 								dialog.showOpenDialog({
 									properties: ['openDirectory']
 								}).then(result => {
 									openedprojectdir = result.filePaths[0];
-									if(openedprojectdir != undefined){
-										//showAlert("Open Project", "Is this correct: " + openedprojectdir + " ?");
-										//Try to get the WTMProject.wtm file
-										if(fs.existsSync(openedprojectdir + "\\WTMProject.wtm")){
-											fs.readFile(openedprojectdir + "\\WTMProject.wtm", 'utf8', function (err,data) {
+									if (openedprojectdir != undefined) {
+										console.log("Opening " + openedprojectdir);
+            
+										// Use path.join() for cross-platform paths
+										const projectFilePath = path.join(openedprojectdir, "WTMProject.wtm");
+            
+										if (fs.existsSync(projectFilePath)) {
+											fs.readFile(projectFilePath, 'utf8', function (err, data) {
 												if (err) {
-													showAlert("Open Project", "This is NOT a valid project.");
+													showAlert("Open Project", "This is NOT a valid project. Try to contact developer.");
 													return console.log(err);
 												}
+                    
 												var openedprojecttitle = JSON.parse(data).title;
-												openedprojectdir = openedprojectdir.replace(/\\/g, "/");
-												
-												if(isProjectExist(openedprojecttitle, openedprojectdir)){
+												// No need to replace slashes - path.join() handles this
+                    
+												if (isProjectExist(openedprojecttitle, openedprojectdir)) {
 													showAlert("Open Project", "This project already exists in Recent Projects list.");
-												}else{
-													//showAlert("Open Project", "Project has been successfully added to Recent Projects list.");
+												} else {
 													wtmdata.projects.push({
-														projectdir : openedprojectdir,
-														projectname : openedprojecttitle,
+														projectdir: openedprojectdir, // Keep original path format
+														projectname: openedprojecttitle,
 													});
 													saveWtmdata();
 													loadRecentProjects();
 												}
 											});
-										}else{
-											showAlert("Open Project", "This is NOT a valid project.");
+										} else {
+											showAlert("Open Project", "This is NOT a valid project or project files are corrupted.");
 										}
 									}
 								});
@@ -353,10 +359,10 @@
 			<div id="ciihuybanner">ciihuy2020</div>
 			<script>
 				var banners = []
-				$.get("https://imhere.ciihuy.com/ciihuybannerads/index.php", function(data){
-					banners = data.split(",");
-					initBanners();
-				});
+                $.get("https://imhere.ciihuy.com/ciihuybannerads/index.php", function (data) {
+                    banners = data.split(",").filter(item => item.trim() !== "");
+                    initBanners();
+                });
 				function initBanners(){
 					var rn = Math.floor(Math.random() * banners.length);
 					$("#ciihuybanner").html("<a href='https://imhere.ciihuy.com/ciihuybannerads/index.php?clickad="+banners[rn]+"'><img id='cb' src='https://imhere.ciihuy.com/ciihuybannerads/uploads/"+banners[rn]+"' style='width: 100%;'></a>");

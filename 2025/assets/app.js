@@ -1219,39 +1219,55 @@ function getPanoramasNameOption(){
 	
 }
 
-function addpanorama(){
+function addpanorama() {
 	var newpanoramapath = "";
 	dialog.showOpenDialog({
 		properties: ['openFile'],
-		filters : [{
-			name : 'Images', extensions : ['jpg', 'jpeg', 'png', 'gif'],
+		filters: [{
+			name: 'Images',
+			extensions: ['jpg', 'jpeg', 'png', 'gif']
 		}]
 	}).then(result => {
-		//Get the new panorama file path
 		newpanoramapath = result.filePaths[0];
-		if(newpanoramapath != undefined){
+		if (newpanoramapath != undefined) {
 			console.log(newpanoramapath);
-			//Renaming the file to better file name
-			var newpanoramafile = newpanoramapath.split("\\")[newpanoramapath.split("\\").length-1];
-			newpanoramafile = remSpaces(newpanoramafile);
-			//Checking duplicate file name to avoid conflicts
-			if(foundduplicatepanofile(newpanoramafile))
-				newpanoramafile = newpanoramafile.split(".")[0] + randomblah(5) + "." + newpanoramafile.split(".")[newpanoramafile.split(".").length-1];
-			console.log("Selected file: " + newpanoramafile);
-			//Copying new panorama image to project image directory
-			fse.copySync(newpanoramapath, wtmdata.projects[currentprojectindex].projectdir + '/panoramas/' + newpanoramafile);
-			console.log("New panorama file copied to project directory.");
-			//Pushing new panorama file name to projectdata
-			currentprojectdata.panoramas.push({ panofile : newpanoramafile, hotspots : [] });
-			//Write new projectdata to wtm file
+
+			// Cross-platform way to get filename
+			const newpanoramafile = remSpaces(path.basename(newpanoramapath));
+
+			// Checking duplicate file name
+			let finalFilename = newpanoramafile;
+			if (foundduplicatepanofile(newpanoramafile)) {
+				const ext = path.extname(newpanoramafile);
+				const nameWithoutExt = path.basename(newpanoramafile, ext);
+				finalFilename = `${nameWithoutExt}${randomblah(5)}${ext}`;
+			}
+
+			console.log("Selected file: " + finalFilename);
+
+			// Create panoramas directory if it doesn't exist
+			const panoramaDir = path.join(wtmdata.projects[currentprojectindex].projectdir, 'panoramas');
+			fse.ensureDirSync(panoramaDir);
+
+			// Copy file using proper path joining
+			const destinationPath = path.join(panoramaDir, finalFilename);
+			fse.copySync(newpanoramapath, destinationPath);
+
+			console.log("New panorama file copied to:", destinationPath);
+
+			// Update project data
+			currentprojectdata.panoramas.push({
+				panofile: finalFilename,
+				hotspots: []
+			});
+
 			updateWtmFile();
-			//Regenerate html panoramas
-			//generateHTMLPanoramas();
+
 			showDim("Please wait...");
-			setTimeout(function(){
+			setTimeout(function () {
 				showeditorc('panoramas');
 				hideDim();
-			},1000);
+			}, 1000);
 		}
 	});
 }
@@ -1449,23 +1465,29 @@ function deleteFile(f){
 var tempSourceFile;
 var tempDestinationFileName;
 var tempDestinationDirectory;
-function pointToFile( exts, fun){
-	doit = function(){
+function pointToFile(exts, fun) {
+	//const path = require('path'); // Make sure to require path at the top of your file
+
+	const doit = function () {
 		fun();
-	}
-	
+	};
+
 	dialog.showOpenDialog({
 		properties: ['openFile'],
-		filters : [{
-			name : 'Supported Files', extensions : exts,
+		filters: [{
+			name: 'Supported Files',
+			extensions: exts,
 		}]
 	}).then(result => {
-		tempSourceFile = result.filePaths[0];
-		if(tempSourceFile != undefined){
-			tempDestinationFileName = remSpaces(tempSourceFile.split("\\")[tempSourceFile.split("\\").length-1]);
+		if (!result.canceled && result.filePaths.length > 0) {
+			tempSourceFile = result.filePaths[0];
+
+			// Cross-platform way to get filename
+			tempDestinationFileName = remSpaces(path.basename(tempSourceFile));
+
 			console.log("Chosen file: " + tempDestinationFileName);
 			doit();
-		}else{
+		} else {
 			console.log("Open Dialog canceled.");
 		}
 	});
