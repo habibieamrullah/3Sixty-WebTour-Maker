@@ -97,7 +97,7 @@
 		</div>
 		
 		<div style="position: fixed; top: 0; left: 0; right: 0; text-align: center; padding: 20px; background-color: #2c3643;">
-			Press Ctrl + Click on any area you wish to add a new hotspot / reposition an existing hotspot.
+			Press Ctrl + Click on any area you wish to add a new hotspot / reposition an existing hotspot.<br>Or press H button to place hotspot to current mouse position.
 		</div>
 		
 		<!-- Three.js Core -->
@@ -140,35 +140,19 @@
 						(event.clientX / window.innerWidth) * 2 - 1,
 						-(event.clientY / window.innerHeight) * 2 + 1
 					);
-
 					const raycaster = new THREE.Raycaster();
 					raycaster.setFromCamera(mouseClick, camera);
-
 					const intersects = raycaster.intersectObject(panoramaMesh);
 					if (intersects.length > 0) {
-						const point = intersects[0].point.clone();
-
-						// Geser keluar 10 unit dari permukaan bola ke arah vektor dari pusat ke titik
-						const dir = point.clone().normalize();
-						point.add(dir.multiplyScalar(-100)); // offset 30 unit
-						
-						/*
-						addHotspot('images/hotspot.png', point, () => {
-							//alert('Hotspot ini hasil Ctrl+Klik!');
-						});
-						*/
-						$("#infospotloc").html(point.x + "," + point.y + "," + point.z);
-						console.log('Ctrl Klik pada:', JSON.stringify(point));
+						handleHotspotPlacement(intersects[0].point.clone());
 					}
 				}
-				
-			
 			});
 
 			
 			/*initfunction*/
 
-		let currentPanorama = 'newpano2.jpg';
+		let currentPanorama = 'testpanorama.jpg';
 		function init() {
 			const container = document.getElementById('container');
 
@@ -193,13 +177,13 @@
 			const geometry = new THREE.SphereGeometry(500, 60, 40);
 			geometry.scale(-1, 1, 1);
 
-			const texture = new THREE.TextureLoader().load('/Users/mhabibieamrullah/Desktop/uhuu/panoramas/newpano2.jpg');
+			const texture = new THREE.TextureLoader().load('C:/Users/Habibie/Desktop/VirtualTours/pressh/panoramas/testpanorama.jpg');
 			const material = new THREE.MeshBasicMaterial({ map: texture });
 
 			panoramaMesh = new THREE.Mesh(geometry, material);
 			scene.add(panoramaMesh);
 
-			loadHotspotsFor('newpano2.jpg');
+			loadHotspotsFor('testpanorama.jpg');
 
 			window.addEventListener('resize', onWindowResize);
 			renderer.domElement.addEventListener('wheel', onMouseWheel, { passive: false });
@@ -209,6 +193,30 @@
 		}
 		
 /*initfunction-end*/
+
+			// Keep track of the last mouse event (in case you want pageX/Y)
+			let lastPointerEvent = null;
+
+			renderer.domElement.addEventListener('pointermove', function(event) {
+				lastPointerEvent = event; // store the last pointer event
+			});
+
+			document.addEventListener('keydown', function(event) {
+				// Ignore keypress if focused on an input field or overlay is active
+				if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
+				if ($("#dim").is(":visible")) return;
+
+				if (event.key === 'h' || event.key === 'H') {
+					// Use the last known mouse NDC
+					const mouseNDC = new THREE.Vector2(mouse.x, mouse.y);
+					const raycaster = new THREE.Raycaster();
+					raycaster.setFromCamera(mouseNDC, camera);
+					const intersects = raycaster.intersectObject(panoramaMesh);
+					if (intersects.length > 0) {
+						handleHotspotPlacement(intersects[0].point.clone());
+					}
+				}
+			});
 
 			function onMouseWheel(e) {
 				e.preventDefault();
@@ -286,27 +294,7 @@
 			}
 
 			
-			var hpos;
-			$("body").on("click", function(e) {
-				if (e.ctrlKey || e.metaKey) {
-					setTimeout(function(){
-						console.log("Ctrl Pressed");
-						hpos = $("#infospotloc").html();
-						console.log("Hpos value: " + hpos);
-						if(hpos != ""){
-							if(!editinghotspot){
-								initHotspotDialog();
-							}else{
-								ipcRenderer.send("infospotlocationupdated", { title : editinghotspotidx, position : hpos });
-								var window = remote.getCurrentWindow();
-								window.close();
-							}
-						}
-					}, 1000);
-					
-				}
-			});
-		
+			
 			
 			function initHotspotDialog(){
 				
@@ -325,6 +313,22 @@
 				ipcRenderer.send("infospotlocationreceived", { title : hotspotname, position : hpos });
 				var window = remote.getCurrentWindow();
 				window.close();
+			}
+			
+			function handleHotspotPlacement(point) {
+				// Offset from sphere surface
+				const dir = point.clone().normalize();
+				point.add(dir.multiplyScalar(-100));
+				hpos = point.x + "," + point.y + "," + point.z;
+				$("#infospotloc").html(hpos);
+				console.log("Hotspot placed at:", JSON.stringify(point));
+				if(!editinghotspot){
+					initHotspotDialog();
+				}else{
+					ipcRenderer.send("infospotlocationupdated", { title : editinghotspotidx, position : hpos });
+					var window = remote.getCurrentWindow();
+					window.close();
+				}
 			}
 			
 			$("#dim").fadeOut();
