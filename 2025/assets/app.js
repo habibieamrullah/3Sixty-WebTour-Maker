@@ -56,17 +56,38 @@ function removeFromProjectList(index){
 	});
 }
 
-function showInExplorer(idx){
-	
-	var dir = wtmdata.projects[idx].projectdir;
+const { exec } = require("child_process");
+const os = require("os");
 
-	if(dir.indexOf(" ") > -1){
-		showAlert("White Space Problem", "This project folder contains white space(s). Please manually explore and find it on your computer:<br>" + dir);
-	}else{
-		console.log("Trying to open in dir: " + dir);
-		require('child_process').exec('start "" ' + dir);
-	}
-	
+function openFolder(dir) {
+  let command;
+
+  switch (os.platform()) {
+    case "win32": // Windows
+      // start "" "C:\path with spaces"
+      command = `start "" "${dir}"`;
+      break;
+    case "darwin": // macOS
+      // open "/Users/.../folder with spaces"
+      command = `open "${dir}"`;
+      break;
+    default: // Linux
+      // xdg-open "/home/.../folder with spaces"
+      command = `xdg-open "${dir}"`;
+      break;
+  }
+
+  exec(command, (err) => {
+    if (err) {
+      console.error("Failed to open folder:", err);
+    }
+  });
+}
+
+function showInExplorer(idx) {
+  const dir = wtmdata.projects[idx].projectdir;
+  console.log("Trying to open in dir:", dir);
+  openFolder(dir);
 }
 
 function browseInExplorer(dir){
@@ -294,7 +315,7 @@ function setHotspotIcon(cid, idx){
 function showMiniPage(type){
 	switch (type){
 		case "about" :
-			showAlert("About", "<h1>3Sixty Virtual Tour Maker</h1><h3>Version 1.5.1 - 4.5.25</h3><p>Made with:</p><div style='background-color: white;'><img src='imgs/poweredby.png' style='width: 100%;'></div><p style='margin-top: 20px;'>Developed by</p><a href='https://webappdev.id/'><img src='imgs/webappdev.png' style='width: 100%'></a><p><a href='#' onclick=showMiniPage('donate')>Support The Development</a><br><a href='https://3sixty.webappdev.my.id/'>Visit 3Sixty Website</a></p>");
+			showAlert("About", "<h1>3Sixty Virtual Tour Maker</h1><h3>Version 1.5.3 - 2.9.25</h3><p>Made with:</p><div style='background-color: white;'><img src='imgs/poweredby.png' style='width: 100%;'></div><p style='margin-top: 20px;'>Developed by</p><a href='https://webappdev.id/'><img src='imgs/webappdev.png' style='width: 100%'></a><p><a href='#' onclick=showMiniPage('donate')>Support The Development</a><br><a href='https://3sixty.webappdev.my.id/'>Visit 3Sixty Website</a></p>");
 			break;
 		case "donate" :
 			showAlert("Support The Development", "<p><img src='imgs/paypal.png' style='background-color: white; padding: 20px;'></p><p>This software is made for you for free. However, I expect any amount donations from users like you to keep me supported for maintenance and further development of this software.</p><p>Please send your donation to my PayPal account here: <a href='https://paypal.me/habibieamrullah'>https://paypal.me/habibieamrullah</a></p>");
@@ -513,13 +534,17 @@ function showeditorc(type){
 				var itsmainpanogreen = "background-color: #eba576; color: black;";
 				var itsmainpanoaction = " onclick='setitasmainpano(" +i+ ")'";
 				var itsmainpanotrash = "";
+
+				var panofile = wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[i].panofile;
+				var panoUrl = toFileUrl(panofile);
+
 				if(currentprojectdata.panoramas[i].panofile == currentprojectdata.settings.firstpanorama){
 					itsmainpano = "<i class='fa fa-home'></i> ";
 					itsmainpanogreen = "background-color: #0d9e59; color: white;";
 					itsmainpanoaction = " onclick='showAlert(\"Main Panorama\", \"This panorama is already set as Main Panorama\");'";
 					itsmainpanotrash = " display: none;";
 				}
-				panoramas += "<div class='imgthumb' style='position: relative; background: url(" + wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[i].panofile + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'><span"+itsmainpanoaction+" style='"+itsmainpanogreen+" cursor: pointer; font-weight: bold; padding: 5px; font-size: 10px;'>" + itsmainpano + truncate(currentprojectdata.panoramas[i].panofile, 15) + "</span><div style='position: absolute; bottom: 0; right: 0;'><div onclick=\"showImage('"+currentprojectdata.panoramas[i].panofile+"', '" + wtmdata.projects[currentprojectindex].projectdir+"/panoramas/"+currentprojectdata.panoramas[i].panofile + "');\" class='greenbutton'><i class='fa fa-eye'></i></div><div onclick='removePanorama(" +i+ ")' class='redbutton' style='" +itsmainpanotrash+ "'><i class='fa fa-trash'></i></div></div></div>";
+				panoramas += "<div class='imgthumb' style='position: relative; background: url(" + panoUrl + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'><span"+itsmainpanoaction+" style='"+itsmainpanogreen+" cursor: pointer; font-weight: bold; padding: 5px; font-size: 10px;'>" + itsmainpano + truncate(currentprojectdata.panoramas[i].panofile, 15) + "</span><div style='position: absolute; bottom: 0; right: 0;'><div onclick=\"showImage('"+currentprojectdata.panoramas[i].panofile+"', '" + wtmdata.projects[currentprojectindex].projectdir+"/panoramas/"+currentprojectdata.panoramas[i].panofile + "');\" class='greenbutton'><i class='fa fa-eye'></i></div><div onclick='removePanorama(" +i+ ")' class='redbutton' style='" +itsmainpanotrash+ "'><i class='fa fa-trash'></i></div></div></div>";
 			}
 			$("#editorcontent").html(panoramas + "<div class='imgthumb' onclick='addpanorama()'><div style='cursor: pointer; display: table; width: 100%; height: 100%;'><div style='display: table-cell; text-align: center; vertical-align: middle;'><i class='fa fa-plus' style='font-size: 40px;'></i></div></div></div>");
 			break;
@@ -545,7 +570,11 @@ function showeditorc(type){
 			}
 			fs.readdirSync(workingdir).forEach(file =>{
 				if(file.split(".")[file.split(".").length-1] == "JPG" || file.split(".")[file.split(".").length-1] == "jpg" || file.split(".")[file.split(".").length-1] == "jpeg" || file.split(".")[file.split(".").length-1] == "png"){
-					imagefiles += "<div class='imgthumb' style='position: relative; background: url(" + wtmdata.projects[currentprojectindex].projectdir+"/images/"+file + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'><span style='background-color: black; color: white; font-weight: bold; padding: 5px; font-size: 10px;'>" + truncate(file, 20) + "</span><div style='position: absolute; bottom: 0; right: 0;'><div onclick=\"showImage('"+file+"', '" + wtmdata.projects[currentprojectindex].projectdir+"/images/"+file + "');\" class='greenbutton'><i class='fa fa-eye'></i></div><div onclick=removeImageasset('"+wtmdata.projects[currentprojectindex].projectdir+"/images/"+file+"') class='redbutton'><i class='fa fa-trash'></i></div></div></div>";
+
+					var oriimagefile = wtmdata.projects[currentprojectindex].projectdir+"/images/"+file;
+					var imagefileurl = toFileUrl(oriimagefile);
+					imagefiles += "<div class='imgthumb' style='position: relative; background: url(" + imagefileurl + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'><span style='background-color: black; color: white; font-weight: bold; padding: 5px; font-size: 10px;'>" + truncate(file, 20) + "</span><div style='position: absolute; bottom: 0; right: 0;'><div onclick=\"showImage('"+file+"', '" + wtmdata.projects[currentprojectindex].projectdir+"/images/"+file + "');\" class='greenbutton'><i class='fa fa-eye'></i></div><div onclick=removeImageasset('"+wtmdata.projects[currentprojectindex].projectdir+"/images/"+file+"') class='redbutton'><i class='fa fa-trash'></i></div></div></div>";
+				
 				}
 				
 			});
@@ -648,7 +677,12 @@ function hotShowConfigs(cid){
 	var currenthotspot = currentprojectdata.panoramas[res.pano].hotspots[res.hot];
 	if(currenthotspot.icon != undefined && currenthotspot.icon != ""){
 		hotspoticon = "/" + currenthotspot.icon;
+
 	}
+
+	var oriimagefile = projectdir+hotspoticon;
+	var imagefileurl = toFileUrl(oriimagefile);
+
 	var hotspotfilename = hotspoticon.split("/")[hotspoticon.split("/").length-1];
 	var stoh = "";
 	if(currenthotspot.stoh != undefined && currenthotspot.stoh == 1){
@@ -657,7 +691,7 @@ function hotShowConfigs(cid){
 	$("#hothome" + cid).hide();
 	
 	
-	$("#hotscreen"+cid).hide().html("<h4>Configs</h4><p>Current Hotspot icon<br>(Click to change):</p><div onclick='changehotspoticon(\""+cid+"\");' style='width: 92px; height: 92px; margin: 0 auto; margin-bottom: 20px; background: url("+projectdir+hotspoticon+") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'></div><input value='"+hotspotfilename+"' readonly onclick='changehotspoticon(\""+cid+"\");'><!--<p>Show title on hover</p><select id='showtitleonhover"+cid+"' onchange='applyshowtoh(\""+cid+"\")'><option value=0>No</option><option value=1"+stoh+">Yes</option></select>--><p>Current Hotspot location<br>(Click the input below to change)</p><input value='"+currenthotspot.position+"' readonly><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-floppy-o'></i> Save</div><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-times'></i> Close</div>").show();
+	$("#hotscreen"+cid).hide().html("<h4>Configs</h4><p>Current Hotspot icon<br>(Click to change):</p><div onclick='changehotspoticon(\""+cid+"\");' style='width: 92px; height: 92px; margin: 0 auto; margin-bottom: 20px; background: url("+imagefileurl+") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'></div><input value='"+hotspotfilename+"' readonly onclick='changehotspoticon(\""+cid+"\");'><!--<p>Show title on hover</p><select id='showtitleonhover"+cid+"' onchange='applyshowtoh(\""+cid+"\")'><option value=0>No</option><option value=1"+stoh+">Yes</option></select>--><p>Current Hotspot location<br>(Click the input below to change)</p><input value='"+currenthotspot.position+"' readonly><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-floppy-o'></i> Save</div><div class='button' onclick=hotGoHome(\""+cid+"\") style='margin: 5px;'><i class='fa fa-times'></i> Close</div>").show();
 }
 
 //Go hot home
@@ -1762,7 +1796,15 @@ window.console = console;
 
 
 
+// file to url
+//const path = require("path");
+const { pathToFileURL } = require("url");
 
+function toFileUrl(panofile) {
+  // normalize dulu (biar \ di Windows jadi /)
+  const normalizedPath = path.normalize(panofile);
+  return pathToFileURL(normalizedPath).href;
+}
 
 
 
@@ -1858,6 +1900,8 @@ function ReloadEditorHotspots(){
 			for(var x = 0 ; x < currentprojectdata.panoramas[i].hotspots.length; x++){
 				var cid = currentprojectdata.panoramas[i].hotspots[x].hotspotid;
 				var hotspoticon = "default.png";
+
+				
 				
 				if(currentprojectdata.panoramas[i].hotspots[x].icon != undefined){
 					if(currentprojectdata.panoramas[i].hotspots[x].icon != "")
@@ -1868,11 +1912,13 @@ function ReloadEditorHotspots(){
 				var currenthActions2 = "";
 				var htarget = "";
 				
+				
 				/*
 				if(currentprojectdata.panoramas[i].hotspots[x].url != undefined || currentprojectdata.panoramas[i].hotspots[x].js != undefined){
 					currenthActions = "<p>Actions:</p>";
 				}
 				*/
+				
 				
 				
 				var hactions = currentprojectdata.panoramas[i].hotspots[x].actions;
@@ -1916,15 +1962,22 @@ function ReloadEditorHotspots(){
 				if(currentprojectdata.panoramas[i].hotspots[x].icon != undefined)
 					hiconidx = currentprojectdata.panoramas[i].hotspots[x].icon;
 				
-				hotspotsofit = "<div class='hotspotholder'><div class='hotspottitle'><input onkeyup=renameHotspotTitle("+i+","+x+") id='hinput"+cid+"' value='" +currentprojectdata.panoramas[i].hotspots[x].title+ "'></div><div style='padding: 10px; white-space: normal; display: block; box-sizing: border-box;'><div id='hotscreen"+cid+"' style='display: none;'></div><div id='hothome"+cid+"'><div onclick='changehotspoticon(\""+cid+"\");' style='width: 92px; height: 92px; margin: 0 auto; margin-top: 10px; margin-bottom: 10px; background: url("+wtmdata.projects[currentprojectindex].projectdir + '/images/' + hiconidx +") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'></div><div>"+currenthActions+currenthActions2+"</div></div></div><div align='right'><button style='min-width: 20px;' class='greenbutton' onclick='hotShowAddNewAction(\""+cid+"\")'><i class='fa fa-plus'></i> Action</button><button style='min-width: 20px;' onclick='reSetHotspotPosition("+i+","+x+")'><i class='fa fa-pencil'></i> Position</button><button class='redbutton' style='min-width: 20px;' onclick=removehotspot('"+cid+"');><i class='fa fa-trash'></i> Del.</button></div></div>" + hotspotsofit;
+				var oriimagefile = wtmdata.projects[currentprojectindex].projectdir + '/images/' + hiconidx;
+				var imagefileurl = toFileUrl(oriimagefile);
+				
+
+				hotspotsofit = "<div class='hotspotholder'><div class='hotspottitle'><input onkeyup=renameHotspotTitle("+i+","+x+") id='hinput"+cid+"' value='" +currentprojectdata.panoramas[i].hotspots[x].title+ "'></div><div style='padding: 10px; white-space: normal; display: block; box-sizing: border-box;'><div id='hotscreen"+cid+"' style='display: none;'></div><div id='hothome"+cid+"'><div onclick='changehotspoticon(\""+cid+"\");' style='width: 92px; height: 92px; margin: 0 auto; margin-top: 10px; margin-bottom: 10px; background: url("+ imagefileurl +") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;'></div><div>"+currenthActions+currenthActions2+"</div></div></div><div align='right'><button style='min-width: 20px;' class='greenbutton' onclick='hotShowAddNewAction(\""+cid+"\")'><i class='fa fa-plus'></i> Action</button><button style='min-width: 20px;' onclick='reSetHotspotPosition("+i+","+x+")'><i class='fa fa-pencil'></i> Position</button><button class='redbutton' style='min-width: 20px;' onclick=removehotspot('"+cid+"');><i class='fa fa-trash'></i> Del.</button></div></div>" + hotspotsofit;
 				
 				// config button -> <button style='min-width: 20px;' onclick='hotShowConfigs(\""+cid+"\")'><i class='fa fa-cogs'></i> Conf.</button>
 			}
 		}
 		
 		hotspotsofit = "<div>" + hotspotsofit + "</div>";
+
+		var panofile = wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[i].panofile;
+		var panoUrl = toFileUrl(panofile);
 		
-		panoswithhots += "<div style='background: url(" + wtmdata.projects[currentprojectindex].projectdir + "/panoramas/" + currentprojectdata.panoramas[i].panofile + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; margin-bottom: 20px; margin-right: 20px;'><div class='brighteronhover' style='padding: 20px;'><div style='border: 2px solid white; color: white; padding: 10px; display: inline-block; margin-bottom: 10px;'>" +currentprojectdata.panoramas[i].panofile+ "</div><div style='overflow: auto; white-space: nowrap;'>" + hotspotsofit + "</div><button style='margin: 0px; margin-top: 10px;' class='greenbutton' onclick=addNewHotspotFor("+i+")><i class='fa fa-plus-square'></i> Add New Hotspot</button></div></div>";
+		panoswithhots += "<div style='background: url(" + panoUrl + ") no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; margin-bottom: 20px; margin-right: 20px;'><div class='brighteronhover' style='padding: 20px;'><div style='border: 2px solid white; color: white; padding: 10px; display: inline-block; margin-bottom: 10px;'>" +currentprojectdata.panoramas[i].panofile+ "</div><div style='overflow: auto; white-space: nowrap;'>" + hotspotsofit + "</div><button style='margin: 0px; margin-top: 10px;' class='greenbutton' onclick=addNewHotspotFor("+i+")><i class='fa fa-plus-square'></i> Add New Hotspot</button></div></div>";
 	}
 	$("#editorcontent").html("<h2>Hotspots</h2>" + panoswithhots);
 }

@@ -152,7 +152,7 @@
 			
 			/*initfunction*/
 
-		let currentPanorama = 'testpanorama.jpg';
+		let currentPanorama = 'lake.jpg';
 		function init() {
 			const container = document.getElementById('container');
 
@@ -177,13 +177,13 @@
 			const geometry = new THREE.SphereGeometry(500, 60, 40);
 			geometry.scale(-1, 1, 1);
 
-			const texture = new THREE.TextureLoader().load('C:/Users/Habibie/Desktop/VirtualTours/pressh/panoramas/testpanorama.jpg');
+			const texture = new THREE.TextureLoader().load('/Users/mhabibieamrullah/Desktop/project nyutnyit/panoramas/lake.jpg');
 			const material = new THREE.MeshBasicMaterial({ map: texture });
 
 			panoramaMesh = new THREE.Mesh(geometry, material);
 			scene.add(panoramaMesh);
 
-			loadHotspotsFor('testpanorama.jpg');
+			loadHotspotsFor('lake.jpg');
 
 			window.addEventListener('resize', onWindowResize);
 			renderer.domElement.addEventListener('wheel', onMouseWheel, { passive: false });
