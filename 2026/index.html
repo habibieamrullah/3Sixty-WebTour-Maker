@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>3Sixty - 360 Panorama Virtual Tour Maker</title>
+		<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://applulbayt.ciihuy.com; script-src-elem 'self' 'unsafe-inline' https://applulbayt.ciihuy.com;">
+
+
+		<link rel="stylesheet" type="text/css" href="css/font-awesome.css">
+		<link rel="stylesheet" type="text/css" href="style.css">
+		
+		<!-- Insert this line above script imports  -->
+		<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+				
+		
+		<script src="resources/panotemplate/js/jquery.js"></script>
+		<script src="resources/panotemplate/js/imagedata.js"></script>
+		<script src="jquery-ui.js"></script>
+		
+		
+		<!-- Insert this line after script imports -->
+		<script>if (window.module) module = window.module;</script>
+		
+		<script>
+			var projectext = ".wtm";
+			const { dialog, BrowserWindow } = require('electron').remote;
+			const { ipcRenderer } = require('electron');
+			const fs = require('fs');
+			const fse = require("fs-extra");
+		</script>
+		
+	</head>
+	
+	<body style="display: none;">
+		<div id="appbar">
+			<a href="https://3sixty.webappdev.my.id"><div style="-webkit-app-region: no-drag; cursor: pointer; background-color: #0d9e59; color: white; padding: 10px; display: inline-block; font-weight: bold;">3Sixty 1.5.4 - 29.1.26</div></a>
+			<div class="abitem">
+				File
+				<div class="dropdown-content">
+					<div class="subabitem" onclick="showpage('projects')"><div style="display: inline-block; width: 190px;"><i class="fa fa-briefcase" style="width: 30px;"></i> Projects</div><div style="display: inline-block; color: gray;">Ctrl+P</div></div>
+					<div class="subabitem" onclick="openproject();"><div style="display: inline-block; width: 190px;"><i class="fa fa-folder" style="width: 30px;"></i> Open Existing Project</div><div style="display: inline-block; color: gray;">Ctrl+O</div></div>
+					<div class="subabitem" onclick="reloadApp();"><div style="display: inline-block; width: 190px;"><i class="fa fa-refresh" style="width: 30px;"></i> Reload App</div><div style="display: inline-block; color: gray;">Ctrl+R</div></div>
+					<div class="subabitem" onclick="quitprogram();"><div style="display: inline-block; width: 190px;"><i class="fa fa-times" style="width: 30px;"></i> Exit</div><div style="display: inline-block; color: gray;">Ctrl+Q</div></div>
+				</div>
+			</div>
+			<div class="abitem">
+				Program
+				<div class="dropdown-content">
+					<div class="subabitem" onclick="ShowDebugWindow();"><div style="display: inline-block; width: 190px;"><i class="fa fa-code" style="width: 30px;"></i> Log Window</div><div style="display: inline-block; color: gray;">Ctrl+D</div></div>
+					<!--<div class="subabitem" onclick="showpage('plugins');"><div style="display: inline-block; width: 190px;"><i class="fa fa-plug" style="width: 30px;"></i> Plugins</div><div style="display: inline-block; color: gray;">Ctrl+U</div></div>-->
+					<!--
+					<div class="subabitem" onclick="OpenDevConsole()"><div style="display: inline-block; width: 190px;"><i class="fa fa-code" style="width: 30px;"></i> Open Dev. Console</div><div style="display: inline-block; color: gray;"></div></div>
+					-->
+				</div>
+			</div>
+			<div class="abitem">
+				Help
+				<div class="dropdown-content">
+					<div class="subabitem" onclick="showpage('tutorials')"><div style="display: inline-block; width: 190px;"><i class="fa fa-book" style="width: 30px;"></i> Tutorials</div><div style="display: inline-block; color: gray;">Ctrl+T</div></div>
+					<div class="subabitem" onclick="showMiniPage('donate')"><div style="display: inline-block; width: 190px;"><i class="fa fa-paypal" style="width: 30px;"></i> Support The Developer</div><div style="display: inline-block; color: gray;">Ctrl+S</div></div>
+					<div class="subabitem" onclick="showMiniPage('about')"><div style="display: inline-block; width: 190px;"><i class="fa fa-question" style="width: 30px;"></i> About</div><div style="display: inline-block; color: gray;">Ctrl+B</div></div>					
+				</div>
+			</div>
+			<div style="float: right;">
+				<div class="abitem rightbtn minimizebutton" onclick="minimize()" style="width: 30px; text-align: center;"><i class="fa fa-window-minimize"></i></div>
+				<div class="abitem rightbtn minmaxbutton" onclick="maximize()" style="width: 30px; text-align: center;"><i class="fa fa-window-restore"></i></div>
+				<div class="abitem rightbtn closebutton" onclick="quitprogram()" style="width: 30px; text-align: center;"><i class="fa fa-times"></i></div>
+			</div>
+		</div>
+		
+		<div id="maincontentwrapper" style="position: fixed; top: 30px; left: 0; right: 0; height: 70%; overflow: hidden;">
+			<!-- Tutorials -->
+			<div class="page" id="tutorials">
+				<h1>Tutorials</h1>
+				<div style="display: table; width: 100%; table-layout: fixed;">
+					<div style="display: table-cell; vertical-align: top; padding-right: 40px;">
+						<h2><i class="fa fa-book"></i> Creating New Project</h2>
+						<a href="https://youtu.be/ZbKQ8qHgBH8"><img src="imgs/1.png" style="width: 40%; margin-left: 20px; float: right;"></a>
+						<p>To create a new project, open 3Sixty. The first scren you see is where you can start making new project. You can also click File > Projects.</p>
+						<p>First you need to enter a project name. This project name will be used as your website title when it is running on web browsers.</p>
+						<p>The next step is to specify a folder where you want to save your project files. Make sure you are working on a directory that is free of empty spaces. Avoid using folders like for example: C:\Users\user name\Desktop\New folder, because it has empty spaces on "user name" and "New folder".</p>
+						<p>Recommended project folder path can be like this: C:\Users\David\Desktop\NewTour.</p>
+						<h2><i class="fa fa-book"></i> Opening Existing project</h2>
+						<p>If you already worked with this software and you want to open your pevious project, press Ctrl+O to find it on your computer. Navigate to the main project folder then click Open. If it has WTMProject.wtm in it, it will be listed on the Recent Projects list.</p>
+						<p>Once your project has been listed on Recent Projects, you can click on the title to open it.</p>
+						<h2><i class="fa fa-book"></i> Removing a project from Recent Projects list</h2>
+						<p>You can not delete a project from 3Sixty. However, you can browse its location by clicking "Show in Explorer" then delete the files manually then click the red button "Remove from List" to remove it from the list.</p>
+						<h2><i class="fa fa-book"></i> Working with Project View</h2>
+						<p>By clicking a project title, you will see the Project View.</p>
+						<p>Project view has three main parts, the top part that has Back button on its left, and Run button on the right. Between them you can see the Project Title. You can click on it, and rename your Project Title then automatically it will saved after a few seconds. Below the Project Title you can see directory path of current project. You can click it to reveal it on Explorer window.</p>
+						<p>On the left part of main area on Project View, there are tabs: Panoramas, Hotspots, Image Assets, Video Files, Audio Files, PDF Documents and Settings. If you click one of them you will see its contents on right.</p>
+						<h2><i class="fa fa-book"></i> Panoramas</h2>
+						<p>Here you can add any panorama images to your project. Hit plus button to import a file. You can import normal equirectangular panorama image.</p>
+						<p>Each panorama file works as a scene inside your projects. That's why you can not re-import the same panorama file twice, otherwise 3Sixty will rename it after importing it.</p>
+						<p>Any imported panorama image file will be listed accordingly as a square box with image preview. Each has some buttons. At the top left part of each thumbnail you see the panorama file name. If it's marked as green it means that panorama is the main panorama that will be loaded first time when you run the tour. To make the other panoramas as main panorama, click its title and it will turned green.</p>
+						<p>At bottom right corner of each panorama thumbnails there are View and Trash buttons. You can click View button to see your panorama image in full, or click Trash button to remove it from your project. However you can not delete your main panorama file, at least it needs one panorama to be there. Be careful when deleting files, make sure you are not using it in your project at all.</p>
+						<h2><i class="fa fa-book"></i> Hotspots</h2>
+						<p>Hotspot is a clickable element that can be placed anywhere on your 360 scene.</p><p>Each panorama that you have in your project, you can add hotspots to it.</p>
+						<p>To add a hotspot, click Add New Hotspot button. Then you will see a new window to see around your 360 scene. Then press Ctrl button while clicking on an area that you wish to add the hotspot to it. Then a popup will appear. You can give it a name to make your hotspots more organised. Then click Add. Your new Hotspot has been added.</p>
+						<p>You can change your hotspot icon by clicking its actual icon inside those hotspot boxes. There are some premade icons available to use. Sorry right now there is no possibility for you to use your custom image as icon. Maybe in future releases.</p>
+						<p>Your new hotspot has no action yet. It means, nothing will happen if you click the hotspot when you run your project. To add an action, click Add Action button on your hotspot. Then you will see 7 hotspot action options, each one will do a specific task.</p>
+						<h2><i class="fa fa-book"></i> Adding images, videos, audios and PDF documents</h2>
+						<p>After Panoramas and Hotspots, the next tabs are Image Assets, Video Files, Audio Files and PDF Documents. Click any one of those then you will see a plus button to add your files.</p>
+						<p>Remember currently 3Sixty supported files are limited to: jpg, jpeg and png for images; mp4 for videos, mp3 for audios; and pdf files.</p>
+						<h2><i class="fa fa-book"></i> Settings</h2>
+						<p>In this page you can set your project settings according your need. There are some available settings such as Project Description, Panorama Loading Text, Main Panorama to load at first time and enable or disable Panolens control Buttons on the bottom right of your virtual tour.</p>
+						<h2><i class="fa fa-book"></i> Publishing</h2>
+						<p>After you are finished with your project, at least you must build and run you project once to get your project files generated properly. After that, browse the project directory, copy entire files and upload it to your website. Done! That's all.</p>
+						<p>For more info, please visit <a href="https://3sixty.webappdev.my.id/">the website</a>.</p>
+					</div>
+				</div>
+			</div>
+			
+			<!-- Plugins -->
+			<div class="page" id="plugins">
+				<h1>Plugins</h1>
+				<p>To install plugins, simply extract the zip file to plugins directory. To remove plugin, just delete the specific plugin folder you want to remove. Please note that enabling multiple plugins may causes conflicts and unwanted results. Install and use plugins at your own risk.</p>
+				<div><button onclick=browseInExplorer("plugins")><i class="fa fa-plug"></i> Browse Plugin Directory</button></div>
+				<div id="pluginlist"></div>
+			</div>
+			
+			<!-- What is -->
+			<div class="page" id="whatis">
+				<h1>What is 360 Virtual Tour Maker</h1>
+				<p>360 Web Virtual Maker is a 100% free desktop software built for you to make a 360 panorama virtual tour for web.</p>
+				<p>This software is made with so many wonderful open source technologies such as HTML5, JavaScript, jQuery, three.js, panolens and so on.</p>
+			</div>
+			
+			
+			
+			<!-- Projects -->
+			<div class="page" id="projects" style="overflow: auto;">
+			
+				<h1>Projects</h1>
+				<div style="display: table; width: 100%; height: 80%; overflow: auto; table-layout: fixed;">
+					<div style="display: table-cell; vertical-align: top; width: 30%; overflow-x: hidden; overflow-y: auto;">
+						<h2><i class="fa fa-pencil"></i> Create New Project</h2>
+						<div>
+							<p style="font-size: 12px; font-style: italic;">1. Project Name</p>
+							<input id="newprojectname" placeholder="Give it a name">
+						</div>
+						<div>
+							<p style="font-size: 12px; font-style: italic;">2. Project Directory</p>
+							<p id="newprojectdir"></p>
+							<button onclick="chooseprojectdir()"><i class="fa fa-folder"></i> Browse</button>
+						</div>
+						<div>
+							<p style="font-size: 12px; font-style: italic;">3. Hit Create Button!</p>
+							<button onclick="createproject()"><i class="fa fa-chevron-right"></i> Create</button>
+						</div>
+						
+						<div style="display: none;">
+							<h2><i class="fa fa-warning"></i> Please Note:</h2>
+							<p>Make sure you are running this program as Administrator to make sure it has permission to read and write files for your projects.</p>
+							<p>Don't worry about your privacy. This program does not even connect to the internet.</p>
+							<img src="imgs/runasadmin1.jpg" style="width: 100%">
+							<br>
+							<img src="imgs/runasadmin2.jpg" style="width: 100%">
+						</div>
+						<!--
+						<h2><i class="fa fa-folder"></i> Or Open Existing Project</h2>
+						<div>
+							<p style="font-size: 12px; font-style: italic;">Click to browse</p>
+							<button onclick="openproject()"><i class="fa fa-folder"></i> Browse</button>
+						</div>
+						-->
+						<script>
+						
+							const path = require('path');
+	
+							var newprojectname = "";
+							var newprojectdir = "";
+							function chooseprojectdir(){
+								newprojectname = $("#newprojectname").val();
+								if(newprojectname != ""){
+									dialog.showOpenDialog({
+                                        properties: ['openDirectory', 'createDirectory'] 
+									}).then(result => {
+										newprojectdir = result.filePaths[0];
+										if(newprojectdir != undefined){
+											$("#newprojectdir").html(newprojectdir);
+										}else{
+											$("#newprojectdir").html("");
+											newprojectdir = "";
+										}
+									});
+								}else{
+									showAlert("Incomplete Information", "Enter your Project Name first, then specify the directory.");
+									$("#newprojectname").focus();
+									
+								}
+								
+							}
+							
+							function openproject() {
+    							var openedprojectdir = "";
+								dialog.showOpenDialog({
+									properties: ['openDirectory']
+								}).then(result => {
+									openedprojectdir = result.filePaths[0];
+									if (openedprojectdir != undefined) {
+										console.log("Opening " + openedprojectdir);
+            
+										// Use path.join() for cross-platform paths
+										const projectFilePath = path.join(openedprojectdir, "WTMProject.wtm");
+            
+										if (fs.existsSync(projectFilePath)) {
+											fs.readFile(projectFilePath, 'utf8', function (err, data) {
+												if (err) {
+													showAlert("Open Project", "This is NOT a valid project. Try to contact developer.");
+													return console.log(err);
+												}
+                    
+												var openedprojecttitle = JSON.parse(data).title;
+												// No need to replace slashes - path.join() handles this
+                    
+												if (isProjectExist(openedprojecttitle, openedprojectdir)) {
+													showAlert("Open Project", "This project already exists in Recent Projects list.");
+												} else {
+													wtmdata.projects.push({
+														projectdir: openedprojectdir, // Keep original path format
+														projectname: openedprojecttitle,
+													});
+													saveWtmdata();
+													loadRecentProjects();
+												}
+											});
+										} else {
+											showAlert("Open Project", "This is NOT a valid project or project files are corrupted.");
+										}
+									}
+								});
+							}
+							
+							function createproject(){
+								newprojectname = $("#newprojectname").val();
+								if(newprojectname == "" || newprojectdir == ""){
+									showAlert("Incomplete Information", "Both Project Name and Project Directory must be set.");
+									$("#newprojectname").focus();
+								}else{
+								
+									
+								
+									if(fs.existsSync(newprojectdir + "\\WTMProject.wtm")){
+										showAlert("Invalid Directory", "This directory has been used for another project. Please choose another directory.");
+									}else{
+										showDim("Please Wait...");
+									
+										setTimeout(function(){
+											var initialProjectData = {
+												"title" : newprojectname,
+												"panoramas" : [ { panofile : "testpanorama.jpg", hotspots : [] }],
+												"threedeescenes" : [],  // PASTIKAN INI ADA
+												"settings" : {
+													"description" : "New 3Sixty Virtual Tour Project",
+													"loadingtext" : "Loading...",
+													"firstpanorama" : "testpanorama.jpg",
+												},
+											};
+											currentprojectdata = initialProjectData;
+											fs.writeFile(newprojectdir + "/WTMProject" + projectext, JSON.stringify(initialProjectData), function (err) {
+												if (err) return console.log(err);
+												console.log('Tadaaaa! New project is created!');
+
+												const srcDir =  __dirname + "/resources/panotemplate";
+												const destDir = newprojectdir;
+												fse.copySync(srcDir, destDir);
+												
+											});
+											
+											//Preparing initial HTML
+											setTimeout(function(){
+												fs.readFile(newprojectdir + "/index.html", 'utf8', function (err, data) {
+													if (err) { return console.log(err); }
+													newhtml = data;
+													var newhtml = data.replace("<title>TITLE</title>", "<title>" +newprojectname+ "</title>");
+													data = newhtml;
+													var newhtml = data.split("/*panoramas*/")[0] +"/*panoramas*/\n\r"+ generatePanoramas(initialProjectData.panoramas) +"\n\r/*panoramas-end*/"+ data.split("/*panoramas-end*/")[1];
+													fs.writeFile(newprojectdir + "/index.html", newhtml, function (err) {
+														if (err) return console.log(err);
+														console.log('Project title is set!');		
+														
+														wtmdata.projects.push({ 
+															projectdir : newprojectdir.replace(/\\/g, "/"),
+															projectname : newprojectname
+														});
+														
+														saveWtmdata();
+														loadRecentProjects();
+														
+														//Preview the Project
+														editproject(wtmdata.projects.length-1);
+														
+														hideDim();
+														
+														$("#newprojectname").val("").focus();
+														$("#newprojectdir").html("");
+														newprojectname = "";
+														newprojectdir = "";
+														
+														
+														
+													});
+												});
+											}, 3000);
+										}, 1000);
+									}
+									
+								}
+							}
+						</script>
+					</div>
+					<div style="display: table-cell; vertical-align: top; padding-left: 20px;">
+						<h2><i class="fa fa-briefcase"></i> Recent Projects</h2>
+						<div id="recentprojects"></div>
+					</div>
+				</div>			
+			</div>
+			
+			<!-- Project Editor -->
+			<div class="page" id="projecteditor">
+				<div style="display: table; width: 100%; table-layout: fixed;">
+					<div style="display: table-cell; vertical-align: top; width: 50px; vertical-align: middle;">
+						<a href="#" onclick="showpage('projects')"><i class="fa fa-chevron-left" style="font-size: 30px;"></i></a>
+					</div>
+					<div style="display: table-cell; vertical-align: top;">
+						<div style="font-size: 20px;"><i class="fa fa-briefcase" style="width: 20px;"></i> <input id="currentprojecttitle" style="display: inline-block; width: 300px; color: #cccccc; font-size: 20px; font-weight: normal; margin-bottom: 5px; border: none;"onkeyup="renamecurrentproject()"></div>
+						<p id="currentprojectdir" style='font-size: 12px; color: #eba576; font-style: italic; cursor: pointer;'></p>
+					</div>
+					<div style="display: table-cell; vertical-align: middle; width: 100px; text-align: right;">
+						<div class="greenbutton" style="margin: 0px; padding: 10px; font-size: 12px;" id="currentprojectrunbutton"><i class="fa fa-play"></i></div>
+					</div>
+				</div>
+
+				<div style="position: relative; top: 0; left: 0; right: 0; height: 85%; overflow: hidden;">
+					<div style="display: table; width: 100%;">
+						<div id="sidebar" style="display: table-cell; vertical-align: top; width: 200px; overflow-x: hidden;">
+							<div class="editortab" onclick="showeditorc('panoramas')"><i class="fa fa-camera" style="width: 20px;"></i> Panoramas</div>
+							<div class="editortab" onclick="showeditorc('tourmap')"><i class="fa fa-map" style="width: 20px;"></i> Tour Map</div>
+							<div class="editortab" onclick="showeditorc('hotspots')"><i class="fa fa-circle-thin" style="width: 20px;"></i> Hotspots</div>
+							<div class="editortab" onclick="showeditor3DScenes()"><i class="fa fa-cube" style="width: 20px;"></i> 3D Scenes</div>
+							<div class="editortab" onclick="showeditorc('imageassets')"><i class="fa fa-image" style="width: 20px;"></i> Image Assets</div>
+							<div class="editortab" onclick="showeditorc('videos')"><i class="fa fa-film" style="width: 20px;"></i> Video Files</div>
+							<div class="editortab" onclick="showeditorc('audios')"><i class="fa fa-music" style="width: 20px;"></i> Audio Files</div>
+							<div class="editortab" onclick="showeditorc('pdfs')"><i class="fa fa-file-pdf-o" style="width: 20px;"></i> PDF Documents</div>
+							<div class="editortab" onclick="showeditorc('settings')"><i class="fa fa-cog" style="width: 20px;"></i> Settings</div>
+							
+						</div>
+						<div style="display: table-cell; vertical-align: top; padding-left: 20px; height: 100px;">
+							<div id="editorcontent" style="overflow: auto; height: 100px;"></div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		
+		<!-- ads placeholder -->
+		<!--
+		<div id="advertisementwebview" style="position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;">
+			<h5 style="text-align: center; color: white;">ADVERTISEMENT</h5>
+			<div id="ciihuybanner">ciihuy2020</div>
+			<script>
+				/*
+				var banners = []
+                $.get("https://imhere.ciihuy.com/ciihuybannerads/index.php", function (data) {
+                    banners = data.split(",").filter(item => item.trim() !== "");
+                    initBanners();
+                });
+				function initBanners(){
+					var rn = Math.floor(Math.random() * banners.length);
+					$("#ciihuybanner").html("<a href='https://imhere.ciihuy.com/ciihuybannerads/index.php?clickad="+banners[rn]+"'><img id='cb' src='https://imhere.ciihuy.com/ciihuybannerads/uploads/"+banners[rn]+"' style='width: 100%;'></a>");
+					$("#cb").click();
+					setTimeout(function(){
+						initBanners();
+					},600000);
+				}
+				*/
+			</script>
+		</div>
+		-->
+		<!-- loading and alert dim -->
+		<div id="dim">
+			<div style="display: table-cell; vertical-align: middle; text-align: center;">
+				<div class="lds-hourglass" id="loading"></div>
+				<h3 id="dimmessage"></h3>
+			</div>
+		</div>
+		
+		<!-- top menu dim -->
+		<div id="topmenudim"></div>
+		
+		<!-- debug window -->
+		<div id="debugwindow" style="display: none;">
+			<div style="display: table; width: 100%; margin-bottom: 1em; font-size: 12px;">
+				<div style="display: table-cell; vertical-align: middle;">
+					Log Window
+				</div>
+				<div style="display: table-cell; vertical-align: middle; text-align: right;">
+					<i class="fa fa-times" onclick="HideDebugWindow();"></i>
+				</div>
+			</div>
+			<div id="debugwindowcontent"></div>
+		</div>
+		
+		
+		<div style="position: fixed; right: 0; bottom: 0; padding: 10px;"><a href="https://ciihuy.com/supportus/?lang=en" target="_blank"><img src="imgs/pleasedonate.png" style="width: 64px;"></a></div>
+		
+		
+		<script src="app.js"></script>
+
+
+	</body>
+
+</html>
+

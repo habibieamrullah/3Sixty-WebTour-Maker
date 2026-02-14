@@ -1,0 +1,3 @@
+electron-packager ./ 3Sixty --platform=win32 --arch=x64 --icon=./icon.ico
+	
+electron-packager ./ 3Sixty --platform=darwin --arch=x64 --icon=./icon.icns

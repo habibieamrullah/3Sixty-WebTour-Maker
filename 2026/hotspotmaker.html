@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Add New Hotspot</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta charset="utf-8">
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
+		<link rel="stylesheet" type="text/css" href="style.css">
+		<link rel="stylesheet" type="text/css" href="css/font-awesome.css">
+		
+		<!-- Insert this line above script imports  -->
+		<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+		
+		<script src="resources/panotemplate/js/jquery.js"></script>
+
+		<!-- Insert this line after script imports -->
+		<script>if (window.module) module = window.module;</script>
+		
+		
+		
+		<style>
+			/* SCROLLBAR STYLING */
+			/* width */
+			::-webkit-scrollbar {
+				width: 0.25em;
+				height: 0.25em;
+			}
+			/* Track */
+			::-webkit-scrollbar-track {
+				background: #2c3643; 
+			}
+			/* Handle */
+			::-webkit-scrollbar-thumb {
+				background: #0d9e59; 
+				transition: background .5s;
+			}
+			/* Handle on hover */
+			::-webkit-scrollbar-thumb:hover {
+				background: #00e075; 
+			}
+
+
+			body {
+				margin: 0;
+				overflow: hidden;
+			}
+			#container {
+				width: 100vw;
+				height: 100vh;
+				display: block;
+			}
+			#overlay {
+				position: absolute;
+				top: 0; left: 0;
+				width: 100vw;
+				height: 100vh;
+				background-color: rgba(0, 0, 0, 0.8);
+				color: white;
+				font-size: 2rem;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				z-index: 10;
+				opacity: 0;
+				pointer-events: none;
+				transition: opacity 0.5s ease;
+			}
+			
+			#tmp{
+				position: fixed;
+				top: 0;
+				left: 0; 
+				right: 0;
+				bottom: 0;
+				padding: 3em;
+				background-color: rgba(0,0,0,.5);
+				backdrop-filter: blur(5px);
+				display: none;
+			}
+			
+		</style>
+	</head>
+	<body id="body">
+	    <div id="container"></div>
+		<div id="infospotloc" style="display: none;"></div>
+    	<div id="loading" class="fullwrapper" style="display: table; width: 100%; height: 100%;">
+    		<div style="display: table-cell; vertical-align: middle; text-align: center; color: white; font-size: 30px; padding: 50px;">
+    			<!--loadingtext--><p>Please Wait...</p><!--loadingtext-end-->
+    		</div>
+    	</div>		
+		
+		<!-- loading and alert dim -->
+		<div id="dim">
+			<div style="display: table-cell; vertical-align: middle; text-align: center;">
+				<h3 id="dimmessage"></h3>
+			</div>
+		</div>
+		
+		<div style="position: fixed; top: 0; left: 0; right: 0; text-align: center; padding: 20px; background-color: #2c3643;">
+			Press Ctrl + Click on any area you wish to add a new hotspot / reposition an existing hotspot.<br>Or press H button to place hotspot to current mouse position.
+		</div>
+		
+		<!-- Three.js Core -->
+		<script src="resources/panotemplate/js/three.min.js"></script>
+		<!-- OrbitControls -->
+		<script src="resources/panotemplate/js/OrbitControls.js"></script>
+		
+    	<script>
+		
+			var editinghotspot = false;
+			var editinghotspotidx = 0;
+			
+            
+            
+			const { ipcRenderer } = require('electron');
+			const remote = require('electron').remote;
+			
+			
+			let scene, camera, renderer, controls;
+			let spriteHotspots = [];
+			
+			let panoramaMesh;
+
+			let targetFov = 75;
+			let initialFov = 75;
+			let initialPinchDistance = null;
+
+			const overlay = document.getElementById('overlay');
+			const raycaster = new THREE.Raycaster();
+			const mouse = new THREE.Vector2();
+
+			init();
+			animate();
+			
+			//fungsi menambahkan hotspot dengan ctrl klik
+
+			renderer.domElement.addEventListener('pointerdown', (event) => {
+				if ((event.ctrlKey || event.metaKey) && event.button === 0) { // Ctrl + klik kiri
+					const mouseClick = new THREE.Vector2(
+						(event.clientX / window.innerWidth) * 2 - 1,
+						-(event.clientY / window.innerHeight) * 2 + 1
+					);
+					const raycaster = new THREE.Raycaster();
+					raycaster.setFromCamera(mouseClick, camera);
+					const intersects = raycaster.intersectObject(panoramaMesh);
+					if (intersects.length > 0) {
+						handleHotspotPlacement(intersects[0].point.clone());
+					}
+				}
+			});
+
+			
+			/*initfunction*/
+
+		let currentPanorama = 'testpanorama.jpg';
+		function init() {
+			const container = document.getElementById('container');
+
+
+			scene = new THREE.Scene();
+
+
+			camera = new THREE.PerspectiveCamera(targetFov, container.clientWidth / container.clientHeight, 0.1, 1000);
+			camera.position.set(0, 0, 0.1);
+
+
+			renderer = new THREE.WebGLRenderer({ antialias: true });
+			renderer.setSize(container.clientWidth, container.clientHeight);
+			container.appendChild(renderer.domElement);
+
+
+			controls = new THREE.OrbitControls(camera, renderer.domElement);
+			controls.enableZoom = true;
+			controls.minDistance = 0.1;
+			controls.maxDistance = 5;
+			controls.enablePan = false;
+			controls.rotateSpeed = -0.3;
+			controls.enableDamping = true;
+			controls.dampingFactor = 0.1;
+
+
+			const geometry = new THREE.SphereGeometry(500, 60, 40);
+			geometry.scale(-1, 1, 1);
+
+
+			const texture = new THREE.TextureLoader().load('C:/Users/Ariandra/Desktop/3s/4/panoramas/testpanorama.jpg');
+			const material = new THREE.MeshBasicMaterial({ map: texture });
+
+
+			panoramaMesh = new THREE.Mesh(geometry, material);
+			scene.add(panoramaMesh);
+
+
+			loadHotspotsFor('testpanorama.jpg');
+
+
+			window.addEventListener('resize', onWindowResize);
+			renderer.domElement.addEventListener('wheel', onMouseWheel, { passive: false });
+			renderer.domElement.addEventListener('touchstart', handleTouchStart, { passive: false });
+			renderer.domElement.addEventListener('touchmove', handleTouchMove, { passive: false });
+			renderer.domElement.addEventListener('pointermove', onPointerMove, false);
+		}
+		
+/*initfunction-end*/
+
+			// Keep track of the last mouse event (in case you want pageX/Y)
+			let lastPointerEvent = null;
+
+			renderer.domElement.addEventListener('pointermove', function(event) {
+				lastPointerEvent = event; // store the last pointer event
+			});
+
+			document.addEventListener('keydown', function(event) {
+				// Ignore keypress if focused on an input field or overlay is active
+				if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
+				if ($("#dim").is(":visible")) return;
+
+				if (event.key === 'h' || event.key === 'H') {
+					// Use the last known mouse NDC
+					const mouseNDC = new THREE.Vector2(mouse.x, mouse.y);
+					const raycaster = new THREE.Raycaster();
+					raycaster.setFromCamera(mouseNDC, camera);
+					const intersects = raycaster.intersectObject(panoramaMesh);
+					if (intersects.length > 0) {
+						handleHotspotPlacement(intersects[0].point.clone());
+					}
+				}
+			});
+
+			function onMouseWheel(e) {
+				e.preventDefault();
+				targetFov += e.deltaY * 0.05;
+				targetFov = THREE.MathUtils.clamp(targetFov, 30, 100);
+			}
+
+			function handleTouchStart(e) {
+				if (e.touches.length === 2) {
+					const dx = e.touches[0].pageX - e.touches[1].pageX;
+					const dy = e.touches[0].pageY - e.touches[1].pageY;
+					initialPinchDistance = Math.sqrt(dx * dx + dy * dy);
+					initialFov = targetFov;
+				}
+			}
+
+			function handleTouchMove(e) {
+				if (e.touches.length === 2 && initialPinchDistance !== null) {
+					e.preventDefault();
+					const dx = e.touches[0].pageX - e.touches[1].pageX;
+					const dy = e.touches[0].pageY - e.touches[1].pageY;
+					const newDistance = Math.sqrt(dx * dx + dy * dy);
+					const zoomFactor = initialPinchDistance / newDistance;
+					targetFov = THREE.MathUtils.clamp(initialFov * zoomFactor, 30, 100);
+				}
+			}
+
+			function loadHotspotsFor(panorama) {
+
+				/*panoramas*/
+/*panoramas-end*/
+				
+			}
+
+
+			function onPointerMove(event) {
+				mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+				mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+				raycaster.setFromCamera(mouse, camera);
+				const intersects = raycaster.intersectObjects(spriteHotspots);
+
+				spriteHotspots.forEach(sprite => {
+					sprite.userData.targetScale = 40;
+				});
+
+				if (intersects.length > 0) {
+					intersects[0].object.userData.targetScale = 50;
+				}
+			}
+
+			function onWindowResize() {
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize(window.innerWidth, window.innerHeight);
+			}
+			
+			function animate() {
+				requestAnimationFrame(animate);
+
+				// Smooth transition FOV
+				camera.fov += (targetFov - camera.fov) * 0.1;
+				camera.updateProjectionMatrix();
+
+				// Smooth hotspot scale animation
+				spriteHotspots.forEach(sprite => {
+					const currentScale = sprite.scale.x;
+					const target = sprite.userData.targetScale || 40;
+					const newScale = THREE.MathUtils.lerp(currentScale, target, 0.1);
+					sprite.scale.set(newScale, newScale, 1);
+				});
+
+				controls.update();
+				renderer.render(scene, camera);
+			}
+
+			
+			
+			
+			function initHotspotDialog(){
+				
+				$("#dimmessage").html("<div style='width: 70%; max-width: 400px; margin: 0 auto;'><div style='background-color: #2c3643; color: white; padding: 10px;'><i class='fa fa-info-circle'></i> New Hotspot</div><div style='padding: 30px; background-color: #3d4855; font-size: 14px; font-weight: normal;'><div><p>Give the hotspot a name:</p><input placeholder='Hotspot Name' id='hotspotname' style='margin: 0px; margin-bottom: 10px;'></div><button onclick='addTheHotspot()' style='margin: 5px;'><i class='fa fa-plus'></i> Add</button><button onclick=$('#dim').fadeOut() style='margin: 5px;'><i class='fa fa-times'></i> Cancel</button></div></div>");
+				$("#dim").show();
+				
+			}
+			
+			function addTheHotspot(){
+				
+				var hotspotname = $("#hotspotname").val();
+				if(hotspotname == ""){
+					hotspotname = "Untitled";
+				}
+				console.log("Infospot New Location: " + hpos);
+				ipcRenderer.send("infospotlocationreceived", { title : hotspotname, position : hpos });
+				var window = remote.getCurrentWindow();
+				window.close();
+			}
+			
+			function handleHotspotPlacement(point) {
+				// Offset from sphere surface
+				const dir = point.clone().normalize();
+				point.add(dir.multiplyScalar(-100));
+				hpos = point.x + "," + point.y + "," + point.z;
+				$("#infospotloc").html(hpos);
+				console.log("Hotspot placed at:", JSON.stringify(point));
+				if(!editinghotspot){
+					initHotspotDialog();
+				}else{
+					ipcRenderer.send("infospotlocationupdated", { title : editinghotspotidx, position : hpos });
+					var window = remote.getCurrentWindow();
+					window.close();
+				}
+			}
+			
+			$("#dim").fadeOut();
+			
+			var stilloading = true;
+			function onProgress ( event ) {
+				
+				progress = event.progress.loaded / event.progress.total * 100;
+				console.log("Loading panorama: " + progress + " ... ");
+				$("#loadingperc").html(Math.ceil(progress) + "%");
+				if(Math.ceil(progress) >= 100){
+					endLoading();
+					stilloading = false;
+				}else{
+					stilloading = true;
+					$("#loading").show();
+				}
+			}
+			
+			function endLoading(){
+				if(stilloading == false){
+					setTimeout(function(){
+						$("#loading").fadeOut();
+					}, 1500);
+					
+				}
+			}
+			
+			
+        </script>
+	</body>
+</html>

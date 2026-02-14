@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<!--projecttitle--><title>3Sixty Virtual Tour</title><!--projecttitle-end-->
+		<!--projectdescription--><meta name="description" content="Project 3Sixty Baru"><!--projectdescription-end-->
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta charset="utf-8">
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
+		
+		<link rel="stylesheet" type="text/css" href="css/font-awesome.css">
+		<link rel="stylesheet" type="text/css" href="style.css">
+		
+		<!-- Insert this line above script imports  -->
+		<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+		
+		<script src="js/jquery.js"></script>
+		<script src="js/imagedata.js"></script>
+		
+		<!-- Insert this line after script imports -->
+		<script>if (window.module) module = window.module;</script>
+		
+		<style>
+			/* SCROLLBAR STYLING */
+			::-webkit-scrollbar {
+				width: 0.25em;
+				height: 0.25em;
+			}
+			::-webkit-scrollbar-track {
+				background: #2c3643; 
+			}
+			::-webkit-scrollbar-thumb {
+				background: #0d9e59; 
+				transition: background .5s;
+			}
+			::-webkit-scrollbar-thumb:hover {
+				background: #00e075; 
+			}
+
+			body {
+				margin: 0;
+				overflow: hidden;
+			}
+			#container {
+				width: 100vw;
+				height: 100vh;
+				display: block;
+			}
+			#overlay {
+				position: absolute;
+				top: 0; left: 0;
+				width: 100vw;
+				height: 100vh;
+				background-color: rgba(0, 0, 0, 0.8);
+				color: white;
+				font-size: 2rem;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				z-index: 10;
+				opacity: 0;
+				pointer-events: none;
+				transition: opacity 0.5s ease;
+			}
+			
+			#tmp{
+				position: fixed;
+				top: 0;
+				left: 0; 
+				right: 0;
+				bottom: 0;
+				padding: 3em;
+				background-color: rgba(0,0,0,.5);
+				backdrop-filter: blur(5px);
+				display: none;
+				z-index: 21;
+			}
+		</style>
+	</head>
+	<body id="body">
+	    <div id="container"></div>
+		<div id="overlay">Loading...</div>
+    	
+		<!--customhtml--><!--customhtml-end-->
+		
+		<div id="tmp">
+			<div style="width: 100%; height: 100%; overflow: hidden; overflow-y: auto; box-sizing: border-box; position: relative;" id="tmpcontent"></div>
+			<div class="mediaclosebutton" onclick="hideTemp()"><i class="fa fa-times-circle"></i></div>
+		</div>
+
+		<div id="loading" class="fullwrapper" style="display: table; width: 100%; height: 100%;">
+    		<div style="display: table-cell; vertical-align: middle; text-align: center; color: white; font-size: 30px; padding: 50px;">
+    			<!--loadingtext-->Loading...<!--loadingtext-end-->
+				<div id="loadingperc" style="font-size:12px;"></div>
+    		</div>
+    	</div>
+		
+		<!-- Three.js Core -->
+		<script src="js/three.min.js"></script>
+		<!-- OrbitControls -->
+		<script src="js/OrbitControls.js"></script>
+		
+    	<script>
+			let scene, camera, renderer, controls;
+			let spriteHotspots = [];
+			let panoramaMesh;
+			let mode = "panorama";
+			let threeDSceneObjects = [];
+			let threeDScenes = {};
+
+			let targetFov = 75;
+			let initialFov = 75;
+			let initialPinchDistance = null;
+
+			const overlay = document.getElementById('overlay');
+			const raycaster = new THREE.Raycaster();
+			const mouse = new THREE.Vector2();
+			const keys = {};
+			const direction = new THREE.Vector3();
+
+			init();
+			animate();
+			
+			/*initfunction*/
+			let currentPanorama = 'testpanorama';
+			function init() {
+				const container = document.getElementById('container');
+
+				scene = new THREE.Scene();
+
+				camera = new THREE.PerspectiveCamera(targetFov, container.clientWidth / container.clientHeight, 0.1, 1000);
+				camera.position.set(0, 0, 0.1);
+
+				renderer = new THREE.WebGLRenderer({ antialias: true });
+				renderer.setSize(container.clientWidth, container.clientHeight);
+				container.appendChild(renderer.domElement);
+
+				controls = new THREE.OrbitControls(camera, renderer.domElement);
+				controls.enableZoom = true;
+				controls.minDistance = 0.1;
+				controls.maxDistance = 5;
+				controls.enablePan = false;
+				controls.rotateSpeed = -1;
+				controls.enableDamping = true;
+				controls.dampingFactor = 0.1;
+
+				const geometry = new THREE.SphereGeometry(500, 60, 40);
+				geometry.scale(-1, 1, 1);
+
+				const texture = new THREE.TextureLoader().load('panoramas/testpanorama.jpg');
+				const material = new THREE.MeshBasicMaterial({ map: texture });
+
+				panoramaMesh = new THREE.Mesh(geometry, material);
+				scene.add(panoramaMesh);
+
+				loadHotspotsFor('testpanorama');
+
+				window.addEventListener('resize', onWindowResize);
+				renderer.domElement.addEventListener('wheel', onMouseWheel, { passive: false });
+				renderer.domElement.addEventListener('touchstart', handleTouchStart, { passive: false });
+				renderer.domElement.addEventListener('touchmove', handleTouchMove, { passive: false });
+				renderer.domElement.addEventListener('pointermove', onPointerMove, false);
+			}
+			/*initfunction-end*/
+
+			function onMouseWheel(e) {
+				e.preventDefault();
+				targetFov += e.deltaY * 0.05;
+				targetFov = THREE.MathUtils.clamp(targetFov, 30, 100);
+			}
+
+			function handleTouchStart(e) {
+				if (e.touches.length === 2) {
+					const dx = e.touches[0].pageX - e.touches[1].pageX;
+					const dy = e.touches[0].pageY - e.touches[1].pageY;
+					initialPinchDistance = Math.sqrt(dx * dx + dy * dy);
+					initialFov = targetFov;
+				}
+			}
+
+			function handleTouchMove(e) {
+				if (e.touches.length === 2 && initialPinchDistance !== null) {
+					e.preventDefault();
+					const dx = e.touches[0].pageX - e.touches[1].pageX;
+					const dy = e.touches[0].pageY - e.touches[1].pageY;
+					const newDistance = Math.sqrt(dx * dx + dy * dy);
+					const zoomFactor = initialPinchDistance / newDistance;
+					targetFov = THREE.MathUtils.clamp(initialFov * zoomFactor, 30, 100);
+				}
+			}
+
+			function loadHotspotsFor(panorama) {
+				clearHotspots();
+				/*panoramas*/
+				/*panoramas-end*/
+			}
+
+			function switchPanorama(panoramaName) {
+				overlay.style.pointerEvents = 'auto';
+				overlay.style.opacity = '1';
+				overlay.textContent = 'Loading...';
+
+				const newTexture = new THREE.TextureLoader().load(`panoramas/${panoramaName}`, (tex) => {
+					panoramaMesh.material.map = tex;
+					panoramaMesh.material.needsUpdate = true;
+					currentPanorama = panoramaName;
+					loadHotspotsFor(currentPanorama);
+					overlay.style.opacity = '0';
+					overlay.style.pointerEvents = 'none';
+				}, (xhr) => {
+					const progress = (xhr.loaded / xhr.total) * 100;
+					overlay.textContent = `Loading... ${progress.toFixed(0)}%`;
+				});
+			}
+
+			function addHotspot(imageUrl, position, onClickCallback) {
+				const textureLoader = new THREE.TextureLoader();
+				textureLoader.load(imageUrl, (texture) => {
+					const material = new THREE.SpriteMaterial({ map: texture });
+					const sprite = new THREE.Sprite(material);
+					sprite.position.copy(position);
+					sprite.scale.set(40, 40, 1);
+					sprite.userData = {
+						onClick: onClickCallback,
+						targetScale: 40
+					};
+					spriteHotspots.push(sprite);
+					scene.add(sprite);
+				});
+			}
+
+			function clearHotspots() {
+				spriteHotspots.forEach(sprite => scene.remove(sprite));
+				spriteHotspots = [];
+			}
+
+			function clearScene() {
+				while (scene.children.length > 0) {
+					scene.remove(scene.children[0]);
+				}
+				threeDSceneObjects = [];
+			}
+
+			function onPointerMove(event) {
+				mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+				mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+				raycaster.setFromCamera(mouse, camera);
+				const intersects = raycaster.intersectObjects(spriteHotspots);
+
+				spriteHotspots.forEach(sprite => {
+					sprite.userData.targetScale = 40;
+				});
+
+				if (intersects.length > 0) {
+					intersects[0].object.userData.targetScale = 50;
+				}
+			}
+
+			function onWindowResize() {
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize(window.innerWidth, window.innerHeight);
+			}
+
+			function animate() {
+				requestAnimationFrame(animate);
+				
+				if (mode === "3d") {
+					// Keyboard movement for 3D scenes
+					direction.set(0, 0, 0);
+					
+					if (keys["KeyW"]) direction.z -= 1;
+					if (keys["KeyS"]) direction.z += 1;
+					if (keys["KeyA"]) direction.x -= 1;
+					if (keys["KeyD"]) direction.x += 1;
+					
+					if (direction.length() > 0) {
+						direction.normalize();
+						direction.applyQuaternion(camera.quaternion);
+						camera.position.add(direction.multiplyScalar(0.1));
+					}
+					
+					controls.update();
+				} else {
+					// Panorama mode animation
+					camera.fov += (targetFov - camera.fov) * 0.1;
+					camera.updateProjectionMatrix();
+					
+					spriteHotspots.forEach(sprite => {
+						const currentScale = sprite.scale.x;
+						const target = sprite.userData.targetScale || 40;
+						const newScale = THREE.MathUtils.lerp(currentScale, target, 0.1);
+						sprite.scale.set(newScale, newScale, 1);
+					});
+					
+					controls.update();
+				}
+				
+				renderer.render(scene, camera);
+			}
+
+			// Klik pada hotspot
+			function handleHotspotClick(event) {
+			    const clientX = event.clientX || (event.changedTouches && event.changedTouches[0].clientX);
+			    const clientY = event.clientY || (event.changedTouches && event.changedTouches[0].clientY);
+
+			    const mouseClick = new THREE.Vector2(
+			        (clientX / window.innerWidth) * 2 - 1,
+			        -(clientY / window.innerHeight) * 2 + 1
+			    );
+
+			    const clickRaycaster = new THREE.Raycaster();
+			    clickRaycaster.setFromCamera(mouseClick, camera);
+			    const intersects = clickRaycaster.intersectObjects(spriteHotspots);
+
+			    if (intersects.length > 0) {
+			        event.preventDefault();
+			        const clicked = intersects[0].object;
+			        if (clicked.userData.onClick) clicked.userData.onClick();
+			    }
+			}
+
+			document.addEventListener('click', handleHotspotClick);
+			document.addEventListener('touchend', handleHotspotClick);
+			
+			function hideTemp(){
+				$("#tmp").fadeOut();
+				setTimeout(function(){
+					$("#tmpcontent").html("");
+				},1000);
+			}
+			
+			function showMedia(type, content){
+				switch(type){
+					case 1:
+						$("#tmpcontent").html("<img src='"+content+"' style='width: 100%;'>");
+						$("#tmp").fadeIn();
+						break;
+					case 2:
+						$("#tmpcontent").html("<video id='webvideo' controls autoplay style='width: 100%; height: 100%;'><source src='" +content+ "' type='video/mp4'> Your browser does not support the video tag. </video>");
+						$("#tmp").fadeIn();
+						break;
+					case 3:
+						$("#tmpcontent").html("<audio controls style='width: 100%;'><source src='"+content+"' type='audio/ogg'>Your browser does not support the audio tag.</audio>");
+						$("#tmp").fadeIn();
+						break;
+					case 4:
+						$("#tmpcontent").html("<iframe src='pdfjs/web/viewer.html?file=../../"+content+"' style='width: 100%; height: 99%;'></iframe>");
+						$("#tmp").fadeIn();
+						break;
+				}
+			}
+			
+			/*customjs*/
+			/*customjs-end*/
+			
+			// ============ 3D SCENES SUPPORT ============
+			
+			function addLights() {
+				scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1));
+				
+				const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+				dirLight.position.set(5, 10, 7);
+				scene.add(dirLight);
+				
+				const ambientLight = new THREE.AmbientLight(0x404040);
+				scene.add(ambientLight);
+			}
+
+			function addObjectToScene(objData) {
+				let geometry, material, mesh;
+				
+				switch(objData.type) {
+					case 'cube':
+						geometry = new THREE.BoxGeometry(objData.width || 1, objData.height || 1, objData.depth || 1);
+						material = new THREE.MeshStandardMaterial({ color: objData.color || 0x00ff00 });
+						mesh = new THREE.Mesh(geometry, material);
+						break;
+						
+					case 'sphere':
+						geometry = new THREE.SphereGeometry(objData.radius || 0.7, 32, 32);
+						material = new THREE.MeshStandardMaterial({ color: objData.color || 0x0099ff });
+						mesh = new THREE.Mesh(geometry, material);
+						break;
+						
+					case 'plane':
+						geometry = new THREE.PlaneGeometry(objData.width || 50, objData.height || 50);
+						material = new THREE.MeshStandardMaterial({ color: objData.color || 0xffffff });
+						mesh = new THREE.Mesh(geometry, material);
+						mesh.rotation.x = -Math.PI / 2;
+						break;
+						
+					default:
+						return;
+				}
+				
+				if (mesh) {
+					mesh.position.set(objData.posX || 0, objData.posY || 0, objData.posZ || 0);
+					scene.add(mesh);
+					threeDSceneObjects.push(mesh);
+				}
+			}
+
+			function addDefaultPlane() {
+				const planeGeometry = new THREE.PlaneGeometry(50, 50);
+				const planeMaterial = new THREE.MeshStandardMaterial({ color: 0xcccccc });
+				const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+				plane.rotation.x = -Math.PI / 2;
+				plane.position.y = 0;
+				scene.add(plane);
+				threeDSceneObjects.push(plane);
+			}
+
+			function addDefaultCube() {
+				const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+				const cubeMaterial = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
+				const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+				cube.position.y = 0.5;
+				scene.add(cube);
+				threeDSceneObjects.push(cube);
+			}
+			
+			function switchTo3DScene(sceneId) {
+				console.log("Switching to 3D scene:", sceneId);
+				
+				var sceneData = threeDScenes[sceneId];
+				
+				if (!sceneData) {
+					console.error("3D Scene not found:", sceneId);
+					console.log("Available scenes:", threeDScenes);
+					return;
+				}
+				
+				console.log("Found scene:", sceneData.name);
+				
+				mode = "3d";
+				clearScene();
+				
+				// Set camera position
+				if (sceneData.cameraPos) {
+					camera.position.set(sceneData.cameraPos.x, sceneData.cameraPos.y, sceneData.cameraPos.z);
+				} else {
+					camera.position.set(0, 1.6, 5);
+				}
+				
+				// Set controls untuk 3D mode
+				controls.enablePan = true;
+				controls.maxDistance = 50;
+				controls.minDistance = 1;
+				controls.target.set(0, 1, 0);
+				
+				// Add lights
+				addLights();
+				
+				// Add objects
+				if (sceneData.objects && sceneData.objects.length > 0) {
+					sceneData.objects.forEach(objData => {
+						addObjectToScene(objData);
+					});
+				} else {
+					addDefaultPlane();
+					addDefaultCube();
+				}
+				
+				overlay.style.opacity = '0';
+				overlay.style.pointerEvents = 'none';
+			}
+
+			// Override switchPanorama untuk handle 3D scenes
+			const originalSwitchPanorama = switchPanorama;
+			switchPanorama = function(target) {
+				if (threeDScenes[target]) {
+					switchTo3DScene(target);
+					return;
+				}
+				originalSwitchPanorama(target);
+			};
+
+			// Keyboard event listeners
+			document.addEventListener('keydown', e => keys[e.code] = true);
+			document.addEventListener('keyup', e => keys[e.code] = false);
+
+			// 3D scenes data akan diisi oleh generateHTMLPanoramas
+			/*threedeescenes-data*/
+			/*threedeescenes-data-end*/
+			
+			// Initialize with panorama mode
+			mode = "panorama";
+        </script>
+	</body>
+</html>
