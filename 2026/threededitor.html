@@ -61,7 +61,7 @@
             position: fixed;
             top: 70px;
             right: 10px;
-            width: 280px;
+            width: 320px;
             background: rgba(44, 54, 67, 0.95);
             backdrop-filter: blur(5px);
             color: white;
@@ -82,16 +82,21 @@
         
         .object-list {
             margin-bottom: 20px;
+            max-height: 200px;
+            overflow-y: auto;
         }
         
         .object-item {
             background: #3d4855;
-            margin-bottom: 8px;
-            padding: 10px;
+            margin-bottom: 5px;
+            padding: 8px;
             border-radius: 5px;
             cursor: pointer;
             transition: all 0.2s;
             border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .object-item:hover {
@@ -103,23 +108,34 @@
             background: #4a5563;
         }
         
-        .object-item .object-name {
-            font-weight: bold;
+        .object-item .object-icon {
+            width: 24px;
+            height: 24px;
             display: flex;
             align-items: center;
-            gap: 5px;
+            justify-content: center;
+            background: #2c3643;
+            border-radius: 3px;
+        }
+        
+        .object-item .object-info {
+            flex: 1;
+        }
+        
+        .object-item .object-name {
+            font-weight: bold;
+            font-size: 13px;
         }
         
         .object-item .object-type {
-            font-size: 11px;
+            font-size: 10px;
             color: #eba576;
-            margin-top: 3px;
         }
         
         .property-group {
             margin-bottom: 15px;
             background: #2c3643;
-            padding: 10px;
+            padding: 12px;
             border-radius: 5px;
         }
         
@@ -191,6 +207,16 @@
             color: white;
         }
         
+        .btn-blue {
+            background: #0066cc;
+            border-color: #0066cc;
+        }
+        
+        .btn-blue:hover {
+            background: #0052a3;
+            color: white;
+        }
+        
         #status-bar {
             position: fixed;
             bottom: 10px;
@@ -234,6 +260,45 @@
             color: #2c3643;
         }
         
+        .actions-panel {
+            margin-top: 15px;
+            border-top: 1px solid #eba576;
+            padding-top: 15px;
+        }
+        
+        .action-item {
+            background: #1e262f;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+        
+        .action-type {
+            color: #eba576;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .action-target {
+            background: #2c3643;
+            padding: 5px;
+            border-radius: 3px;
+            word-break: break-all;
+        }
+        
+        .action-remove {
+            color: #cf0000;
+            cursor: pointer;
+            margin-top: 5px;
+            text-align: right;
+            font-size: 11px;
+        }
+        
+        .action-remove:hover {
+            text-decoration: underline;
+        }
+        
         .hotspot-creator {
             position: fixed;
             top: 70px;
@@ -245,7 +310,56 @@
             padding: 15px;
             z-index: 100;
             border: 1px solid #eba576;
-            width: 250px;
+            width: 280px;
+        }
+        
+        .action-dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(44, 54, 67, 0.98);
+            backdrop-filter: blur(10px);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            z-index: 200;
+            border: 2px solid #eba576;
+            width: 400px;
+            max-width: 90vw;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        .action-dialog select, .action-dialog input {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            background: #1e262f;
+            border: 1px solid #3d4855;
+            color: white;
+            border-radius: 3px;
+        }
+        
+        .action-option {
+            background: #1e262f;
+            border: 1px solid #3d4855;
+            border-radius: 5px;
+            padding: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .action-option:hover {
+            background: #2c3643;
+            border-color: #eba576;
+        }
+        
+        .action-option i {
+            width: 24px;
+            color: #eba576;
         }
     </style>
     
@@ -296,23 +410,12 @@
             <i class="fa fa-square"></i> Plane
         </button>
         <div style="width: 1px; height: 30px; background: #eba576; margin: 0 10px;"></div>
-        <button class="tool-btn" id="add-hotspot">
-            <i class="fa fa-circle-thin"></i> Add Hotspot
-        </button>
         <button class="tool-btn" id="save-scene">
             <i class="fa fa-floppy-o"></i> Save
         </button>
         <button class="tool-btn" id="close-editor">
             <i class="fa fa-times"></i> Close
         </button>
-    </div>
-    
-    <!-- Hotspot Creator -->
-    <div class="hotspot-creator" id="hotspot-creator" style="display: none;">
-        <h3 style="margin-top: 0;">Create Hotspot</h3>
-        <p>Click on an object to add a hotspot</p>
-        <div id="hotspot-objects"></div>
-        <button class="btn btn-green" id="cancel-hotspot" style="width: 100%; margin-top: 10px;">Cancel</button>
     </div>
     
     <!-- Object Properties Panel -->
@@ -362,9 +465,23 @@
                 </div>
             </div>
             
-            <div id="obj-specific-props"></div>
+            <!-- Actions Panel for 3D Objects -->
+            <div class="actions-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h4 style="margin: 0; color: #eba576;">Object Actions</h4>
+                    <button class="btn btn-green" id="add-action" style="padding: 4px 10px; font-size: 11px;">
+                        <i class="fa fa-plus"></i> Add Action
+                    </button>
+                </div>
+                <div id="object-actions-list">
+                    <!-- Actions will be listed here -->
+                    <div style="color: #888; font-style: italic; text-align: center; padding: 10px;">
+                        No actions. Click "Add Action" to create one.
+                    </div>
+                </div>
+            </div>
             
-            <div style="display: flex; gap: 10px;">
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
                 <button class="btn btn-green" id="apply-props" style="flex: 1;">Apply</button>
                 <button class="btn btn-red" id="delete-object" style="flex: 1;">Delete</button>
             </div>
@@ -390,6 +507,53 @@
         <span id="object-count">0 objects</span>
     </div>
     
+    <!-- Action Dialog (hidden by default) -->
+    <div id="action-dialog" class="action-dialog" style="display: none;">
+        <h3 style="margin-top: 0; color: #eba576;">Add Action to Object</h3>
+        <p style="font-size: 12px; margin-bottom: 15px;">Select action type:</p>
+        
+        <div class="action-option" onclick="selectActionType(0)">
+            <i class="fa fa-image"></i> <strong>Open Panorama</strong><br>
+            <small>Switch to a different panorama scene</small>
+        </div>
+        
+        <div class="action-option" onclick="selectActionType(1)">
+            <i class="fa fa-picture-o"></i> <strong>Show Image</strong><br>
+            <small>Display an image overlay</small>
+        </div>
+        
+        <div class="action-option" onclick="selectActionType(2)">
+            <i class="fa fa-film"></i> <strong>Play Video</strong><br>
+            <small>Play a video file</small>
+        </div>
+        
+        <div class="action-option" onclick="selectActionType(3)">
+            <i class="fa fa-music"></i> <strong>Play Audio</strong><br>
+            <small>Play an audio file</small>
+        </div>
+        
+        <div class="action-option" onclick="selectActionType(4)">
+            <i class="fa fa-file-pdf-o"></i> <strong>Open PDF</strong><br>
+            <small>Open a PDF document</small>
+        </div>
+        
+        <div class="action-option" onclick="selectActionType(6)">
+            <i class="fa fa-link"></i> <strong>Open URL</strong><br>
+            <small>Open a website URL</small>
+        </div>
+        
+        <div class="action-option" onclick="selectActionType(7)">
+            <i class="fa fa-code"></i> <strong>Execute JavaScript</strong><br>
+            <small>Run custom JavaScript code</small>
+        </div>
+        
+        <div style="text-align: right; margin-top: 20px;">
+            <button class="btn" onclick="closeActionDialog()">
+                <i class="fa fa-times"></i> Cancel
+            </button>
+        </div>
+    </div>
+    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="resources/panotemplate/css/font-awesome.css">
     
@@ -405,8 +569,6 @@
         let currentMode = 'select'; // select, move, rotate, scale
         let isDragging = false;
         let dragStart = new THREE.Vector2();
-        let dragPlane = new THREE.Plane();
-        let dragOffset = new THREE.Vector3();
         
         // Scene data
         let sceneData;
@@ -414,8 +576,8 @@
         let projectDir;
         let tempDataFile;
         
-        // Hotspot mode
-        let isAddingHotspot = false;
+        // Action dialog
+        let pendingActionType = null;
         
         // Initialize
         function init() {
@@ -561,7 +723,11 @@
                 posX: 0,
                 posY: 0,
                 posZ: 0,
-                name: 'Floor'
+                rotX: -90,
+                rotY: 0,
+                rotZ: 0,
+                name: 'Floor',
+                actions: []
             };
             addObjectToScene(floorData, true);
             
@@ -575,87 +741,83 @@
                 posX: 0,
                 posY: 0.5,
                 posZ: 0,
-                name: 'Cube'
+                rotX: 0,
+                rotY: 0,
+                rotZ: 0,
+                scaleX: 1,
+                scaleY: 1,
+                scaleZ: 1,
+                name: 'Cube',
+                actions: []
             };
             addObjectToScene(cubeData, true);
         }
         
         function addObjectToScene(objData, addToData = true) {
-			let geometry, material, mesh;
-			
-			switch(objData.type) {
-				case 'cube':
-					geometry = new THREE.BoxGeometry(objData.width || 1, objData.height || 1, objData.depth || 1);
-					material = new THREE.MeshStandardMaterial({ color: objData.color || 0xeba576 });
-					mesh = new THREE.Mesh(geometry, material);
-					break;
-					
-				case 'sphere':
-					geometry = new THREE.SphereGeometry(objData.radius || 0.7, 32, 32);
-					material = new THREE.MeshStandardMaterial({ color: objData.color || 0xeba576 });
-					mesh = new THREE.Mesh(geometry, material);
-					break;
-					
-				case 'plane':
-					geometry = new THREE.PlaneGeometry(objData.width || 20, objData.height || 20);
-					material = new THREE.MeshStandardMaterial({ color: objData.color || 0x3d4855, side: THREE.DoubleSide });
-					mesh = new THREE.Mesh(geometry, material);
-					// Set rotation from data if available
-					if (objData.rotX !== undefined) {
-						mesh.rotation.x = objData.rotX * Math.PI / 180;
-						mesh.rotation.y = objData.rotY * Math.PI / 180;
-						mesh.rotation.z = objData.rotZ * Math.PI / 180;
-					} else {
-						mesh.rotation.x = -Math.PI / 2; // Default floor
-					}
-					mesh.receiveShadow = true;
-					break;
-					
-				default:
-					return null;
-			}
-			
-			if (mesh) {
-				mesh.position.set(objData.posX || 0, objData.posY || 0, objData.posZ || 0);
-				
-				// Only set rotation for non-plane objects (plane already handled above)
-				if (objData.type !== 'plane') {
-					mesh.rotation.set(
-						(objData.rotX || 0) * Math.PI / 180,
-						(objData.rotY || 0) * Math.PI / 180,
-						(objData.rotZ || 0) * Math.PI / 180
-					);
-				}
-				
-				mesh.scale.set(objData.scaleX || 1, objData.scaleY || 1, objData.scaleZ || 1);
-				
-				mesh.castShadow = true;
-				mesh.receiveShadow = true;
-				
-				// Add unique ID if not exists
-				if (!objData.id) {
-					objData.id = 'obj_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-				}
-				
-				mesh.userData = {
-					id: objData.id,
-					type: objData.type,
-					originalData: { ...objData },
-					name: objData.name || `${objData.type}_${objects.length}`,
-					actions: objData.actions || []
-				};
-				
-				scene.add(mesh);
-				objects.push(mesh);
-				
-				if (addToData) {
-					if (!sceneData.scene.objects) sceneData.scene.objects = [];
-					sceneData.scene.objects.push(objData);
-				}
-			}
-			
-			return mesh;
-		}
+            let geometry, material, mesh;
+            
+            switch(objData.type) {
+                case 'cube':
+                    geometry = new THREE.BoxGeometry(objData.width || 1, objData.height || 1, objData.depth || 1);
+                    material = new THREE.MeshStandardMaterial({ color: objData.color || 0xeba576 });
+                    mesh = new THREE.Mesh(geometry, material);
+                    break;
+                    
+                case 'sphere':
+                    geometry = new THREE.SphereGeometry(objData.radius || 0.7, 32, 32);
+                    material = new THREE.MeshStandardMaterial({ color: objData.color || 0xeba576 });
+                    mesh = new THREE.Mesh(geometry, material);
+                    break;
+                    
+                case 'plane':
+                    geometry = new THREE.PlaneGeometry(objData.width || 20, objData.height || 20);
+                    material = new THREE.MeshStandardMaterial({ color: objData.color || 0x3d4855, side: THREE.DoubleSide });
+                    mesh = new THREE.Mesh(geometry, material);
+                    mesh.receiveShadow = true;
+                    break;
+                    
+                default:
+                    return null;
+            }
+            
+            if (mesh) {
+                mesh.position.set(objData.posX || 0, objData.posY || 0, objData.posZ || 0);
+                
+                mesh.rotation.set(
+                    (objData.rotX || 0) * Math.PI / 180,
+                    (objData.rotY || 0) * Math.PI / 180,
+                    (objData.rotZ || 0) * Math.PI / 180
+                );
+                
+                mesh.scale.set(objData.scaleX || 1, objData.scaleY || 1, objData.scaleZ || 1);
+                
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+                
+                // Add unique ID if not exists
+                if (!objData.id) {
+                    objData.id = 'obj_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                }
+                
+                mesh.userData = {
+                    id: objData.id,
+                    type: objData.type,
+                    originalData: { ...objData },
+                    name: objData.name || `${objData.type}_${objects.length}`,
+                    actions: objData.actions || []
+                };
+                
+                scene.add(mesh);
+                objects.push(mesh);
+                
+                if (addToData) {
+                    if (!sceneData.scene.objects) sceneData.scene.objects = [];
+                    sceneData.scene.objects.push(objData);
+                }
+            }
+            
+            return mesh;
+        }
         
         function setupEventListeners() {
             // Window resize
@@ -679,14 +841,12 @@
             document.getElementById('add-sphere').addEventListener('click', () => addNewObject('sphere'));
             document.getElementById('add-plane').addEventListener('click', () => addNewObject('plane'));
             
-            document.getElementById('add-hotspot').addEventListener('click', startAddHotspot);
-            document.getElementById('cancel-hotspot').addEventListener('click', cancelAddHotspot);
-            
             document.getElementById('save-scene').addEventListener('click', saveScene);
             document.getElementById('close-editor').addEventListener('click', closeEditor);
             
             document.getElementById('apply-props').addEventListener('click', applyObjectProperties);
             document.getElementById('delete-object').addEventListener('click', deleteSelectedObject);
+            document.getElementById('add-action').addEventListener('click', showActionDialog);
             
             // Property inputs
             document.getElementById('obj-name').addEventListener('input', updateObjectProperty);
@@ -721,7 +881,14 @@
                 posX: 0,
                 posY: type === 'plane' ? 0 : 1,
                 posZ: 0,
-                name: `${type}_${objects.length + 1}`
+                rotX: 0,
+                rotY: 0,
+                rotZ: 0,
+                scaleX: 1,
+                scaleY: 1,
+                scaleZ: 1,
+                name: `${type}_${objects.length + 1}`,
+                actions: []
             };
             
             if (type === 'cube') {
@@ -733,23 +900,13 @@
             } else if (type === 'plane') {
                 newObj.width = 20;
                 newObj.height = 20;
+                newObj.rotX = -90; // Default floor rotation
             }
             
             const mesh = addObjectToScene(newObj, true);
             selectObject(mesh);
             updateObjectList();
             updateStatus(`Added new ${type}`);
-        }
-        
-        function startAddHotspot() {
-            isAddingHotspot = true;
-            document.getElementById('hotspot-creator').style.display = 'block';
-            updateStatus('Click on an object to add a hotspot');
-        }
-        
-        function cancelAddHotspot() {
-            isAddingHotspot = false;
-            document.getElementById('hotspot-creator').style.display = 'none';
         }
         
         function onMouseDown(event) {
@@ -760,36 +917,21 @@
             
             raycaster.setFromCamera(mouse, camera);
             
-            if (isAddingHotspot) {
-                // Hotspot creation mode
-                const intersects = raycaster.intersectObjects(objects);
-                if (intersects.length > 0) {
-                    const hitObject = intersects[0].object;
-                    addHotspotToObject(hitObject, intersects[0].point);
-                }
-                return;
-            }
+            // Check for object selection
+            const intersects = raycaster.intersectObjects(objects);
             
-            if (currentMode === 'select') {
-                const intersects = raycaster.intersectObjects(objects);
-                if (intersects.length > 0) {
-                    selectObject(intersects[0].object);
-                } else {
-                    selectObject(null);
-                }
-            } else if (selectedObject && (currentMode === 'move' || currentMode === 'rotate' || currentMode === 'scale')) {
-                // Start dragging
-                isDragging = true;
-                dragStart.set(mouse.x, mouse.y);
+            if (intersects.length > 0) {
+                // Select the clicked object
+                selectObject(intersects[0].object);
                 
-                // Store initial values
-                if (selectedObject.userData.dragStart === undefined) {
-                    selectedObject.userData.dragStart = {
-                        pos: selectedObject.position.clone(),
-                        rot: selectedObject.rotation.clone(),
-                        scale: selectedObject.scale.clone()
-                    };
+                if (currentMode === 'move' || currentMode === 'rotate' || currentMode === 'scale') {
+                    // Start dragging
+                    isDragging = true;
+                    dragStart.set(mouse.x, mouse.y);
                 }
+            } else if (currentMode === 'select') {
+                // Click on empty space - deselect
+                selectObject(null);
             }
         }
         
@@ -858,11 +1000,16 @@
                 }
                 
                 updatePropertyInputs();
+                updateActionsList();
                 updateStatus(`Selected: ${obj.userData.name || 'Object'}`);
             } else {
                 document.getElementById('obj-name').value = '';
+                document.getElementById('object-actions-list').innerHTML = 
+                    '<div style="color: #888; font-style: italic; text-align: center; padding: 10px;">No actions. Click "Add Action" to create one.</div>';
                 updateStatus('No object selected');
             }
+            
+            updateObjectList();
         }
         
         function updatePropertyInputs() {
@@ -892,6 +1039,58 @@
             document.getElementById('obj-scale-x').value = selectedObject.scale.x.toFixed(2);
             document.getElementById('obj-scale-y').value = selectedObject.scale.y.toFixed(2);
             document.getElementById('obj-scale-z').value = selectedObject.scale.z.toFixed(2);
+        }
+        
+        function updateActionsList() {
+            if (!selectedObject) return;
+            
+            const actions = selectedObject.userData.actions || [];
+            const container = document.getElementById('object-actions-list');
+            
+            if (actions.length === 0) {
+                container.innerHTML = '<div style="color: #888; font-style: italic; text-align: center; padding: 10px;">No actions. Click "Add Action" to create one.</div>';
+                return;
+            }
+            
+            let html = '';
+            actions.forEach((action, index) => {
+                let actionTypeText = '';
+                switch(action.type) {
+                    case 0: actionTypeText = 'Open Panorama'; break;
+                    case 1: actionTypeText = 'Show Image'; break;
+                    case 2: actionTypeText = 'Play Video'; break;
+                    case 3: actionTypeText = 'Play Audio'; break;
+                    case 4: actionTypeText = 'Open PDF'; break;
+                    case 5: actionTypeText = 'Open 3D Scene'; break;
+                    case 6: actionTypeText = 'Open URL'; break;
+                    case 7: actionTypeText = 'Execute JavaScript'; break;
+                    default: actionTypeText = 'Unknown Action';
+                }
+                
+                let targetText = action.target || action.url || 'No target';
+                if (targetText.length > 30) targetText = targetText.substring(0, 30) + '...';
+                
+                html += `
+                    <div class="action-item">
+                        <div class="action-type">${actionTypeText}</div>
+                        <div class="action-target">${targetText}</div>
+                        <div class="action-remove" onclick="removeAction(${index})">
+                            <i class="fa fa-trash"></i> Remove
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function removeAction(index) {
+            if (!selectedObject) return;
+            
+            selectedObject.userData.actions.splice(index, 1);
+            updateActionsList();
+            updateObjectDataFromMesh(selectedObject);
+            updateStatus('Action removed');
         }
         
         function updateObjectProperty() {
@@ -925,38 +1124,40 @@
         }
         
         function updateObjectDataFromMesh(mesh) {
-			if (sceneData.scene.objects) {
-				// Cari berdasarkan ID
-				const dataObj = sceneData.scene.objects.find(obj => 
-					obj.id === mesh.userData.id
-				);
-				
-				if (dataObj) {
-					dataObj.posX = mesh.position.x;
-					dataObj.posY = mesh.position.y;
-					dataObj.posZ = mesh.position.z;
-					
-					dataObj.rotX = mesh.rotation.x * 180 / Math.PI;
-					dataObj.rotY = mesh.rotation.y * 180 / Math.PI;
-					dataObj.rotZ = mesh.rotation.z * 180 / Math.PI;
-					
-					dataObj.scaleX = mesh.scale.x;
-					dataObj.scaleY = mesh.scale.y;
-					dataObj.scaleZ = mesh.scale.z;
-					
-					dataObj.color = mesh.material.color.getHex();
-					dataObj.name = mesh.userData.name;
-					
-					mesh.userData.originalData = { ...dataObj };
-				}
-			}
-		}
+            if (sceneData.scene.objects) {
+                // Find by ID
+                const dataObj = sceneData.scene.objects.find(obj => 
+                    obj.id === mesh.userData.id
+                );
+                
+                if (dataObj) {
+                    dataObj.posX = mesh.position.x;
+                    dataObj.posY = mesh.position.y;
+                    dataObj.posZ = mesh.position.z;
+                    
+                    dataObj.rotX = mesh.rotation.x * 180 / Math.PI;
+                    dataObj.rotY = mesh.rotation.y * 180 / Math.PI;
+                    dataObj.rotZ = mesh.rotation.z * 180 / Math.PI;
+                    
+                    dataObj.scaleX = mesh.scale.x;
+                    dataObj.scaleY = mesh.scale.y;
+                    dataObj.scaleZ = mesh.scale.z;
+                    
+                    dataObj.color = mesh.material.color.getHex();
+                    dataObj.name = mesh.userData.name;
+                    dataObj.actions = mesh.userData.actions || [];
+                    
+                    mesh.userData.originalData = { ...dataObj };
+                }
+            }
+        }
         
         function changeObjectType() {
             if (!selectedObject) return;
             
             const newType = document.getElementById('obj-type').value;
             const oldData = selectedObject.userData.originalData;
+            const actions = selectedObject.userData.actions || [];
             
             // Create new object data
             const newData = {
@@ -965,7 +1166,14 @@
                 posX: selectedObject.position.x,
                 posY: selectedObject.position.y,
                 posZ: selectedObject.position.z,
-                name: selectedObject.userData.name
+                rotX: selectedObject.rotation.x * 180 / Math.PI,
+                rotY: selectedObject.rotation.y * 180 / Math.PI,
+                rotZ: selectedObject.rotation.z * 180 / Math.PI,
+                scaleX: selectedObject.scale.x,
+                scaleY: selectedObject.scale.y,
+                scaleZ: selectedObject.scale.z,
+                name: selectedObject.userData.name,
+                actions: actions
             };
             
             if (newType === 'cube') {
@@ -986,9 +1194,7 @@
             // Remove from data
             if (sceneData.scene.objects) {
                 sceneData.scene.objects = sceneData.scene.objects.filter(obj => 
-                    obj.posX !== oldData.posX || 
-                    obj.posY !== oldData.posY || 
-                    obj.posZ !== oldData.posZ
+                    obj.id !== selectedObject.userData.id
                 );
             }
             
@@ -1009,9 +1215,7 @@
                 // Remove from data
                 if (sceneData.scene.objects) {
                     sceneData.scene.objects = sceneData.scene.objects.filter(obj => 
-                        obj.posX !== selectedObject.position.x || 
-                        obj.posY !== selectedObject.position.y || 
-                        obj.posZ !== selectedObject.position.z
+                        obj.id !== selectedObject.userData.id
                     );
                 }
                 
@@ -1025,15 +1229,20 @@
             const list = document.getElementById('object-list');
             list.innerHTML = '<h4 style="margin: 0 0 10px 0;">Objects</h4>';
             
-            objects.forEach((obj, index) => {
+            objects.forEach((obj) => {
                 const div = document.createElement('div');
                 div.className = 'object-item' + (obj === selectedObject ? ' selected' : '');
+                
+                let icon = 'cube';
+                if (obj.userData.type === 'sphere') icon = 'circle';
+                else if (obj.userData.type === 'plane') icon = 'square';
+                
                 div.innerHTML = `
-                    <div class="object-name">
-                        <i class="fa fa-${obj.userData.type === 'cube' ? 'cube' : obj.userData.type === 'sphere' ? 'circle' : 'square'}"></i>
-                        ${obj.userData.name || obj.userData.type}
+                    <div class="object-icon"><i class="fa fa-${icon}"></i></div>
+                    <div class="object-info">
+                        <div class="object-name">${obj.userData.name || obj.userData.type}</div>
+                        <div class="object-type">${obj.userData.type}</div>
                     </div>
-                    <div class="object-type">${obj.userData.type}</div>
                 `;
                 div.onclick = () => selectObject(obj);
                 list.appendChild(div);
@@ -1042,37 +1251,205 @@
             document.getElementById('object-count').innerText = objects.length + ' objects';
         }
         
-        function addHotspotToObject(obj, point) {
-            // Create hotspot data
-            const hotspot = {
-                objectId: obj.userData.name,
-                position: point,
-                actions: [],
-                icon: 'default.png'
-            };
-            
-            if (!obj.userData.actions) {
-                obj.userData.actions = [];
-            }
-            obj.userData.actions.push(hotspot);
-            
-            // Visualize hotspot
-            const sphereGeo = new THREE.SphereGeometry(0.2, 16, 16);
-            const sphereMat = new THREE.MeshStandardMaterial({ color: 0xff0000, emissive: 0x440000 });
-            const hotspotSphere = new THREE.Mesh(sphereGeo, sphereMat);
-            hotspotSphere.position.copy(point);
-            hotspotSphere.userData.isHotspot = true;
-            hotspotSphere.userData.hotspotData = hotspot;
-            scene.add(hotspotSphere);
-            objects.push(hotspotSphere);
-            
-            updateStatus('Hotspot added! You can configure actions in the main editor.');
-            cancelAddHotspot();
-        }
-        
         function applyObjectProperties() {
             updateObjectProperty();
             updateStatus('Properties applied');
+        }
+        
+        // Action Dialog Functions
+        function showActionDialog() {
+            if (!selectedObject) {
+                alert('Please select an object first');
+                return;
+            }
+            document.getElementById('action-dialog').style.display = 'block';
+        }
+        
+        function closeActionDialog() {
+            document.getElementById('action-dialog').style.display = 'none';
+            pendingActionType = null;
+        }
+        
+        function selectActionType(type) {
+            pendingActionType = type;
+            
+            switch(type) {
+                case 0: // Open Panorama
+                    showPanoramaChooser();
+                    break;
+                case 1: // Show Image
+                    showAssetChooser('images', 'Choose Image');
+                    break;
+                case 2: // Play Video
+                    showAssetChooser('videos', 'Choose Video');
+                    break;
+                case 3: // Play Audio
+                    showAssetChooser('audios', 'Choose Audio');
+                    break;
+                case 4: // Open PDF
+                    showAssetChooser('pdf', 'Choose PDF');
+                    break;
+                case 6: // Open URL
+                    showURLInput();
+                    break;
+                case 7: // Execute JavaScript
+                    showJSInput();
+                    break;
+                default:
+                    alert('Action type not implemented yet');
+                    closeActionDialog();
+            }
+        }
+        
+        function showPanoramaChooser() {
+            // Close the action dialog first
+            closeActionDialog();
+            
+            // Use the main app's item chooser via IPC
+            const dialogHTML = `
+                <div class="action-dialog" style="display: block;">
+                    <h3 style="margin-top: 0;">Choose Panorama</h3>
+                    <p>Enter panorama filename:</p>
+                    <input type="text" id="panorama-name" placeholder="panorama.jpg" style="width: 100%; padding: 8px; margin: 10px 0;">
+                    <div style="text-align: right;">
+                        <button class="btn" onclick="document.getElementById('custom-dialog').remove()">Cancel</button>
+                        <button class="btn btn-green" onclick="addPanoramaAction()">Add Action</button>
+                    </div>
+                </div>
+            `;
+            
+            const dialogDiv = document.createElement('div');
+            dialogDiv.id = 'custom-dialog';
+            dialogDiv.innerHTML = dialogHTML;
+            document.body.appendChild(dialogDiv);
+            
+            // Focus the input
+            setTimeout(() => document.getElementById('panorama-name').focus(), 100);
+        }
+        
+        function addPanoramaAction() {
+            const panoName = document.getElementById('panorama-name').value.trim();
+            if (panoName) {
+                addActionToSelectedObject(0, panoName);
+            }
+            document.getElementById('custom-dialog').remove();
+        }
+        
+        function showAssetChooser(assetType, title) {
+            // Close the action dialog first
+            closeActionDialog();
+            
+            // Create a simple dialog with input for asset name
+            const dialogHTML = `
+                <div class="action-dialog" style="display: block;">
+                    <h3 style="margin-top: 0;">${title}</h3>
+                    <p>Enter ${assetType} filename:</p>
+                    <input type="text" id="asset-name" placeholder="filename.${assetType === 'images' ? 'jpg' : assetType === 'videos' ? 'mp4' : assetType === 'audios' ? 'mp3' : 'pdf'}" style="width: 100%; padding: 8px; margin: 10px 0;">
+                    <div style="text-align: right;">
+                        <button class="btn" onclick="document.getElementById('custom-dialog').remove()">Cancel</button>
+                        <button class="btn btn-green" onclick="addAssetAction('${assetType}')">Add Action</button>
+                    </div>
+                </div>
+            `;
+            
+            const dialogDiv = document.createElement('div');
+            dialogDiv.id = 'custom-dialog';
+            dialogDiv.innerHTML = dialogHTML;
+            document.body.appendChild(dialogDiv);
+            
+            // Focus the input
+            setTimeout(() => document.getElementById('asset-name').focus(), 100);
+        }
+        
+        function addAssetAction(assetType) {
+            const assetName = document.getElementById('asset-name').value.trim();
+            if (assetName) {
+                let targetPath = `${assetType}/${assetName}`;
+                if (assetType === 'images') addActionToSelectedObject(1, targetPath);
+                else if (assetType === 'videos') addActionToSelectedObject(2, targetPath);
+                else if (assetType === 'audios') addActionToSelectedObject(3, targetPath);
+                else if (assetType === 'pdf') addActionToSelectedObject(4, targetPath);
+            }
+            document.getElementById('custom-dialog').remove();
+        }
+        
+        function showURLInput() {
+            closeActionDialog();
+            
+            const dialogHTML = `
+                <div class="action-dialog" style="display: block;">
+                    <h3 style="margin-top: 0;">Open URL</h3>
+                    <p>Enter URL:</p>
+                    <input type="text" id="url-input" placeholder="https://example.com" style="width: 100%; padding: 8px; margin: 10px 0;">
+                    <div style="text-align: right;">
+                        <button class="btn" onclick="document.getElementById('custom-dialog').remove()">Cancel</button>
+                        <button class="btn btn-green" onclick="addURLAction()">Add Action</button>
+                    </div>
+                </div>
+            `;
+            
+            const dialogDiv = document.createElement('div');
+            dialogDiv.id = 'custom-dialog';
+            dialogDiv.innerHTML = dialogHTML;
+            document.body.appendChild(dialogDiv);
+            
+            setTimeout(() => document.getElementById('url-input').focus(), 100);
+        }
+        
+        function addURLAction() {
+            const url = document.getElementById('url-input').value.trim();
+            if (url) {
+                addActionToSelectedObject(6, url);
+            }
+            document.getElementById('custom-dialog').remove();
+        }
+        
+        function showJSInput() {
+            closeActionDialog();
+            
+            const dialogHTML = `
+                <div class="action-dialog" style="display: block;">
+                    <h3 style="margin-top: 0;">JavaScript Code</h3>
+                    <p>Enter JavaScript code:</p>
+                    <textarea id="js-input" rows="5" style="width: 100%; padding: 8px; margin: 10px 0; background: #1e262f; color: white; border: 1px solid #3d4855;"></textarea>
+                    <div style="text-align: right;">
+                        <button class="btn" onclick="document.getElementById('custom-dialog').remove()">Cancel</button>
+                        <button class="btn btn-green" onclick="addJSAction()">Add Action</button>
+                    </div>
+                </div>
+            `;
+            
+            const dialogDiv = document.createElement('div');
+            dialogDiv.id = 'custom-dialog';
+            dialogDiv.innerHTML = dialogHTML;
+            document.body.appendChild(dialogDiv);
+            
+            setTimeout(() => document.getElementById('js-input').focus(), 100);
+        }
+        
+        function addJSAction() {
+            const jsCode = document.getElementById('js-input').value.trim();
+            if (jsCode) {
+                addActionToSelectedObject(7, jsCode);
+            }
+            document.getElementById('custom-dialog').remove();
+        }
+        
+        function addActionToSelectedObject(type, target) {
+            if (!selectedObject) return;
+            
+            if (!selectedObject.userData.actions) {
+                selectedObject.userData.actions = [];
+            }
+            
+            selectedObject.userData.actions.push({
+                type: type,
+                target: target
+            });
+            
+            updateActionsList();
+            updateObjectDataFromMesh(selectedObject);
+            updateStatus('Action added');
         }
         
         function onKeyDown(event) {
