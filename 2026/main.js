@@ -12,7 +12,6 @@ function createWindow () {
 			contextIsolation: false,
 			enableRemoteModule: true,
 			webviewTag: true,
-			//preload: path.join(__dirname, 'preload.js') // kalau mau akses shell dari renderer
 		}
 	});
 

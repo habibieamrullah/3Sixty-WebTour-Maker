@@ -104,6 +104,7 @@
     "sprintf-js": "^1.1.2",
     "string_decoder": "^1.1.1",
     "sumchecker": "^3.0.1",
+    "three": "^0.182.0",
     "to-readable-stream": "^1.0.0",
     "truncate-utf8-bytes": "^1.0.2",
     "tunnel": "^0.0.6",

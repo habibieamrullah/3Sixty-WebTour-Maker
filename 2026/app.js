@@ -1,4 +1,12 @@
+//3Sixty app.js
+
 var apppath = require('electron').remote.app.getAppPath();
+
+// Create temp directory if not exists
+const tempDir = __dirname + '/temp';
+if (!fs.existsSync(tempDir)) {
+    fs.mkdirSync(tempDir);
+}
 
 
 var wtmdata = {
@@ -2357,22 +2365,30 @@ function createNew3DScene() {
         sceneName = "My 3D Scene " + (currentprojectdata.threedeescenes.length + 1);
     }
     
-    // Create default scene with plane and cube
+    // Create default scene with plane and cube - dengan rotasi yang benar
     var newScene = {
         id: "3dscene_" + randomblah(8),
         name: sceneName,
         cameraPos: { x: 0, y: 1.6, z: 5 },
         objects: [
             {
+                id: 'obj_' + Date.now() + '_plane',
                 type: "plane",
                 width: 50,
                 height: 50,
                 color: 0xffffff,
                 posX: 0,
                 posY: 0,
-                posZ: 0
+                posZ: 0,
+                rotX: -90, // Rotasi -90 derajat di sumbu X untuk floor
+                rotY: 0,
+                rotZ: 0,
+                scaleX: 1,
+                scaleY: 1,
+                scaleZ: 1
             },
             {
+                id: 'obj_' + Date.now() + '_cube',
                 type: "cube",
                 width: 1,
                 height: 1,
@@ -2380,7 +2396,13 @@ function createNew3DScene() {
                 color: 0x00ff00,
                 posX: 0,
                 posY: 0.5,
-                posZ: 0
+                posZ: 0,
+                rotX: 0,
+                rotY: 0,
+                rotZ: 0,
+                scaleX: 1,
+                scaleY: 1,
+                scaleZ: 1
             }
         ]
     };
@@ -2601,10 +2623,17 @@ function updateObjectProperties() {
 function addObjectToSceneConfirm(sceneIndex) {
     var type = $("#newobject_type").val();
     var newObj = {
+        id: 'obj_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9), // TAMBAHKAN ID
         type: type,
         posX: parseFloat($("#newobject_x").val()) || 0,
         posY: parseFloat($("#newobject_y").val()) || 0,
-        posZ: parseFloat($("#newobject_z").val()) || 0
+        posZ: parseFloat($("#newobject_z").val()) || 0,
+        rotX: 0, // TAMBAHKAN ROTASI DEFAULT
+        rotY: 0,
+        rotZ: 0,
+        scaleX: 1, // TAMBAHKAN SCALE DEFAULT
+        scaleY: 1,
+        scaleZ: 1
     };
     
     // Parse color
@@ -2805,4 +2834,70 @@ function save3DScene(index) {
     
     updateWtmFile();
     showeditor3DScenes();
+}
+
+
+
+
+// Tambahkan fungsi ini di app.js setelah fungsi edit3DScene yang sudah ada
+
+// Open 3D Scene Visual Editor
+function open3DSceneVisualEditor(sceneIndex) {
+    var scene = currentprojectdata.threedeescenes[sceneIndex];
+    
+    // Buat file HTML temporary untuk 3D editor
+    var editorPath = __dirname + "/threededitor.html";
+    
+    // Data scene untuk dikirim ke editor
+    var sceneData = {
+        index: sceneIndex,
+        projectDir: wtmdata.projects[currentprojectindex].projectdir,
+        scene: scene
+    };
+    
+    // Tulis data scene ke file temp
+    var tempDataFile = __dirname + "/temp/scenedata_" + scene.id + ".json";
+    fse.ensureDirSync(__dirname + "/temp");
+    fs.writeFileSync(tempDataFile, JSON.stringify(sceneData));
+    
+    // Buat editor window
+    var editorWindow = new BrowserWindow({
+        width: 1366,
+        height: 768,
+        title: "3D Scene Editor - " + scene.name,
+        icon: "3Sixty.ico",
+        webPreferences: {
+            contextIsolation: false,
+            nodeIntegration: true,
+            enableRemoteModule: true,
+            webSecurity: false
+        }
+    });
+    
+    // Load editor HTML
+    editorWindow.loadFile(editorPath);
+    editorWindow.removeMenu();
+    // editorWindow.webContents.openDevTools(); // Uncomment untuk debugging
+    
+    // Listen untuk ketika editor ditutup
+    editorWindow.on('closed', function() {
+        // Baca ulang data scene setelah editor ditutup
+        try {
+            var updatedData = fs.readFileSync(tempDataFile, 'utf8');
+            var updatedScene = JSON.parse(updatedData);
+            currentprojectdata.threedeescenes[sceneIndex] = updatedScene.scene;
+            updateWtmFile();
+            
+            // Hapus file temp
+            fs.unlinkSync(tempDataFile);
+        } catch(e) {
+            console.log("Error reading updated scene data:", e);
+        }
+    });
+}
+
+// Override fungsi edit3DScene yang sudah ada
+function edit3DScene(index) {
+    // Ganti dengan visual editor
+    open3DSceneVisualEditor(index);
 }

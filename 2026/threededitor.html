@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>3D Scene Visual Editor</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        #container {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+        }
+        
+        #toolbar {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(44, 54, 67, 0.95);
+            backdrop-filter: blur(5px);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 30px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            border: 1px solid #eba576;
+        }
+        
+        .tool-btn {
+            background: #2c3643;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .tool-btn:hover {
+            background: #eba576;
+            color: #2c3643;
+        }
+        
+        .tool-btn.active {
+            background: #0d9e59;
+            color: white;
+        }
+        
+        #object-panel {
+            position: fixed;
+            top: 70px;
+            right: 10px;
+            width: 280px;
+            background: rgba(44, 54, 67, 0.95);
+            backdrop-filter: blur(5px);
+            color: white;
+            border-radius: 10px;
+            padding: 15px;
+            z-index: 100;
+            border: 1px solid #eba576;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+        
+        #object-panel h3 {
+            margin: 0 0 15px 0;
+            color: #eba576;
+            border-bottom: 1px solid #eba576;
+            padding-bottom: 8px;
+        }
+        
+        .object-list {
+            margin-bottom: 20px;
+        }
+        
+        .object-item {
+            background: #3d4855;
+            margin-bottom: 8px;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        
+        .object-item:hover {
+            background: #4a5563;
+        }
+        
+        .object-item.selected {
+            border-color: #eba576;
+            background: #4a5563;
+        }
+        
+        .object-item .object-name {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .object-item .object-type {
+            font-size: 11px;
+            color: #eba576;
+            margin-top: 3px;
+        }
+        
+        .property-group {
+            margin-bottom: 15px;
+            background: #2c3643;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .property-group label {
+            display: block;
+            font-size: 12px;
+            color: #eba576;
+            margin-bottom: 5px;
+        }
+        
+        .property-group input, .property-group select {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #3d4855;
+            background: #1e262f;
+            color: white;
+            border-radius: 3px;
+            margin-bottom: 8px;
+        }
+        
+        .property-group input[type="color"] {
+            height: 35px;
+            padding: 2px;
+        }
+        
+        .transform-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 5px;
+        }
+        
+        .transform-controls input {
+            text-align: center;
+        }
+        
+        .btn {
+            background: #2c3643;
+            color: white;
+            border: 1px solid #eba576;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+        }
+        
+        .btn:hover {
+            background: #eba576;
+            color: #2c3643;
+        }
+        
+        .btn-green {
+            background: #0d9e59;
+            border-color: #0d9e59;
+        }
+        
+        .btn-green:hover {
+            background: #0b8046;
+            color: white;
+        }
+        
+        .btn-red {
+            background: #cf0000;
+            border-color: #cf0000;
+        }
+        
+        .btn-red:hover {
+            background: #a50000;
+            color: white;
+        }
+        
+        #status-bar {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: #eba576;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 100;
+        }
+        
+        .gizmo {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(44, 54, 67, 0.9);
+            color: white;
+            padding: 8px;
+            border-radius: 5px;
+            display: flex;
+            gap: 5px;
+            z-index: 100;
+        }
+        
+        .gizmo-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #2c3643;
+            border: 1px solid #eba576;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .gizmo-btn:hover, .gizmo-btn.active {
+            background: #eba576;
+            color: #2c3643;
+        }
+        
+        .hotspot-creator {
+            position: fixed;
+            top: 70px;
+            left: 10px;
+            background: rgba(44, 54, 67, 0.95);
+            backdrop-filter: blur(5px);
+            color: white;
+            border-radius: 10px;
+            padding: 15px;
+            z-index: 100;
+            border: 1px solid #eba576;
+            width: 250px;
+        }
+    </style>
+    
+    <!-- Insert this line above script imports -->
+    <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+    
+    <!-- Three.js -->
+    <script src="resources/panotemplate/js/three.min.js"></script>
+    <script src="resources/panotemplate/js/OrbitControls.js"></script>
+    <script src="resources/panotemplate/js/jquery.js"></script>
+    
+    <!-- Insert this line after script imports -->
+    <script>if (window.module) module = window.module;</script>
+    
+    <!-- Electron -->
+    <script>
+        const { ipcRenderer } = require('electron');
+        const fs = require('fs');
+        const fse = require('fs-extra');
+        const path = require('path');
+    </script>
+</head>
+<body>
+    <div id="container"></div>
+    
+    <!-- Toolbar -->
+    <div id="toolbar">
+        <button class="tool-btn" id="select-mode" title="Select Object (Q)">
+            <i class="fa fa-mouse-pointer"></i> Select
+        </button>
+        <button class="tool-btn" id="move-mode" title="Move (W)">
+            <i class="fa fa-arrows"></i> Move
+        </button>
+        <button class="tool-btn" id="rotate-mode" title="Rotate (E)">
+            <i class="fa fa-repeat"></i> Rotate
+        </button>
+        <button class="tool-btn" id="scale-mode" title="Scale (R)">
+            <i class="fa fa-expand"></i> Scale
+        </button>
+        <div style="width: 1px; height: 30px; background: #eba576; margin: 0 10px;"></div>
+        <button class="tool-btn" id="add-cube">
+            <i class="fa fa-cube"></i> Cube
+        </button>
+        <button class="tool-btn" id="add-sphere">
+            <i class="fa fa-circle"></i> Sphere
+        </button>
+        <button class="tool-btn" id="add-plane">
+            <i class="fa fa-square"></i> Plane
+        </button>
+        <div style="width: 1px; height: 30px; background: #eba576; margin: 0 10px;"></div>
+        <button class="tool-btn" id="add-hotspot">
+            <i class="fa fa-circle-thin"></i> Add Hotspot
+        </button>
+        <button class="tool-btn" id="save-scene">
+            <i class="fa fa-floppy-o"></i> Save
+        </button>
+        <button class="tool-btn" id="close-editor">
+            <i class="fa fa-times"></i> Close
+        </button>
+    </div>
+    
+    <!-- Hotspot Creator -->
+    <div class="hotspot-creator" id="hotspot-creator" style="display: none;">
+        <h3 style="margin-top: 0;">Create Hotspot</h3>
+        <p>Click on an object to add a hotspot</p>
+        <div id="hotspot-objects"></div>
+        <button class="btn btn-green" id="cancel-hotspot" style="width: 100%; margin-top: 10px;">Cancel</button>
+    </div>
+    
+    <!-- Object Properties Panel -->
+    <div id="object-panel">
+        <h3>Object Properties</h3>
+        
+        <div class="object-list" id="object-list">
+            <!-- Object list will be populated here -->
+        </div>
+        
+        <div id="selected-object-props">
+            <div class="property-group">
+                <label>Name</label>
+                <input type="text" id="obj-name" placeholder="Object name">
+                
+                <label>Type</label>
+                <select id="obj-type">
+                    <option value="cube">Cube</option>
+                    <option value="sphere">Sphere</option>
+                    <option value="plane">Plane</option>
+                </select>
+                
+                <label>Color</label>
+                <input type="color" id="obj-color" value="#00ff00">
+            </div>
+            
+            <div class="property-group">
+                <label>Position</label>
+                <div class="transform-controls">
+                    <input type="number" id="obj-pos-x" step="0.1" placeholder="X">
+                    <input type="number" id="obj-pos-y" step="0.1" placeholder="Y">
+                    <input type="number" id="obj-pos-z" step="0.1" placeholder="Z">
+                </div>
+                
+                <label>Rotation (degrees)</label>
+                <div class="transform-controls">
+                    <input type="number" id="obj-rot-x" step="1" placeholder="X">
+                    <input type="number" id="obj-rot-y" step="1" placeholder="Y">
+                    <input type="number" id="obj-rot-z" step="1" placeholder="Z">
+                </div>
+                
+                <label>Scale</label>
+                <div class="transform-controls">
+                    <input type="number" id="obj-scale-x" step="0.1" min="0.1" value="1" placeholder="X">
+                    <input type="number" id="obj-scale-y" step="0.1" min="0.1" value="1" placeholder="Y">
+                    <input type="number" id="obj-scale-z" step="0.1" min="0.1" value="1" placeholder="Z">
+                </div>
+            </div>
+            
+            <div id="obj-specific-props"></div>
+            
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-green" id="apply-props" style="flex: 1;">Apply</button>
+                <button class="btn btn-red" id="delete-object" style="flex: 1;">Delete</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Gizmo Mode -->
+    <div class="gizmo">
+        <div class="gizmo-btn" id="gizmo-local" title="Local Space">
+            <i class="fa fa-cube"></i>
+        </div>
+        <div class="gizmo-btn" id="gizmo-world" title="World Space">
+            <i class="fa fa-globe"></i>
+        </div>
+        <div class="gizmo-btn" id="gizmo-snap" title="Snap (hold Ctrl)">
+            <i class="fa fa-magnet"></i>
+        </div>
+    </div>
+    
+    <!-- Status Bar -->
+    <div id="status-bar">
+        <span id="status-text">Ready</span> | 
+        <span id="object-count">0 objects</span>
+    </div>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="resources/panotemplate/css/font-awesome.css">
+    
+    <script>
+        // Scene variables
+        let scene, camera, renderer, controls;
+        let objects = [];
+        let selectedObject = null;
+        let raycaster = new THREE.Raycaster();
+        let mouse = new THREE.Vector2();
+        
+        // Transform controls (simplified)
+        let currentMode = 'select'; // select, move, rotate, scale
+        let isDragging = false;
+        let dragStart = new THREE.Vector2();
+        let dragPlane = new THREE.Plane();
+        let dragOffset = new THREE.Vector3();
+        
+        // Scene data
+        let sceneData;
+        let sceneIndex;
+        let projectDir;
+        let tempDataFile;
+        
+        // Hotspot mode
+        let isAddingHotspot = false;
+        
+        // Initialize
+        function init() {
+            // Load scene data
+            loadSceneData();
+            
+            // Setup Three.js
+            const container = document.getElementById('container');
+            
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x111122);
+            
+            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(5, 3, 8);
+            camera.lookAt(0, 1, 0);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            container.appendChild(renderer.domElement);
+            
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.screenSpacePanning = true;
+            controls.maxPolarAngle = Math.PI / 2;
+            
+            // Lighting
+            addLights();
+            
+            // Add grid and axes helper
+            const gridHelper = new THREE.GridHelper(50, 50, 0xeba576, 0x3d4855);
+            scene.add(gridHelper);
+            
+            const axesHelper = new THREE.AxesHelper(5);
+            scene.add(axesHelper);
+            
+            // Load existing objects
+            loadObjectsFromScene();
+            
+            // Event listeners
+            setupEventListeners();
+            
+            // Start animation
+            animate();
+        }
+        
+        function addLights() {
+            // Ambient light
+            const ambientLight = new THREE.AmbientLight(0x404060);
+            scene.add(ambientLight);
+            
+            // Hemisphere light
+            const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1);
+            scene.add(hemiLight);
+            
+            // Directional light (sun)
+            const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+            dirLight.position.set(5, 10, 7);
+            dirLight.castShadow = true;
+            dirLight.receiveShadow = true;
+            dirLight.shadow.mapSize.width = 1024;
+            dirLight.shadow.mapSize.height = 1024;
+            const d = 15;
+            dirLight.shadow.camera.left = -d;
+            dirLight.shadow.camera.right = d;
+            dirLight.shadow.camera.top = d;
+            dirLight.shadow.camera.bottom = -d;
+            dirLight.shadow.camera.near = 1;
+            dirLight.shadow.camera.far = 25;
+            scene.add(dirLight);
+            
+            // Fill light
+            const fillLight = new THREE.PointLight(0x4466ff, 0.3);
+            fillLight.position.set(-5, 3, 5);
+            scene.add(fillLight);
+        }
+        
+        function loadSceneData() {
+            // Find the temp data file
+            const args = process.argv;
+            const tempDir = __dirname + '/temp/';
+            
+            if (!fs.existsSync(tempDir)) {
+                fse.ensureDirSync(tempDir);
+            }
+            
+            const files = fs.readdirSync(tempDir);
+            const sceneFiles = files.filter(f => f.startsWith('scenedata_') && f.endsWith('.json'));
+            
+            if (sceneFiles.length > 0) {
+                // Use the most recent one
+                sceneFiles.sort();
+                const latestFile = sceneFiles[sceneFiles.length - 1];
+                tempDataFile = tempDir + latestFile;
+                
+                try {
+                    const data = fs.readFileSync(tempDataFile, 'utf8');
+                    sceneData = JSON.parse(data);
+                    sceneIndex = sceneData.index;
+                    projectDir = sceneData.projectDir;
+                    
+                    console.log("Loaded scene:", sceneData.scene.name);
+                } catch(e) {
+                    console.error("Error loading scene data:", e);
+                }
+            } else {
+                // Create default scene data
+                sceneData = {
+                    index: 0,
+                    projectDir: '',
+                    scene: {
+                        id: 'new_scene_' + Date.now(),
+                        name: 'New Scene',
+                        cameraPos: { x: 0, y: 1.6, z: 5 },
+                        objects: []
+                    }
+                };
+            }
+        }
+        
+        function loadObjectsFromScene() {
+            if (sceneData.scene.objects && sceneData.scene.objects.length > 0) {
+                sceneData.scene.objects.forEach(objData => {
+                    addObjectToScene(objData, false);
+                });
+            } else {
+                // Add default objects if none exist
+                addDefaultObjects();
+            }
+            
+            updateObjectList();
+        }
+        
+        function addDefaultObjects() {
+            // Add a floor plane
+            const floorData = {
+                type: 'plane',
+                width: 20,
+                height: 20,
+                color: 0x3d4855,
+                posX: 0,
+                posY: 0,
+                posZ: 0,
+                name: 'Floor'
+            };
+            addObjectToScene(floorData, true);
+            
+            // Add a cube
+            const cubeData = {
+                type: 'cube',
+                width: 1,
+                height: 1,
+                depth: 1,
+                color: 0xeba576,
+                posX: 0,
+                posY: 0.5,
+                posZ: 0,
+                name: 'Cube'
+            };
+            addObjectToScene(cubeData, true);
+        }
+        
+        function addObjectToScene(objData, addToData = true) {
+			let geometry, material, mesh;
+			
+			switch(objData.type) {
+				case 'cube':
+					geometry = new THREE.BoxGeometry(objData.width || 1, objData.height || 1, objData.depth || 1);
+					material = new THREE.MeshStandardMaterial({ color: objData.color || 0xeba576 });
+					mesh = new THREE.Mesh(geometry, material);
+					break;
+					
+				case 'sphere':
+					geometry = new THREE.SphereGeometry(objData.radius || 0.7, 32, 32);
+					material = new THREE.MeshStandardMaterial({ color: objData.color || 0xeba576 });
+					mesh = new THREE.Mesh(geometry, material);
+					break;
+					
+				case 'plane':
+					geometry = new THREE.PlaneGeometry(objData.width || 20, objData.height || 20);
+					material = new THREE.MeshStandardMaterial({ color: objData.color || 0x3d4855, side: THREE.DoubleSide });
+					mesh = new THREE.Mesh(geometry, material);
+					// Set rotation from data if available
+					if (objData.rotX !== undefined) {
+						mesh.rotation.x = objData.rotX * Math.PI / 180;
+						mesh.rotation.y = objData.rotY * Math.PI / 180;
+						mesh.rotation.z = objData.rotZ * Math.PI / 180;
+					} else {
+						mesh.rotation.x = -Math.PI / 2; // Default floor
+					}
+					mesh.receiveShadow = true;
+					break;
+					
+				default:
+					return null;
+			}
+			
+			if (mesh) {
+				mesh.position.set(objData.posX || 0, objData.posY || 0, objData.posZ || 0);
+				
+				// Only set rotation for non-plane objects (plane already handled above)
+				if (objData.type !== 'plane') {
+					mesh.rotation.set(
+						(objData.rotX || 0) * Math.PI / 180,
+						(objData.rotY || 0) * Math.PI / 180,
+						(objData.rotZ || 0) * Math.PI / 180
+					);
+				}
+				
+				mesh.scale.set(objData.scaleX || 1, objData.scaleY || 1, objData.scaleZ || 1);
+				
+				mesh.castShadow = true;
+				mesh.receiveShadow = true;
+				
+				// Add unique ID if not exists
+				if (!objData.id) {
+					objData.id = 'obj_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+				}
+				
+				mesh.userData = {
+					id: objData.id,
+					type: objData.type,
+					originalData: { ...objData },
+					name: objData.name || `${objData.type}_${objects.length}`,
+					actions: objData.actions || []
+				};
+				
+				scene.add(mesh);
+				objects.push(mesh);
+				
+				if (addToData) {
+					if (!sceneData.scene.objects) sceneData.scene.objects = [];
+					sceneData.scene.objects.push(objData);
+				}
+			}
+			
+			return mesh;
+		}
+        
+        function setupEventListeners() {
+            // Window resize
+            window.addEventListener('resize', onWindowResize);
+            
+            // Mouse events for object selection and dragging
+            renderer.domElement.addEventListener('mousedown', onMouseDown);
+            renderer.domElement.addEventListener('mousemove', onMouseMove);
+            renderer.domElement.addEventListener('mouseup', onMouseUp);
+            
+            // Keyboard shortcuts
+            window.addEventListener('keydown', onKeyDown);
+            
+            // Toolbar buttons
+            document.getElementById('select-mode').addEventListener('click', () => setMode('select'));
+            document.getElementById('move-mode').addEventListener('click', () => setMode('move'));
+            document.getElementById('rotate-mode').addEventListener('click', () => setMode('rotate'));
+            document.getElementById('scale-mode').addEventListener('click', () => setMode('scale'));
+            
+            document.getElementById('add-cube').addEventListener('click', () => addNewObject('cube'));
+            document.getElementById('add-sphere').addEventListener('click', () => addNewObject('sphere'));
+            document.getElementById('add-plane').addEventListener('click', () => addNewObject('plane'));
+            
+            document.getElementById('add-hotspot').addEventListener('click', startAddHotspot);
+            document.getElementById('cancel-hotspot').addEventListener('click', cancelAddHotspot);
+            
+            document.getElementById('save-scene').addEventListener('click', saveScene);
+            document.getElementById('close-editor').addEventListener('click', closeEditor);
+            
+            document.getElementById('apply-props').addEventListener('click', applyObjectProperties);
+            document.getElementById('delete-object').addEventListener('click', deleteSelectedObject);
+            
+            // Property inputs
+            document.getElementById('obj-name').addEventListener('input', updateObjectProperty);
+            document.getElementById('obj-type').addEventListener('change', changeObjectType);
+            document.getElementById('obj-color').addEventListener('input', updateObjectProperty);
+            
+            ['pos-x', 'pos-y', 'pos-z', 'rot-x', 'rot-y', 'rot-z', 'scale-x', 'scale-y', 'scale-z'].forEach(id => {
+                document.getElementById(`obj-${id}`).addEventListener('input', updateObjectProperty);
+            });
+        }
+        
+        function setMode(mode) {
+            currentMode = mode;
+            
+            // Update UI
+            ['select', 'move', 'rotate', 'scale'].forEach(m => {
+                const btn = document.getElementById(`${m}-mode`);
+                if (m === mode) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            updateStatus(`Mode: ${mode}`);
+        }
+        
+        function addNewObject(type) {
+            const newObj = {
+                type: type,
+                color: type === 'plane' ? 0x3d4855 : 0xeba576,
+                posX: 0,
+                posY: type === 'plane' ? 0 : 1,
+                posZ: 0,
+                name: `${type}_${objects.length + 1}`
+            };
+            
+            if (type === 'cube') {
+                newObj.width = 1;
+                newObj.height = 1;
+                newObj.depth = 1;
+            } else if (type === 'sphere') {
+                newObj.radius = 0.7;
+            } else if (type === 'plane') {
+                newObj.width = 20;
+                newObj.height = 20;
+            }
+            
+            const mesh = addObjectToScene(newObj, true);
+            selectObject(mesh);
+            updateObjectList();
+            updateStatus(`Added new ${type}`);
+        }
+        
+        function startAddHotspot() {
+            isAddingHotspot = true;
+            document.getElementById('hotspot-creator').style.display = 'block';
+            updateStatus('Click on an object to add a hotspot');
+        }
+        
+        function cancelAddHotspot() {
+            isAddingHotspot = false;
+            document.getElementById('hotspot-creator').style.display = 'none';
+        }
+        
+        function onMouseDown(event) {
+            if (event.button !== 0) return; // Left click only
+            
+            mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+            mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+            
+            raycaster.setFromCamera(mouse, camera);
+            
+            if (isAddingHotspot) {
+                // Hotspot creation mode
+                const intersects = raycaster.intersectObjects(objects);
+                if (intersects.length > 0) {
+                    const hitObject = intersects[0].object;
+                    addHotspotToObject(hitObject, intersects[0].point);
+                }
+                return;
+            }
+            
+            if (currentMode === 'select') {
+                const intersects = raycaster.intersectObjects(objects);
+                if (intersects.length > 0) {
+                    selectObject(intersects[0].object);
+                } else {
+                    selectObject(null);
+                }
+            } else if (selectedObject && (currentMode === 'move' || currentMode === 'rotate' || currentMode === 'scale')) {
+                // Start dragging
+                isDragging = true;
+                dragStart.set(mouse.x, mouse.y);
+                
+                // Store initial values
+                if (selectedObject.userData.dragStart === undefined) {
+                    selectedObject.userData.dragStart = {
+                        pos: selectedObject.position.clone(),
+                        rot: selectedObject.rotation.clone(),
+                        scale: selectedObject.scale.clone()
+                    };
+                }
+            }
+        }
+        
+        function onMouseMove(event) {
+            if (!isDragging || !selectedObject) return;
+            
+            mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+            mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+            
+            const deltaX = (mouse.x - dragStart.x) * 5;
+            const deltaY = (mouse.y - dragStart.y) * 5;
+            
+            switch(currentMode) {
+                case 'move':
+                    // Move in camera plane
+                    const moveVec = new THREE.Vector3(deltaX, -deltaY, 0);
+                    moveVec.applyQuaternion(camera.quaternion);
+                    moveVec.y = 0; // Keep on ground plane
+                    selectedObject.position.add(moveVec.multiplyScalar(0.1));
+                    break;
+                    
+                case 'rotate':
+                    selectedObject.rotation.y += deltaX * 0.01;
+                    selectedObject.rotation.x += deltaY * 0.01;
+                    break;
+                    
+                case 'scale':
+                    const scale = 1 + deltaX * 0.01;
+                    selectedObject.scale.set(scale, scale, scale);
+                    break;
+            }
+            
+            updatePropertyInputs();
+        }
+        
+        function onMouseUp() {
+            if (isDragging && selectedObject) {
+                // Update object data
+                updateObjectDataFromMesh(selectedObject);
+                isDragging = false;
+            }
+        }
+        
+        function selectObject(obj) {
+            // Clear previous selection highlight
+            objects.forEach(o => {
+                if (o.material) {
+                    if (Array.isArray(o.material)) {
+                        o.material.forEach(m => m.emissive.setHex(0x000000));
+                    } else {
+                        o.material.emissive.setHex(0x000000);
+                    }
+                }
+            });
+            
+            selectedObject = obj;
+            
+            if (obj) {
+                // Highlight selected object
+                if (obj.material) {
+                    if (Array.isArray(obj.material)) {
+                        obj.material.forEach(m => m.emissive.setHex(0x333333));
+                    } else {
+                        obj.material.emissive.setHex(0x333333);
+                    }
+                }
+                
+                updatePropertyInputs();
+                updateStatus(`Selected: ${obj.userData.name || 'Object'}`);
+            } else {
+                document.getElementById('obj-name').value = '';
+                updateStatus('No object selected');
+            }
+        }
+        
+        function updatePropertyInputs() {
+            if (!selectedObject) return;
+            
+            document.getElementById('obj-name').value = selectedObject.userData.name || '';
+            document.getElementById('obj-type').value = selectedObject.userData.type || 'cube';
+            
+            // Color
+            if (selectedObject.material && selectedObject.material.color) {
+                const color = selectedObject.material.color;
+                const hex = color.getHexString();
+                document.getElementById('obj-color').value = '#' + hex;
+            }
+            
+            // Position
+            document.getElementById('obj-pos-x').value = selectedObject.position.x.toFixed(2);
+            document.getElementById('obj-pos-y').value = selectedObject.position.y.toFixed(2);
+            document.getElementById('obj-pos-z').value = selectedObject.position.z.toFixed(2);
+            
+            // Rotation (convert to degrees)
+            document.getElementById('obj-rot-x').value = (selectedObject.rotation.x * 180 / Math.PI).toFixed(0);
+            document.getElementById('obj-rot-y').value = (selectedObject.rotation.y * 180 / Math.PI).toFixed(0);
+            document.getElementById('obj-rot-z').value = (selectedObject.rotation.z * 180 / Math.PI).toFixed(0);
+            
+            // Scale
+            document.getElementById('obj-scale-x').value = selectedObject.scale.x.toFixed(2);
+            document.getElementById('obj-scale-y').value = selectedObject.scale.y.toFixed(2);
+            document.getElementById('obj-scale-z').value = selectedObject.scale.z.toFixed(2);
+        }
+        
+        function updateObjectProperty() {
+            if (!selectedObject) return;
+            
+            // Update name
+            selectedObject.userData.name = document.getElementById('obj-name').value;
+            
+            // Update color
+            const colorHex = document.getElementById('obj-color').value;
+            if (selectedObject.material) {
+                selectedObject.material.color.set(colorHex);
+            }
+            
+            // Update position
+            selectedObject.position.x = parseFloat(document.getElementById('obj-pos-x').value) || 0;
+            selectedObject.position.y = parseFloat(document.getElementById('obj-pos-y').value) || 0;
+            selectedObject.position.z = parseFloat(document.getElementById('obj-pos-z').value) || 0;
+            
+            // Update rotation
+            selectedObject.rotation.x = (parseFloat(document.getElementById('obj-rot-x').value) || 0) * Math.PI / 180;
+            selectedObject.rotation.y = (parseFloat(document.getElementById('obj-rot-y').value) || 0) * Math.PI / 180;
+            selectedObject.rotation.z = (parseFloat(document.getElementById('obj-rot-z').value) || 0) * Math.PI / 180;
+            
+            // Update scale
+            selectedObject.scale.x = parseFloat(document.getElementById('obj-scale-x').value) || 1;
+            selectedObject.scale.y = parseFloat(document.getElementById('obj-scale-y').value) || 1;
+            selectedObject.scale.z = parseFloat(document.getElementById('obj-scale-z').value) || 1;
+            
+            updateObjectDataFromMesh(selectedObject);
+        }
+        
+        function updateObjectDataFromMesh(mesh) {
+			if (sceneData.scene.objects) {
+				// Cari berdasarkan ID
+				const dataObj = sceneData.scene.objects.find(obj => 
+					obj.id === mesh.userData.id
+				);
+				
+				if (dataObj) {
+					dataObj.posX = mesh.position.x;
+					dataObj.posY = mesh.position.y;
+					dataObj.posZ = mesh.position.z;
+					
+					dataObj.rotX = mesh.rotation.x * 180 / Math.PI;
+					dataObj.rotY = mesh.rotation.y * 180 / Math.PI;
+					dataObj.rotZ = mesh.rotation.z * 180 / Math.PI;
+					
+					dataObj.scaleX = mesh.scale.x;
+					dataObj.scaleY = mesh.scale.y;
+					dataObj.scaleZ = mesh.scale.z;
+					
+					dataObj.color = mesh.material.color.getHex();
+					dataObj.name = mesh.userData.name;
+					
+					mesh.userData.originalData = { ...dataObj };
+				}
+			}
+		}
+        
+        function changeObjectType() {
+            if (!selectedObject) return;
+            
+            const newType = document.getElementById('obj-type').value;
+            const oldData = selectedObject.userData.originalData;
+            
+            // Create new object data
+            const newData = {
+                type: newType,
+                color: parseInt(document.getElementById('obj-color').value.substring(1), 16),
+                posX: selectedObject.position.x,
+                posY: selectedObject.position.y,
+                posZ: selectedObject.position.z,
+                name: selectedObject.userData.name
+            };
+            
+            if (newType === 'cube') {
+                newData.width = oldData.width || 1;
+                newData.height = oldData.height || 1;
+                newData.depth = oldData.depth || 1;
+            } else if (newType === 'sphere') {
+                newData.radius = oldData.radius || 0.7;
+            } else if (newType === 'plane') {
+                newData.width = oldData.width || 20;
+                newData.height = oldData.height || 20;
+            }
+            
+            // Remove old object from scene
+            scene.remove(selectedObject);
+            objects = objects.filter(obj => obj !== selectedObject);
+            
+            // Remove from data
+            if (sceneData.scene.objects) {
+                sceneData.scene.objects = sceneData.scene.objects.filter(obj => 
+                    obj.posX !== oldData.posX || 
+                    obj.posY !== oldData.posY || 
+                    obj.posZ !== oldData.posZ
+                );
+            }
+            
+            // Add new object
+            const newMesh = addObjectToScene(newData, true);
+            selectObject(newMesh);
+            updateObjectList();
+        }
+        
+        function deleteSelectedObject() {
+            if (!selectedObject) return;
+            
+            if (confirm('Delete selected object?')) {
+                // Remove from scene
+                scene.remove(selectedObject);
+                objects = objects.filter(obj => obj !== selectedObject);
+                
+                // Remove from data
+                if (sceneData.scene.objects) {
+                    sceneData.scene.objects = sceneData.scene.objects.filter(obj => 
+                        obj.posX !== selectedObject.position.x || 
+                        obj.posY !== selectedObject.position.y || 
+                        obj.posZ !== selectedObject.position.z
+                    );
+                }
+                
+                selectObject(null);
+                updateObjectList();
+                updateStatus('Object deleted');
+            }
+        }
+        
+        function updateObjectList() {
+            const list = document.getElementById('object-list');
+            list.innerHTML = '<h4 style="margin: 0 0 10px 0;">Objects</h4>';
+            
+            objects.forEach((obj, index) => {
+                const div = document.createElement('div');
+                div.className = 'object-item' + (obj === selectedObject ? ' selected' : '');
+                div.innerHTML = `
+                    <div class="object-name">
+                        <i class="fa fa-${obj.userData.type === 'cube' ? 'cube' : obj.userData.type === 'sphere' ? 'circle' : 'square'}"></i>
+                        ${obj.userData.name || obj.userData.type}
+                    </div>
+                    <div class="object-type">${obj.userData.type}</div>
+                `;
+                div.onclick = () => selectObject(obj);
+                list.appendChild(div);
+            });
+            
+            document.getElementById('object-count').innerText = objects.length + ' objects';
+        }
+        
+        function addHotspotToObject(obj, point) {
+            // Create hotspot data
+            const hotspot = {
+                objectId: obj.userData.name,
+                position: point,
+                actions: [],
+                icon: 'default.png'
+            };
+            
+            if (!obj.userData.actions) {
+                obj.userData.actions = [];
+            }
+            obj.userData.actions.push(hotspot);
+            
+            // Visualize hotspot
+            const sphereGeo = new THREE.SphereGeometry(0.2, 16, 16);
+            const sphereMat = new THREE.MeshStandardMaterial({ color: 0xff0000, emissive: 0x440000 });
+            const hotspotSphere = new THREE.Mesh(sphereGeo, sphereMat);
+            hotspotSphere.position.copy(point);
+            hotspotSphere.userData.isHotspot = true;
+            hotspotSphere.userData.hotspotData = hotspot;
+            scene.add(hotspotSphere);
+            objects.push(hotspotSphere);
+            
+            updateStatus('Hotspot added! You can configure actions in the main editor.');
+            cancelAddHotspot();
+        }
+        
+        function applyObjectProperties() {
+            updateObjectProperty();
+            updateStatus('Properties applied');
+        }
+        
+        function onKeyDown(event) {
+            if (event.ctrlKey || event.metaKey) {
+                switch(event.key.toLowerCase()) {
+                    case 's':
+                        event.preventDefault();
+                        saveScene();
+                        break;
+                    case 'w':
+                        event.preventDefault();
+                        closeEditor();
+                        break;
+                }
+                return;
+            }
+            
+            // Mode shortcuts
+            switch(event.key) {
+                case 'q': setMode('select'); break;
+                case 'w': setMode('move'); break;
+                case 'e': setMode('rotate'); break;
+                case 'r': setMode('scale'); break;
+                case 'Delete':
+                    if (selectedObject) deleteSelectedObject();
+                    break;
+            }
+            
+            // Snap modifier
+            if (event.key === 'Control') {
+                document.getElementById('gizmo-snap').classList.add('active');
+            }
+        }
+        
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        
+        function saveScene() {
+            // Update camera position
+            sceneData.scene.cameraPos = {
+                x: camera.position.x,
+                y: camera.position.y,
+                z: camera.position.z
+            };
+            
+            // Save to temp file
+            fs.writeFileSync(tempDataFile, JSON.stringify(sceneData));
+            
+            updateStatus('Scene saved!');
+            
+            // Flash effect
+            document.body.style.backgroundColor = '#0d9e59';
+            setTimeout(() => {
+                document.body.style.backgroundColor = '';
+            }, 200);
+        }
+        
+        function closeEditor() {
+            // Auto-save before closing
+            saveScene();
+            
+            // Close window
+            const { remote } = require('electron');
+            const win = remote.getCurrentWindow();
+            win.close();
+        }
+        
+        function updateStatus(text) {
+            document.getElementById('status-text').innerText = text;
+        }
+        
+        // Start everything
+        window.onload = init;
+    </script>
+</body>
+</html>
