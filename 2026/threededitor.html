@@ -7,8 +7,23 @@
         body {
             margin: 0;
             overflow: hidden;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Quicksand', sans-serif;
+            background-color: #3d4855;
+            color: #cccccc;
         }
+		
+		#custom-dialog {
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background-color: rgba(0,0,0,0.7);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			z-index: 1000;
+		}
         
         #container {
             width: 100vw;
@@ -21,39 +36,36 @@
             top: 10px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(44, 54, 67, 0.95);
-            backdrop-filter: blur(5px);
+            background-color: #2c3643;
             color: white;
             padding: 8px 15px;
-            border-radius: 30px;
             display: flex;
             gap: 10px;
             z-index: 100;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
             border: 1px solid #eba576;
         }
         
         .tool-btn {
-            background: #2c3643;
+            background-color: #2c3643;
             color: white;
             border: none;
             padding: 8px 15px;
-            border-radius: 20px;
             cursor: pointer;
             font-size: 14px;
-            transition: all 0.2s;
+            transition: background-color .5s, color .5s;
             display: flex;
             align-items: center;
             gap: 5px;
         }
         
         .tool-btn:hover {
-            background: #eba576;
-            color: #2c3643;
+            background-color: #eba576;
+            color: #3d4855;
         }
         
         .tool-btn.active {
-            background: #0d9e59;
+            background-color: #0d9e59;
             color: white;
         }
         
@@ -61,11 +73,9 @@
             position: fixed;
             top: 70px;
             right: 10px;
-            width: 320px;
-            background: rgba(44, 54, 67, 0.95);
-            backdrop-filter: blur(5px);
+            width: 340px;
+            background-color: #2c3643;
             color: white;
-            border-radius: 10px;
             padding: 15px;
             z-index: 100;
             border: 1px solid #eba576;
@@ -78,6 +88,7 @@
             color: #eba576;
             border-bottom: 1px solid #eba576;
             padding-bottom: 8px;
+            font-weight: normal;
         }
         
         .object-list {
@@ -87,12 +98,11 @@
         }
         
         .object-item {
-            background: #3d4855;
+            background-color: #3d4855;
             margin-bottom: 5px;
             padding: 8px;
-            border-radius: 5px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: background-color .5s, color .5s, border .5s;
             border: 1px solid transparent;
             display: flex;
             align-items: center;
@@ -100,12 +110,13 @@
         }
         
         .object-item:hover {
-            background: #4a5563;
+            background-color: #505a6c;
+            color: #eba576;
         }
         
         .object-item.selected {
             border-color: #eba576;
-            background: #4a5563;
+            background-color: #505a6c;
         }
         
         .object-item .object-icon {
@@ -114,8 +125,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #2c3643;
-            border-radius: 3px;
+            background-color: #2c3643;
         }
         
         .object-item .object-info {
@@ -134,9 +144,9 @@
         
         .property-group {
             margin-bottom: 15px;
-            background: #2c3643;
+            background-color: #232c37;
             padding: 12px;
-            border-radius: 5px;
+            border-left: 3px solid #eba576;
         }
         
         .property-group label {
@@ -148,12 +158,21 @@
         
         .property-group input, .property-group select {
             width: 100%;
-            padding: 6px;
-            border: 1px solid #3d4855;
-            background: #1e262f;
-            color: white;
-            border-radius: 3px;
+            padding: 5px;
+            border: 1px solid gray;
+            background-color: #2c3643;
+            color: #eba576;
             margin-bottom: 8px;
+            font-size: 13px;
+            transition: background-color .5s;
+        }
+        
+        .property-group input:hover, .property-group select:hover {
+            background-color: #505a6c;
+        }
+        
+        .property-group input:focus {
+            background-color: #505a6c;
         }
         
         .property-group input[type="color"] {
@@ -172,74 +191,84 @@
         }
         
         .btn {
-            background: #2c3643;
+            background-color: #2c3643;
             color: white;
             border: 1px solid #eba576;
-            padding: 8px 15px;
-            border-radius: 5px;
+            padding: 5px 15px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: background-color .5s, color .5s;
             font-size: 13px;
+            font-weight: bold;
+            min-width: 60px;
+            margin-right: 5px;
+            margin-bottom: 5px;
         }
         
         .btn:hover {
-            background: #eba576;
-            color: #2c3643;
+            background-color: #eba576;
+            color: #3d4855;
         }
         
         .btn-green {
-            background: #0d9e59;
+            background-color: #0d9e59;
             border-color: #0d9e59;
+            color: white;
         }
         
         .btn-green:hover {
-            background: #0b8046;
+            background-color: #00e075;
             color: white;
         }
         
         .btn-red {
-            background: #cf0000;
+            background-color: #cf0000;
             border-color: #cf0000;
+            color: white;
         }
         
         .btn-red:hover {
-            background: #a50000;
+            background-color: #ff0000;
             color: white;
         }
         
         .btn-blue {
-            background: #0066cc;
+            background-color: #0066cc;
             border-color: #0066cc;
+            color: white;
         }
         
         .btn-blue:hover {
-            background: #0052a3;
+            background-color: #0077ff;
             color: white;
+        }
+        
+        .btn-small {
+            padding: 3px 10px;
+            font-size: 11px;
         }
         
         #status-bar {
             position: fixed;
             bottom: 10px;
             left: 10px;
-            background: rgba(0,0,0,0.7);
+            background-color: rgba(0,0,0,0.7);
             color: #eba576;
             padding: 5px 10px;
-            border-radius: 5px;
             font-size: 12px;
             z-index: 100;
         }
         
         .gizmo {
             position: fixed;
-            bottom: 10px;
-            right: 10px;
-            background: rgba(44, 54, 67, 0.9);
+            bottom: 40px;
+            left: 10px;
+            background-color: #2c3643;
             color: white;
             padding: 8px;
-            border-radius: 5px;
             display: flex;
             gap: 5px;
             z-index: 100;
+            border: 1px solid #eba576;
         }
         
         .gizmo-btn {
@@ -248,16 +277,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #2c3643;
+            background-color: #2c3643;
             border: 1px solid #eba576;
-            border-radius: 5px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: background-color .5s, color .5s;
         }
         
         .gizmo-btn:hover, .gizmo-btn.active {
-            background: #eba576;
-            color: #2c3643;
+            background-color: #eba576;
+            color: #3d4855;
         }
         
         .actions-panel {
@@ -267,11 +295,11 @@
         }
         
         .action-item {
-            background: #1e262f;
+            background-color: #1e262f;
             padding: 10px;
-            border-radius: 5px;
             margin-bottom: 10px;
             font-size: 12px;
+            border: 1px solid #2c3643;
         }
         
         .action-type {
@@ -281,9 +309,8 @@
         }
         
         .action-target {
-            background: #2c3643;
+            background-color: #2c3643;
             padding: 5px;
-            border-radius: 3px;
             word-break: break-all;
         }
         
@@ -303,10 +330,8 @@
             position: fixed;
             top: 70px;
             left: 10px;
-            background: rgba(44, 54, 67, 0.95);
-            backdrop-filter: blur(5px);
+            background-color: #2c3643;
             color: white;
-            border-radius: 10px;
             padding: 15px;
             z-index: 100;
             border: 1px solid #eba576;
@@ -318,10 +343,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(44, 54, 67, 0.98);
-            backdrop-filter: blur(10px);
+            background-color: #232c37;
             color: white;
-            border-radius: 10px;
             padding: 20px;
             z-index: 200;
             border: 2px solid #eba576;
@@ -329,37 +352,122 @@
             max-width: 90vw;
             max-height: 80vh;
             overflow-y: auto;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
         }
         
         .action-dialog select, .action-dialog input {
             width: 100%;
-            padding: 8px;
+            padding: 5px;
             margin: 10px 0;
-            background: #1e262f;
-            border: 1px solid #3d4855;
-            color: white;
-            border-radius: 3px;
+            background-color: #2c3643;
+            border: 1px solid gray;
+            color: #eba576;
+            transition: background-color .5s;
+        }
+        
+        .action-dialog select:hover, .action-dialog input:hover {
+            background-color: #505a6c;
         }
         
         .action-option {
-            background: #1e262f;
-            border: 1px solid #3d4855;
-            border-radius: 5px;
+            background-color: #1e262f;
+            border: 1px solid #2c3643;
             padding: 12px;
             margin-bottom: 8px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: background-color .5s, color .5s, border .5s;
         }
         
         .action-option:hover {
-            background: #2c3643;
+            background-color: #505a6c;
             border-color: #eba576;
+            color: #eba576;
         }
         
         .action-option i {
             width: 24px;
             color: #eba576;
+        }
+        
+        .texture-preview {
+            width: 100%;
+            height: 80px;
+            background-color: #1e262f;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #eba576;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .texture-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .skybox-preview {
+            width: 100%;
+            height: 60px;
+            background-color: #1e262f;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #eba576;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Scrollbar styling sesuai standard */
+        ::-webkit-scrollbar {
+            width: 0.5em;
+            height: 0.5em;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #2c3643; 
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #0d9e59; 
+            transition: background .5s;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00e075; 
+        }
+        
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eba576;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 8px;
+            background-color: #2c3643;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color .5s;
+        }
+        
+        .tab-btn.active {
+            background-color: #eba576;
+            color: #3d4855;
+        }
+        
+        .tab-panel {
+            display: none;
+        }
+        
+        .tab-panel.active {
+            display: block;
         }
     </style>
     
@@ -368,8 +476,10 @@
     
     <!-- Three.js -->
     <script src="resources/panotemplate/js/three.min.js"></script>
+	<script src="resources/panotemplate/js/TransformControls.js"></script>
     <script src="resources/panotemplate/js/OrbitControls.js"></script>
     <script src="resources/panotemplate/js/jquery.js"></script>
+	
     
     <!-- Insert this line after script imports -->
     <script>if (window.module) module = window.module;</script>
@@ -380,6 +490,7 @@
         const fs = require('fs');
         const fse = require('fs-extra');
         const path = require('path');
+        const { dialog } = require('electron').remote;
     </script>
 </head>
 <body>
@@ -387,16 +498,13 @@
     
     <!-- Toolbar -->
     <div id="toolbar">
-        <button class="tool-btn" id="select-mode" title="Select Object (Q)">
-            <i class="fa fa-mouse-pointer"></i> Select
-        </button>
-        <button class="tool-btn" id="move-mode" title="Move (W)">
+        <button class="tool-btn active" id="move-mode" title="Move Object (Q)">
             <i class="fa fa-arrows"></i> Move
         </button>
-        <button class="tool-btn" id="rotate-mode" title="Rotate (E)">
+        <button class="tool-btn" id="rotate-mode" title="Rotate (W)">
             <i class="fa fa-repeat"></i> Rotate
         </button>
-        <button class="tool-btn" id="scale-mode" title="Scale (R)">
+        <button class="tool-btn" id="scale-mode" title="Scale (E)">
             <i class="fa fa-expand"></i> Scale
         </button>
         <div style="width: 1px; height: 30px; background: #eba576; margin: 0 10px;"></div>
@@ -418,72 +526,170 @@
         </button>
     </div>
     
-    <!-- Object Properties Panel -->
-    <div id="object-panel">
-        <h3>Object Properties</h3>
-        
-        <div class="object-list" id="object-list">
-            <!-- Object list will be populated here -->
+    <!-- Tab buttons for switching between Object and Environment -->
+    <div style="position: fixed; top: 70px; left: 50%; transform: translateX(-50%); z-index: 100;">
+        <div class="tab-buttons" style="background-color: #2c3643; border: 1px solid #eba576;">
+            <button class="tab-btn active" id="tab-objects"><i class="fa fa-cube"></i> Objects</button>
+            <button class="tab-btn" id="tab-environment"><i class="fa fa-globe"></i> Environment</button>
         </div>
-        
-        <div id="selected-object-props">
-            <div class="property-group">
-                <label>Name</label>
-                <input type="text" id="obj-name" placeholder="Object name">
-                
-                <label>Type</label>
-                <select id="obj-type">
-                    <option value="cube">Cube</option>
-                    <option value="sphere">Sphere</option>
-                    <option value="plane">Plane</option>
-                </select>
-                
-                <label>Color</label>
-                <input type="color" id="obj-color" value="#00ff00">
+    </div>
+    
+    <!-- Object Properties Panel -->
+    <div id="object-panel" style="top: 120px;">
+        <!-- Objects Tab -->
+        <div id="objects-tab" class="tab-panel active">
+            <h3>Object Properties</h3>
+            
+            <div class="object-list" id="object-list">
+                <!-- Object list will be populated here -->
             </div>
             
-            <div class="property-group">
-                <label>Position</label>
-                <div class="transform-controls">
-                    <input type="number" id="obj-pos-x" step="0.1" placeholder="X">
-                    <input type="number" id="obj-pos-y" step="0.1" placeholder="Y">
-                    <input type="number" id="obj-pos-z" step="0.1" placeholder="Z">
-                </div>
-                
-                <label>Rotation (degrees)</label>
-                <div class="transform-controls">
-                    <input type="number" id="obj-rot-x" step="1" placeholder="X">
-                    <input type="number" id="obj-rot-y" step="1" placeholder="Y">
-                    <input type="number" id="obj-rot-z" step="1" placeholder="Z">
-                </div>
-                
-                <label>Scale</label>
-                <div class="transform-controls">
-                    <input type="number" id="obj-scale-x" step="0.1" min="0.1" value="1" placeholder="X">
-                    <input type="number" id="obj-scale-y" step="0.1" min="0.1" value="1" placeholder="Y">
-                    <input type="number" id="obj-scale-z" step="0.1" min="0.1" value="1" placeholder="Z">
-                </div>
-            </div>
-            
-            <!-- Actions Panel for 3D Objects -->
-            <div class="actions-panel">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <h4 style="margin: 0; color: #eba576;">Object Actions</h4>
-                    <button class="btn btn-green" id="add-action" style="padding: 4px 10px; font-size: 11px;">
-                        <i class="fa fa-plus"></i> Add Action
-                    </button>
-                </div>
-                <div id="object-actions-list">
-                    <!-- Actions will be listed here -->
-                    <div style="color: #888; font-style: italic; text-align: center; padding: 10px;">
-                        No actions. Click "Add Action" to create one.
+            <div id="selected-object-props">
+                <div class="property-group">
+                    <label>Name</label>
+                    <input type="text" id="obj-name" placeholder="Object name">
+                    
+                    <label>Type</label>
+                    <select id="obj-type">
+                        <option value="cube">Cube</option>
+                        <option value="sphere">Sphere</option>
+                        <option value="plane">Plane</option>
+                    </select>
+                    
+                    <label>Material Type</label>
+                    <select id="obj-material-type">
+                        <option value="color">Solid Color</option>
+                        <option value="texture">Texture Image</option>
+                    </select>
+                    
+                    <div id="color-control">
+                        <label>Color</label>
+                        <input type="color" id="obj-color" value="#00ff00">
+                    </div>
+                    
+                    <div id="texture-control" style="display: none;">
+                        <label>Texture Image</label>
+                        <div class="texture-preview" id="texture-preview">
+                            <i class="fa fa-image" style="font-size: 30px; color: #eba576;"></i>
+                        </div>
+                        <div style="display: flex; gap: 5px;">
+                            <input type="text" id="obj-texture" readonly placeholder="No texture selected" style="flex: 1;">
+                            <button class="btn btn-small" id="browse-texture"><i class="fa fa-folder"></i></button>
+                            <button class="btn btn-small" id="clear-texture"><i class="fa fa-times"></i></button>
+                        </div>
+                        <small style="color: #888;">Supports PNG with transparency</small>
                     </div>
                 </div>
+                
+                <div class="property-group">
+                    <label>Position</label>
+                    <div class="transform-controls">
+                        <input type="number" id="obj-pos-x" step="0.1" placeholder="X">
+                        <input type="number" id="obj-pos-y" step="0.1" placeholder="Y">
+                        <input type="number" id="obj-pos-z" step="0.1" placeholder="Z">
+                    </div>
+                    
+                    <label>Rotation (degrees)</label>
+                    <div class="transform-controls">
+                        <input type="number" id="obj-rot-x" step="1" placeholder="X">
+                        <input type="number" id="obj-rot-y" step="1" placeholder="Y">
+                        <input type="number" id="obj-rot-z" step="1" placeholder="Z">
+                    </div>
+                    
+                    <label>Scale</label>
+                    <div class="transform-controls">
+                        <input type="number" id="obj-scale-x" step="0.1" min="0.1" value="1" placeholder="X">
+                        <input type="number" id="obj-scale-y" step="0.1" min="0.1" value="1" placeholder="Y">
+                        <input type="number" id="obj-scale-z" step="0.1" min="0.1" value="1" placeholder="Z">
+                    </div>
+                </div>
+                
+                <!-- Actions Panel for 3D Objects -->
+                <div class="actions-panel">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h4 style="margin: 0; color: #eba576;">Object Actions</h4>
+                        <button class="btn btn-green" id="add-action" style="padding: 4px 10px; font-size: 11px;">
+                            <i class="fa fa-plus"></i> Add Action
+                        </button>
+                    </div>
+                    <div id="object-actions-list">
+                        <!-- Actions will be listed here -->
+                        <div style="color: #888; font-style: italic; text-align: center; padding: 10px;">
+                            No actions. Click "Add Action" to create one.
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button class="btn btn-green" id="apply-props" style="flex: 1;">Apply</button>
+                    <button class="btn btn-red" id="delete-object" style="flex: 1;">Delete</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Environment Tab -->
+        <div id="environment-tab" class="tab-panel">
+            <h3>Environment Settings</h3>
+            
+            <div class="property-group">
+                <label>Skybox Type</label>
+                <select id="skybox-type">
+                    <option value="none">No Skybox (Dark)</option>
+                    <option value="color">Solid Color</option>
+                    <option value="panorama">360 Panorama (Equirectangular)</option>
+                </select>
             </div>
             
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button class="btn btn-green" id="apply-props" style="flex: 1;">Apply</button>
-                <button class="btn btn-red" id="delete-object" style="flex: 1;">Delete</button>
+            <div id="skybox-color-control" class="property-group" style="display: none;">
+                <label>Background Color</label>
+                <input type="color" id="skybox-color" value="#111122">
+            </div>
+            
+            <div id="skybox-panorama-control" class="property-group" style="display: none;">
+                <label>Panorama Image</label>
+                <div class="skybox-preview" id="skybox-preview" style="background-image: none;">
+                    <i class="fa fa-image" style="font-size: 24px; color: #eba576;"></i>
+                </div>
+                <div style="display: flex; gap: 5px;">
+                    <input type="text" id="skybox-panorama" readonly placeholder="No panorama selected" style="flex: 1;">
+                    <button class="btn btn-small" id="browse-skybox"><i class="fa fa-folder"></i></button>
+                    <button class="btn btn-small" id="clear-skybox"><i class="fa fa-times"></i></button>
+                </div>
+                <small style="color: #888;">Select a 360° equirectangular panorama from your panoramas folder</small>
+            </div>
+            
+            <div class="property-group">
+                <label>Lighting</label>
+                <div style="display: flex; gap: 5px; margin-bottom: 8px;">
+                    <label style="flex: 1; font-size: 11px; color: #ccc;">
+                        <input type="checkbox" id="env-ambient" checked> Ambient Light
+                    </label>
+                    <label style="flex: 1; font-size: 11px; color: #ccc;">
+                        <input type="checkbox" id="env-hemisphere" checked> Hemisphere Light
+                    </label>
+                </div>
+                <div style="display: flex; gap: 5px;">
+                    <label style="flex: 1; font-size: 11px; color: #ccc;">
+                        <input type="checkbox" id="env-directional" checked> Directional Light
+                    </label>
+                </div>
+            </div>
+            
+            <div class="property-group">
+                <label>Grid & Helpers</label>
+                <div style="display: flex; gap: 5px;">
+                    <label style="flex: 1; font-size: 11px; color: #ccc;">
+                        <input type="checkbox" id="env-grid" checked> Show Grid
+                    </label>
+                    <label style="flex: 1; font-size: 11px; color: #ccc;">
+                        <input type="checkbox" id="env-axes" checked> Show Axes
+                    </label>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-green" id="apply-environment" style="flex: 1;">Apply Environment</button>
+                <button class="btn" id="reset-environment" style="flex: 1;">Reset</button>
             </div>
         </div>
     </div>
@@ -565,10 +771,10 @@
         let raycaster = new THREE.Raycaster();
         let mouse = new THREE.Vector2();
         
-        // Transform controls (simplified)
-        let currentMode = 'select'; // select, move, rotate, scale
-        let isDragging = false;
-        let dragStart = new THREE.Vector2();
+        // Transform controls
+        let currentMode = 'move';
+        let transformControls;
+        let isTransforming = false;
         
         // Scene data
         let sceneData;
@@ -576,8 +782,14 @@
         let projectDir;
         let tempDataFile;
         
+        // Environment variables
+        let skyboxMesh = null;
+        let gridHelper = null;
+        let axesHelper = null;
+        
         // Action dialog
         let pendingActionType = null;
+        let tempSourceFile = null; // Untuk menyimpan file yang dipilih
         
         // Initialize
         function init() {
@@ -594,13 +806,37 @@
             camera.position.set(5, 3, 8);
             camera.lookAt(0, 1, 0);
             
-            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
             renderer.setSize(container.clientWidth, container.clientHeight);
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             container.appendChild(renderer.domElement);
             
             controls = new THREE.OrbitControls(camera, renderer.domElement);
+			controls.enableDamping = true;
+			
+			// Transform Controls
+			try {
+				transformControls = new THREE.TransformControls(camera, renderer.domElement);
+				transformControls.addEventListener('dragging-changed', function (event) {
+					controls.enabled = !event.value;
+					isTransforming = event.value;
+					
+					if (!event.value && selectedObject) {
+						updateObjectDataFromMesh(selectedObject);
+						updatePropertyInputs();
+					}
+				});
+				
+				transformControls.setSize(0.8);
+				transformControls.setMode('translate');
+				scene.add(transformControls);
+				
+				console.log("TransformControls OK!");
+			} catch(e) {
+				console.error("TransformControls error:", e);
+			}
+			
             controls.enableDamping = true;
             controls.dampingFactor = 0.05;
             controls.screenSpacePanning = true;
@@ -610,14 +846,17 @@
             addLights();
             
             // Add grid and axes helper
-            const gridHelper = new THREE.GridHelper(50, 50, 0xeba576, 0x3d4855);
+            gridHelper = new THREE.GridHelper(50, 50, 0xeba576, 0x3d4855);
             scene.add(gridHelper);
             
-            const axesHelper = new THREE.AxesHelper(5);
+            axesHelper = new THREE.AxesHelper(5);
             scene.add(axesHelper);
             
             // Load existing objects
             loadObjectsFromScene();
+            
+            // Load environment settings
+            loadEnvironmentSettings();
             
             // Event listeners
             setupEventListeners();
@@ -629,10 +868,12 @@
         function addLights() {
             // Ambient light
             const ambientLight = new THREE.AmbientLight(0x404060);
+            ambientLight.name = "ambientLight";
             scene.add(ambientLight);
             
             // Hemisphere light
             const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1);
+            hemiLight.name = "hemisphereLight";
             scene.add(hemiLight);
             
             // Directional light (sun)
@@ -649,11 +890,13 @@
             dirLight.shadow.camera.bottom = -d;
             dirLight.shadow.camera.near = 1;
             dirLight.shadow.camera.far = 25;
+            dirLight.name = "directionalLight";
             scene.add(dirLight);
             
             // Fill light
             const fillLight = new THREE.PointLight(0x4466ff, 0.3);
             fillLight.position.set(-5, 3, 5);
+            fillLight.name = "fillLight";
             scene.add(fillLight);
         }
         
@@ -681,6 +924,22 @@
                     sceneIndex = sceneData.index;
                     projectDir = sceneData.projectDir;
                     
+                    // Initialize environment if not exists
+                    if (!sceneData.scene.environment) {
+                        sceneData.scene.environment = {
+                            skyboxType: 'none',
+                            skyboxColor: '#111122',
+                            skyboxPanorama: null,
+                            lights: {
+                                ambient: true,
+                                hemisphere: true,
+                                directional: true
+                            },
+                            showGrid: true,
+                            showAxes: true
+                        };
+                    }
+                    
                     console.log("Loaded scene:", sceneData.scene.name);
                 } catch(e) {
                     console.error("Error loading scene data:", e);
@@ -694,11 +953,315 @@
                         id: 'new_scene_' + Date.now(),
                         name: 'New Scene',
                         cameraPos: { x: 0, y: 1.6, z: 5 },
-                        objects: []
+                        objects: [],
+                        environment: {
+                            skyboxType: 'none',
+                            skyboxColor: '#111122',
+                            skyboxPanorama: null,
+                            lights: {
+                                ambient: true,
+                                hemisphere: true,
+                                directional: true
+                            },
+                            showGrid: true,
+                            showAxes: true
+                        }
                     }
                 };
             }
         }
+        
+        function loadEnvironmentSettings() {
+            const env = sceneData.scene.environment;
+            
+            // Set UI controls
+            document.getElementById('skybox-type').value = env.skyboxType || 'none';
+            document.getElementById('skybox-color').value = env.skyboxColor || '#111122';
+            document.getElementById('skybox-panorama').value = env.skyboxPanorama || '';
+            
+            document.getElementById('env-ambient').checked = env.lights?.ambient !== false;
+            document.getElementById('env-hemisphere').checked = env.lights?.hemisphere !== false;
+            document.getElementById('env-directional').checked = env.lights?.directional !== false;
+            
+            document.getElementById('env-grid').checked = env.showGrid !== false;
+            document.getElementById('env-axes').checked = env.showAxes !== false;
+            
+            // Apply environment
+            applyEnvironmentSettings();
+        }
+        
+        function applyEnvironmentSettings() {
+            const env = sceneData.scene.environment;
+            
+            // Update skybox
+            updateSkybox();
+            
+            // Update lights
+            updateLights();
+            
+            // Update helpers
+            if (gridHelper) gridHelper.visible = env.showGrid !== false;
+            if (axesHelper) axesHelper.visible = env.showAxes !== false;
+            
+            // Update UI visibility
+            document.getElementById('skybox-color-control').style.display = env.skyboxType === 'color' ? 'block' : 'none';
+            document.getElementById('skybox-panorama-control').style.display = env.skyboxType === 'panorama' ? 'block' : 'none';
+            
+            // Update preview
+            if (env.skyboxType === 'panorama' && env.skyboxPanorama) {
+                const preview = document.getElementById('skybox-preview');
+                const panoramaPath = projectDir + '/panoramas/' + env.skyboxPanorama;
+                if (fs.existsSync(panoramaPath)) {
+                    preview.style.backgroundImage = `url('file://${panoramaPath}')`;
+                    preview.innerHTML = '';
+                }
+            } else {
+                document.getElementById('skybox-preview').style.backgroundImage = 'none';
+                document.getElementById('skybox-preview').innerHTML = '<i class="fa fa-image" style="font-size: 24px; color: #eba576;"></i>';
+            }
+        }
+		
+		function debugSkybox() {
+			console.log("=== SKYBOX DEBUG INFO ===");
+			console.log("Scene background type:", scene.background ? 
+				(scene.background.isColor ? "Color" : "Texture") : "None");
+			
+			if (scene.background && scene.background.isTexture) {
+				console.log("Texture mapping:", scene.background.mapping);
+				console.log("Texture image:", scene.background.image ? 
+					scene.background.image.src : "No image");
+			}
+			
+			console.log("Skybox mesh exists:", !!skyboxMesh);
+			if (skyboxMesh) {
+				console.log("⚠️ Warning: Skybox mesh should not exist when using scene.background!");
+			}
+			
+			console.log("Camera position:", camera.position);
+			console.log("Scene name:", sceneData?.scene?.name || "Unknown");
+		}
+
+		// Panggil setelah updateSkybox
+		setTimeout(debugSkybox, 2000);
+		
+		
+		function switchTo3DScene(sceneId) {
+			console.log("Switching to 3D scene:", sceneId);
+			
+			const sceneData = threeDScenes[sceneId];
+			
+			if (!sceneData) {
+				console.error("3D Scene not found:", sceneId);
+				return;
+			}
+			
+			mode = "3d";
+			current3DSceneId = sceneId;
+			
+			// Hapus panorama sphere dari scene
+			if (panoramaMesh && scene.children.includes(panoramaMesh)) {
+				scene.remove(panoramaMesh);
+			}
+			
+			// Hapus semua hotspot
+			clearHotspots();
+			
+			// Hapus semua 3D objects yang ada
+			clear3DScene();
+
+			// Reset background ke null dulu
+			scene.background = null;
+			
+			// Reset lights
+			const lightsToRemove = [];
+			scene.children.forEach(obj => {
+				if (obj.isLight) lightsToRemove.push(obj);
+			});
+			lightsToRemove.forEach(light => scene.remove(light));
+			
+			// Buat ulang lights
+			ambientLight = new THREE.AmbientLight(0x404060);
+			scene.add(ambientLight);
+			
+			hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1);
+			scene.add(hemisphereLight);
+			
+			directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
+			directionalLight.position.set(5, 10, 7);
+			directionalLight.castShadow = true;
+			directionalLight.receiveShadow = true;
+			scene.add(directionalLight);
+			
+			const backLight = new THREE.PointLight(0x4466ff, 0.5);
+			backLight.position.set(-5, 3, -5);
+			scene.add(backLight);
+			
+			// Set environment settings
+			if (sceneData.environment) {
+				// === METODE YANG BENAR: Gunakan Scene.background dengan Texture ===
+				if (sceneData.environment.skyboxType === 'panorama' && sceneData.environment.skyboxPanorama) {
+					const panoramaPath = 'panoramas/' + sceneData.environment.skyboxPanorama;
+					
+					// Load texture dan set sebagai background
+					const textureLoader = new THREE.TextureLoader();
+					textureLoader.load(panoramaPath, (texture) => {
+						// Untuk panorama equirectangular, kita perlu set mapping
+						texture.mapping = THREE.EquirectangularRefractionMapping;
+						
+						// Set sebagai scene background - INI YANG PALING BENAR!
+						scene.background = texture;
+						
+						// Important: Set environment map untuk refleksi (optional)
+						scene.environment = texture;
+						
+						console.log("✅ Skybox set as scene background:", panoramaPath);
+					});
+					
+				} else if (sceneData.environment.skyboxType === 'color' && sceneData.environment.skyboxColor) {
+					scene.background = new THREE.Color(sceneData.environment.skyboxColor);
+				} else {
+					scene.background = new THREE.Color(0x111122);
+				}
+				
+				// Grid and axes
+				if (gridHelper) scene.remove(gridHelper);
+				if (axesHelper) scene.remove(axesHelper);
+				
+				if (sceneData.environment.showGrid !== false) {
+					gridHelper = new THREE.GridHelper(50, 50, 0xeba576, 0x3d4855);
+					scene.add(gridHelper);
+				}
+				
+				if (sceneData.environment.showAxes !== false) {
+					axesHelper = new THREE.AxesHelper(5);
+					scene.add(axesHelper);
+				}
+				
+			} else {
+				scene.background = new THREE.Color(0x111122);
+			}
+			
+			// Set camera position
+			if (sceneData.cameraPos) {
+				camera.position.set(
+					sceneData.cameraPos.x, 
+					sceneData.cameraPos.y, 
+					sceneData.cameraPos.z
+				);
+				controls.target.set(0, 1, 0);
+			} else {
+				camera.position.set(5, 3, 8);
+				controls.target.set(0, 1, 0);
+			}
+			
+			// Set controls untuk 3D mode
+			controls.enablePan = true;
+			controls.maxDistance = 200;
+			controls.minDistance = 1;
+			
+			// Add objects from scene data
+			if (sceneData.objects && sceneData.objects.length > 0) {
+				sceneData.objects.forEach(objData => {
+					const mesh = addObjectToScene(objData);
+					if (mesh) {
+						scene.add(mesh);
+						threeDSceneObjects.push(mesh);
+					}
+				});
+			}
+			
+			// Update UI
+			controlsInfo.style.display = 'block';
+			overlay.style.opacity = '0';
+			overlay.style.pointerEvents = 'none';
+			
+			console.log("3D scene ready");
+		}
+        
+        function updateSkybox() {
+			const env = sceneData.scene.environment;
+			
+			// Remove old skybox
+			if (skyboxMesh) {
+				scene.remove(skyboxMesh);
+				skyboxMesh = null;
+			}
+			
+			// Reset background
+			scene.background = null;
+			
+			switch(env.skyboxType) {
+				case 'color':
+					scene.background = new THREE.Color(env.skyboxColor || '#111122');
+					break;
+					
+				case 'panorama':
+					if (env.skyboxPanorama) {
+						const panoramaPath = projectDir + '/panoramas/' + env.skyboxPanorama;
+						if (fs.existsSync(panoramaPath)) {
+							try {
+								// === METODE YANG BENAR: Gunakan Scene.background dengan EquirectangularMapping ===
+								const textureLoader = new THREE.TextureLoader();
+								const texture = textureLoader.load('file://' + panoramaPath);
+								
+								// Set mapping untuk equirectangular panorama
+								texture.mapping = THREE.EquirectangularRefractionMapping;
+								
+								// Set sebagai scene background - INI YANG PALING BENAR!
+								scene.background = texture;
+								
+								// Optional: Set sebagai environment map untuk refleksi
+								scene.environment = texture;
+								
+								console.log("✅ Skybox set as scene background using EquirectangularMapping");
+								
+							} catch(e) {
+								console.error("Error loading skybox panorama:", e);
+								scene.background = new THREE.Color(0x111122);
+							}
+						} else {
+							console.error("Panorama file not found:", panoramaPath);
+							scene.background = new THREE.Color(0x111122);
+						}
+					} else {
+						scene.background = new THREE.Color(0x111122);
+					}
+					break;
+					
+				default:
+					scene.background = new THREE.Color(0x111122);
+					break;
+			}
+		}
+		
+		function reset3DScene() {
+			// Hapus semua 3D objects
+			threeDSceneObjects.forEach(obj => scene.remove(obj));
+			threeDSceneObjects = [];
+			
+			// Hapus skybox mesh
+			if (skyboxMesh) {
+				scene.remove(skyboxMesh);
+				skyboxMesh = null;
+			}
+			
+			// Reset lights (akan dibuat ulang)
+			scene.children.forEach(obj => {
+				if (obj.isLight) scene.remove(obj);
+			});
+		}
+        
+        function updateLights() {
+			const env = sceneData.scene.environment;
+			
+			// Traverse scene dengan aman
+			scene.children.forEach(obj => {
+				if (obj.name === 'ambientLight') obj.visible = env.lights?.ambient !== false;
+				if (obj.name === 'hemisphereLight') obj.visible = env.lights?.hemisphere !== false;
+				if (obj.name === 'directionalLight') obj.visible = env.lights?.directional !== false;
+				if (obj.name === 'fillLight') obj.visible = env.lights?.directional !== false;
+			});
+		}
         
         function loadObjectsFromScene() {
             if (sceneData.scene.objects && sceneData.scene.objects.length > 0) {
@@ -727,7 +1290,8 @@
                 rotY: 0,
                 rotZ: 0,
                 name: 'Floor',
-                actions: []
+                actions: [],
+                materialType: 'color'
             };
             addObjectToScene(floorData, true);
             
@@ -748,91 +1312,120 @@
                 scaleY: 1,
                 scaleZ: 1,
                 name: 'Cube',
-                actions: []
+                actions: [],
+                materialType: 'color'
             };
             addObjectToScene(cubeData, true);
         }
         
         function addObjectToScene(objData, addToData = true) {
-            let geometry, material, mesh;
-            
-            switch(objData.type) {
-                case 'cube':
-                    geometry = new THREE.BoxGeometry(objData.width || 1, objData.height || 1, objData.depth || 1);
-                    material = new THREE.MeshStandardMaterial({ color: objData.color || 0xeba576 });
-                    mesh = new THREE.Mesh(geometry, material);
-                    break;
-                    
-                case 'sphere':
-                    geometry = new THREE.SphereGeometry(objData.radius || 0.7, 32, 32);
-                    material = new THREE.MeshStandardMaterial({ color: objData.color || 0xeba576 });
-                    mesh = new THREE.Mesh(geometry, material);
-                    break;
-                    
-                case 'plane':
-                    geometry = new THREE.PlaneGeometry(objData.width || 20, objData.height || 20);
-                    material = new THREE.MeshStandardMaterial({ color: objData.color || 0x3d4855, side: THREE.DoubleSide });
-                    mesh = new THREE.Mesh(geometry, material);
-                    mesh.receiveShadow = true;
-                    break;
-                    
-                default:
-                    return null;
-            }
-            
-            if (mesh) {
-                mesh.position.set(objData.posX || 0, objData.posY || 0, objData.posZ || 0);
-                
-                mesh.rotation.set(
-                    (objData.rotX || 0) * Math.PI / 180,
-                    (objData.rotY || 0) * Math.PI / 180,
-                    (objData.rotZ || 0) * Math.PI / 180
-                );
-                
-                mesh.scale.set(objData.scaleX || 1, objData.scaleY || 1, objData.scaleZ || 1);
-                
-                mesh.castShadow = true;
-                mesh.receiveShadow = true;
-                
-                // Add unique ID if not exists
-                if (!objData.id) {
-                    objData.id = 'obj_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                }
-                
-                mesh.userData = {
-                    id: objData.id,
-                    type: objData.type,
-                    originalData: { ...objData },
-                    name: objData.name || `${objData.type}_${objects.length}`,
-                    actions: objData.actions || []
-                };
-                
-                scene.add(mesh);
-                objects.push(mesh);
-                
-                if (addToData) {
-                    if (!sceneData.scene.objects) sceneData.scene.objects = [];
-                    sceneData.scene.objects.push(objData);
-                }
-            }
-            
-            return mesh;
-        }
+			let geometry, material, mesh;
+			
+			// Determine material type
+			const materialType = objData.materialType || 'color';
+			const color = objData.color || 0xeba576;
+			
+			// Create material based on type
+			if (materialType === 'texture' && objData.texture) {
+				const texturePath = projectDir + '/images/' + objData.texture;
+				if (fs.existsSync(texturePath)) {
+					const texture = new THREE.TextureLoader().load('file://' + texturePath);
+					
+					// Check if it's PNG with transparency
+					if (objData.texture.toLowerCase().endsWith('.png')) {
+						material = new THREE.MeshStandardMaterial({ 
+							map: texture,
+							transparent: true
+							// Hapus side: THREE.DoubleSide untuk non-plane
+						});
+					} else {
+						material = new THREE.MeshStandardMaterial({ 
+							map: texture
+							// Hapus side: THREE.DoubleSide untuk non-plane
+						});
+					}
+				} else {
+					material = new THREE.MeshStandardMaterial({ color: color });
+				}
+			} else {
+				material = new THREE.MeshStandardMaterial({ color: color });
+			}
+			
+			switch(objData.type) {
+				case 'cube':
+					geometry = new THREE.BoxGeometry(objData.width || 1, objData.height || 1, objData.depth || 1);
+					mesh = new THREE.Mesh(geometry, material);
+					break;
+					
+				case 'sphere':
+					geometry = new THREE.SphereGeometry(objData.radius || 0.7, 32, 32);
+					mesh = new THREE.Mesh(geometry, material);
+					break;
+					
+				case 'plane':
+					geometry = new THREE.PlaneGeometry(objData.width || 20, objData.height || 20);
+					// Plane perlu DoubleSide agar terlihat dari kedua sisi
+					material.side = THREE.DoubleSide;
+					mesh = new THREE.Mesh(geometry, material);
+					mesh.receiveShadow = true;
+					break;
+					
+				default:
+					return null;
+			}
+			
+			if (mesh) {
+				mesh.position.set(objData.posX || 0, objData.posY || 0, objData.posZ || 0);
+				
+				mesh.rotation.set(
+					(objData.rotX || 0) * Math.PI / 180,
+					(objData.rotY || 0) * Math.PI / 180,
+					(objData.rotZ || 0) * Math.PI / 180
+				);
+				
+				mesh.scale.set(objData.scaleX || 1, objData.scaleY || 1, objData.scaleZ || 1);
+				
+				mesh.castShadow = true;
+				mesh.receiveShadow = true;
+				
+				// Add unique ID if not exists
+				if (!objData.id) {
+					objData.id = 'obj_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+				}
+				
+				mesh.userData = {
+					id: objData.id,
+					type: objData.type,
+					originalData: { ...objData },
+					name: objData.name || `${objData.type}_${objects.length}`,
+					actions: objData.actions || [],
+					materialType: objData.materialType || 'color',
+					texture: objData.texture || null
+				};
+				
+				scene.add(mesh);
+				objects.push(mesh);
+				
+				if (addToData) {
+					if (!sceneData.scene.objects) sceneData.scene.objects = [];
+					sceneData.scene.objects.push(objData);
+				}
+			}
+			
+			return mesh;
+		}
         
         function setupEventListeners() {
-            // Window resize
-            window.addEventListener('resize', onWindowResize);
-            
-            // Mouse events for object selection and dragging
-            renderer.domElement.addEventListener('mousedown', onMouseDown);
-            renderer.domElement.addEventListener('mousemove', onMouseMove);
-            renderer.domElement.addEventListener('mouseup', onMouseUp);
-            
-            // Keyboard shortcuts
-            window.addEventListener('keydown', onKeyDown);
+			// Window resize
+			window.addEventListener('resize', onWindowResize);
+			
+			// Mouse events
+			renderer.domElement.addEventListener('mousedown', onMouseDown);
+			
+			// Keyboard shortcuts
+			window.addEventListener('keydown', onKeyDown);
             
             // Toolbar buttons
-            document.getElementById('select-mode').addEventListener('click', () => setMode('select'));
             document.getElementById('move-mode').addEventListener('click', () => setMode('move'));
             document.getElementById('rotate-mode').addEventListener('click', () => setMode('rotate'));
             document.getElementById('scale-mode').addEventListener('click', () => setMode('scale'));
@@ -848,31 +1441,189 @@
             document.getElementById('delete-object').addEventListener('click', deleteSelectedObject);
             document.getElementById('add-action').addEventListener('click', showActionDialog);
             
+            // Tab switching
+            document.getElementById('tab-objects').addEventListener('click', () => {
+                document.getElementById('tab-objects').classList.add('active');
+                document.getElementById('tab-environment').classList.remove('active');
+                document.getElementById('objects-tab').classList.add('active');
+                document.getElementById('environment-tab').classList.remove('active');
+            });
+            
+            document.getElementById('tab-environment').addEventListener('click', () => {
+                document.getElementById('tab-objects').classList.remove('active');
+                document.getElementById('tab-environment').classList.add('active');
+                document.getElementById('objects-tab').classList.remove('active');
+                document.getElementById('environment-tab').classList.add('active');
+            });
+            
+            // Material type toggle
+            document.getElementById('obj-material-type').addEventListener('change', function() {
+                const val = this.value;
+                document.getElementById('color-control').style.display = val === 'color' ? 'block' : 'none';
+                document.getElementById('texture-control').style.display = val === 'texture' ? 'block' : 'none';
+                
+                if (selectedObject) {
+                    selectedObject.userData.materialType = val;
+                    if (val === 'color') {
+                        updateObjectMaterialColor();
+                    }
+                }
+            });
+            
+            // Texture buttons
+            document.getElementById('browse-texture').addEventListener('click', () => {
+                showAssetChooser('images', 'Choose Texture Image', (filename) => {
+                    document.getElementById('obj-texture').value = filename;
+                    document.getElementById('texture-preview').innerHTML = `<img src="file://${projectDir}/images/${filename}" style="max-width: 100%; max-height: 100%;">`;
+                    
+                    if (selectedObject) {
+                        selectedObject.userData.texture = filename;
+                        updateObjectMaterialTexture(filename);
+                    }
+                });
+            });
+            
+            document.getElementById('clear-texture').addEventListener('click', () => {
+                document.getElementById('obj-texture').value = '';
+                document.getElementById('texture-preview').innerHTML = '<i class="fa fa-image" style="font-size: 30px; color: #eba576;"></i>';
+                
+                if (selectedObject) {
+                    selectedObject.userData.texture = null;
+                    selectedObject.userData.materialType = 'color';
+                    document.getElementById('obj-material-type').value = 'color';
+                    document.getElementById('color-control').style.display = 'block';
+                    document.getElementById('texture-control').style.display = 'none';
+                    updateObjectMaterialColor();
+                }
+            });
+            
+            // Environment controls
+            document.getElementById('skybox-type').addEventListener('change', function() {
+                sceneData.scene.environment.skyboxType = this.value;
+                applyEnvironmentSettings();
+            });
+            
+            document.getElementById('skybox-color').addEventListener('input', function() {
+                sceneData.scene.environment.skyboxColor = this.value;
+                if (sceneData.scene.environment.skyboxType === 'color') {
+                    applyEnvironmentSettings();
+                }
+            });
+            
+            document.getElementById('browse-skybox').addEventListener('click', () => {
+                showAssetChooser('panoramas', 'Choose Skybox Panorama', (filename) => {
+                    document.getElementById('skybox-panorama').value = filename;
+                    sceneData.scene.environment.skyboxPanorama = filename;
+                    applyEnvironmentSettings();
+                });
+            });
+            
+            document.getElementById('clear-skybox').addEventListener('click', () => {
+                document.getElementById('skybox-panorama').value = '';
+                sceneData.scene.environment.skyboxPanorama = null;
+                applyEnvironmentSettings();
+            });
+            
+            document.getElementById('apply-environment').addEventListener('click', () => {
+                const env = sceneData.scene.environment;
+                env.lights = {
+                    ambient: document.getElementById('env-ambient').checked,
+                    hemisphere: document.getElementById('env-hemisphere').checked,
+                    directional: document.getElementById('env-directional').checked
+                };
+                env.showGrid = document.getElementById('env-grid').checked;
+                env.showAxes = document.getElementById('env-axes').checked;
+                
+                applyEnvironmentSettings();
+                updateStatus('Environment updated');
+            });
+            
+            document.getElementById('reset-environment').addEventListener('click', () => {
+                sceneData.scene.environment = {
+                    skyboxType: 'none',
+                    skyboxColor: '#111122',
+                    skyboxPanorama: null,
+                    lights: {
+                        ambient: true,
+                        hemisphere: true,
+                        directional: true
+                    },
+                    showGrid: true,
+                    showAxes: true
+                };
+                loadEnvironmentSettings();
+            });
+            
             // Property inputs
             document.getElementById('obj-name').addEventListener('input', updateObjectProperty);
             document.getElementById('obj-type').addEventListener('change', changeObjectType);
-            document.getElementById('obj-color').addEventListener('input', updateObjectProperty);
+            document.getElementById('obj-color').addEventListener('input', updateObjectMaterialColor);
             
             ['pos-x', 'pos-y', 'pos-z', 'rot-x', 'rot-y', 'rot-z', 'scale-x', 'scale-y', 'scale-z'].forEach(id => {
                 document.getElementById(`obj-${id}`).addEventListener('input', updateObjectProperty);
             });
         }
         
-        function setMode(mode) {
-            currentMode = mode;
+        function updateObjectMaterialColor() {
+            if (!selectedObject) return;
             
-            // Update UI
-            ['select', 'move', 'rotate', 'scale'].forEach(m => {
-                const btn = document.getElementById(`${m}-mode`);
-                if (m === mode) {
-                    btn.classList.add('active');
+            const colorHex = document.getElementById('obj-color').value;
+            if (selectedObject.material) {
+                if (Array.isArray(selectedObject.material)) {
+                    selectedObject.material.forEach(m => m.color.set(colorHex));
                 } else {
-                    btn.classList.remove('active');
+                    selectedObject.material.color.set(colorHex);
                 }
-            });
+            }
             
-            updateStatus(`Mode: ${mode}`);
+            updateObjectDataFromMesh(selectedObject);
         }
+        
+        function updateObjectMaterialTexture(filename) {
+            if (!selectedObject) return;
+            
+            const texturePath = projectDir + '/images/' + filename;
+            if (fs.existsSync(texturePath)) {
+                const texture = new THREE.TextureLoader().load('file://' + texturePath);
+                
+                const isPNG = filename.toLowerCase().endsWith('.png');
+                
+                if (Array.isArray(selectedObject.material)) {
+                    selectedObject.material.forEach(m => {
+                        m.map = texture;
+                        m.transparent = isPNG;
+                        m.needsUpdate = true;
+                    });
+                } else {
+                    selectedObject.material.map = texture;
+                    selectedObject.material.transparent = isPNG;
+                    selectedObject.material.needsUpdate = true;
+                }
+                
+                updateObjectDataFromMesh(selectedObject);
+            }
+        }
+        
+        function setMode(mode) {
+			currentMode = mode;
+			
+			// Update transform controls mode
+			if (transformControls) {
+				transformControls.setMode(mode === 'move' ? 'translate' : mode);
+			}
+			
+			// Update UI
+			['move', 'rotate', 'scale'].forEach(m => {
+				const btn = document.getElementById(`${m}-mode`);
+				if (m === mode) {
+					btn.classList.add('active');
+				} else {
+					btn.classList.remove('active');
+				}
+			});
+			
+			updateStatus(`Mode: ${mode}`);
+		}
         
         function addNewObject(type) {
             const newObj = {
@@ -888,7 +1639,8 @@
                 scaleY: 1,
                 scaleZ: 1,
                 name: `${type}_${objects.length + 1}`,
-                actions: []
+                actions: [],
+                materialType: 'color'
             };
             
             if (type === 'cube') {
@@ -910,113 +1662,102 @@
         }
         
         function onMouseDown(event) {
-            if (event.button !== 0) return; // Left click only
-            
-            mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
-            mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
-            
-            raycaster.setFromCamera(mouse, camera);
-            
-            // Check for object selection
-            const intersects = raycaster.intersectObjects(objects);
-            
-            if (intersects.length > 0) {
-                // Select the clicked object
-                selectObject(intersects[0].object);
-                
-                if (currentMode === 'move' || currentMode === 'rotate' || currentMode === 'scale') {
-                    // Start dragging
-                    isDragging = true;
-                    dragStart.set(mouse.x, mouse.y);
-                }
-            } else if (currentMode === 'select') {
-                // Click on empty space - deselect
-                selectObject(null);
-            }
-        }
-        
-        function onMouseMove(event) {
-            if (!isDragging || !selectedObject) return;
-            
-            mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
-            mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
-            
-            const deltaX = (mouse.x - dragStart.x) * 5;
-            const deltaY = (mouse.y - dragStart.y) * 5;
-            
-            switch(currentMode) {
-                case 'move':
-                    // Move in camera plane
-                    const moveVec = new THREE.Vector3(deltaX, -deltaY, 0);
-                    moveVec.applyQuaternion(camera.quaternion);
-                    moveVec.y = 0; // Keep on ground plane
-                    selectedObject.position.add(moveVec.multiplyScalar(0.1));
-                    break;
-                    
-                case 'rotate':
-                    selectedObject.rotation.y += deltaX * 0.01;
-                    selectedObject.rotation.x += deltaY * 0.01;
-                    break;
-                    
-                case 'scale':
-                    const scale = 1 + deltaX * 0.01;
-                    selectedObject.scale.set(scale, scale, scale);
-                    break;
-            }
-            
-            updatePropertyInputs();
-        }
-        
-        function onMouseUp() {
-            if (isDragging && selectedObject) {
-                // Update object data
-                updateObjectDataFromMesh(selectedObject);
-                isDragging = false;
-            }
-        }
+			if (event.button !== 0) return; // Left click only
+			if (isTransforming) return; // Don't select while transforming
+			
+			mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+			mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+			
+			raycaster.setFromCamera(mouse, camera);
+			
+			// Check for object selection
+			const intersects = raycaster.intersectObjects(objects);
+			
+			if (intersects.length > 0) {
+				// Select the clicked object
+				selectObject(intersects[0].object);
+			} else {
+				// Click on empty space - deselect
+				selectObject(null);
+			}
+		}
         
         function selectObject(obj) {
-            // Clear previous selection highlight
-            objects.forEach(o => {
-                if (o.material) {
-                    if (Array.isArray(o.material)) {
-                        o.material.forEach(m => m.emissive.setHex(0x000000));
-                    } else {
-                        o.material.emissive.setHex(0x000000);
-                    }
-                }
-            });
-            
-            selectedObject = obj;
-            
-            if (obj) {
-                // Highlight selected object
-                if (obj.material) {
-                    if (Array.isArray(obj.material)) {
-                        obj.material.forEach(m => m.emissive.setHex(0x333333));
-                    } else {
-                        obj.material.emissive.setHex(0x333333);
-                    }
-                }
-                
-                updatePropertyInputs();
-                updateActionsList();
-                updateStatus(`Selected: ${obj.userData.name || 'Object'}`);
-            } else {
-                document.getElementById('obj-name').value = '';
-                document.getElementById('object-actions-list').innerHTML = 
-                    '<div style="color: #888; font-style: italic; text-align: center; padding: 10px;">No actions. Click "Add Action" to create one.</div>';
-                updateStatus('No object selected');
-            }
-            
-            updateObjectList();
-        }
+			// Detach dulu
+			if (transformControls) {
+				transformControls.detach();
+			}
+			
+			// Clear highlight
+			objects.forEach(o => {
+				if (o.material) {
+					if (Array.isArray(o.material)) {
+						o.material.forEach(m => m.emissive?.setHex(0x000000));
+					} else {
+						o.material.emissive?.setHex(0x000000);
+					}
+				}
+			});
+			
+			selectedObject = obj;
+			
+			if (obj && transformControls) {
+				// ATTACH ke object yang dipilih
+				transformControls.attach(obj);
+				
+				// Set mode sesuai tombol yang dipilih
+				transformControls.setMode(currentMode === 'move' ? 'translate' : currentMode);
+				
+				// Highlight
+				if (obj.material) {
+					if (Array.isArray(obj.material)) {
+						obj.material.forEach(m => m.emissive?.setHex(0x333333));
+					} else {
+						obj.material.emissive?.setHex(0x333333);
+					}
+				}
+				
+				updatePropertyInputs();
+				updateActionsList();
+				updateStatus(`Selected: ${obj.userData.name || 'Object'}`);
+			} else {
+				document.getElementById('obj-name').value = '';
+				document.getElementById('object-actions-list').innerHTML = 
+					'<div style="color: #888; font-style: italic; text-align: center; padding: 10px;">No actions.</div>';
+				updateStatus('No object selected');
+			}
+			
+			updateObjectList();
+		}
         
         function updatePropertyInputs() {
             if (!selectedObject) return;
             
             document.getElementById('obj-name').value = selectedObject.userData.name || '';
             document.getElementById('obj-type').value = selectedObject.userData.type || 'cube';
+            
+            const materialType = selectedObject.userData.materialType || 'color';
+            document.getElementById('obj-material-type').value = materialType;
+            
+            if (materialType === 'color') {
+                document.getElementById('color-control').style.display = 'block';
+                document.getElementById('texture-control').style.display = 'none';
+            } else {
+                document.getElementById('color-control').style.display = 'none';
+                document.getElementById('texture-control').style.display = 'block';
+                
+                const textureFile = selectedObject.userData.texture || '';
+                document.getElementById('obj-texture').value = textureFile;
+                
+                if (textureFile) {
+                    const texturePath = projectDir + '/images/' + textureFile;
+                    if (fs.existsSync(texturePath)) {
+                        document.getElementById('texture-preview').innerHTML = `<img src="file://${texturePath}" style="max-width: 100%; max-height: 100%;">`;
+                    }
+                } else {
+                    document.getElementById('texture-preview').innerHTML = '<i class="fa fa-image" style="font-size: 30px; color: #eba576;"></i>';
+                }
+            }
             
             // Color
             if (selectedObject.material && selectedObject.material.color) {
@@ -1099,12 +1840,6 @@
             // Update name
             selectedObject.userData.name = document.getElementById('obj-name').value;
             
-            // Update color
-            const colorHex = document.getElementById('obj-color').value;
-            if (selectedObject.material) {
-                selectedObject.material.color.set(colorHex);
-            }
-            
             // Update position
             selectedObject.position.x = parseFloat(document.getElementById('obj-pos-x').value) || 0;
             selectedObject.position.y = parseFloat(document.getElementById('obj-pos-y').value) || 0;
@@ -1143,9 +1878,14 @@
                     dataObj.scaleY = mesh.scale.y;
                     dataObj.scaleZ = mesh.scale.z;
                     
-                    dataObj.color = mesh.material.color.getHex();
+                    if (mesh.material && mesh.material.color) {
+                        dataObj.color = mesh.material.color.getHex();
+                    }
+                    
                     dataObj.name = mesh.userData.name;
                     dataObj.actions = mesh.userData.actions || [];
+                    dataObj.materialType = mesh.userData.materialType || 'color';
+                    dataObj.texture = mesh.userData.texture || null;
                     
                     mesh.userData.originalData = { ...dataObj };
                 }
@@ -1173,7 +1913,9 @@
                 scaleY: selectedObject.scale.y,
                 scaleZ: selectedObject.scale.z,
                 name: selectedObject.userData.name,
-                actions: actions
+                actions: actions,
+                materialType: selectedObject.userData.materialType || 'color',
+                texture: selectedObject.userData.texture || null
             };
             
             if (newType === 'cube') {
@@ -1267,118 +2009,258 @@
         
         function closeActionDialog() {
             document.getElementById('action-dialog').style.display = 'none';
-            pendingActionType = null;
         }
+		
+		function show3DSceneChooser() {
+			// Cek apakah ada 3D scenes di project
+			if (!sceneData.scene || !sceneData.scene.threedeescenes) {
+				alert("No 3D scenes available");
+				return;
+			}
+			
+			let scenesHTML = '';
+			sceneData.scene.threedeescenes.forEach((scene, index) => {
+				scenesHTML += `
+					<div onclick="addActionWith3DScene('${scene.id}')" 
+						 style="display: block; margin: 5px; padding: 10px; background-color: #2c3643; 
+								cursor: pointer; border: 1px solid #eba576;">
+						<strong>${scene.name}</strong>
+						<div style="font-size: 11px; color: #eba576;">${scene.objects?.length || 0} objects</div>
+					</div>
+				`;
+			});
+			
+			const dialogHTML = `
+				<div class="action-dialog" style="display: block; width: 400px;">
+					<h3 style="margin-top: 0; color: #eba576;">Choose 3D Scene</h3>
+					<div style="max-height: 300px; overflow-y: auto;">
+						${scenesHTML}
+					</div>
+					<div style="text-align: right; margin-top: 20px;">
+						<button class="btn" onclick="document.getElementById('custom-dialog').remove()">
+							<i class="fa fa-times"></i> Cancel
+						</button>
+					</div>
+				</div>
+			`;
+			
+			const dialogDiv = document.createElement('div');
+			dialogDiv.id = 'custom-dialog';
+			dialogDiv.innerHTML = dialogHTML;
+			document.body.appendChild(dialogDiv);
+		}
+
+		function addActionWith3DScene(sceneId) {
+			addActionToSelectedObject(5, `3dscene:${sceneId}`);
+			document.getElementById('custom-dialog').remove();
+		}
         
         function selectActionType(type) {
-            pendingActionType = type;
-            
-            switch(type) {
-                case 0: // Open Panorama
-                    showPanoramaChooser();
-                    break;
-                case 1: // Show Image
-                    showAssetChooser('images', 'Choose Image');
-                    break;
-                case 2: // Play Video
-                    showAssetChooser('videos', 'Choose Video');
-                    break;
-                case 3: // Play Audio
-                    showAssetChooser('audios', 'Choose Audio');
-                    break;
-                case 4: // Open PDF
-                    showAssetChooser('pdf', 'Choose PDF');
-                    break;
-                case 6: // Open URL
-                    showURLInput();
-                    break;
-                case 7: // Execute JavaScript
-                    showJSInput();
-                    break;
-                default:
-                    alert('Action type not implemented yet');
-                    closeActionDialog();
+			pendingActionType = type;
+			
+			// Close the action dialog
+			document.getElementById('action-dialog').style.display = 'none';
+			
+			console.log("Selected action type:", type);
+			
+			switch(type) {
+				case 0: // Open Panorama
+					showAssetChooser('panoramas', 'Choose Panorama', null);
+					break;
+				case 1: // Show Image
+					showAssetChooser('images', 'Choose Image', null);
+					break;
+				case 2: // Play Video
+					showAssetChooser('videos', 'Choose Video', null);
+					break;
+				case 3: // Play Audio
+					showAssetChooser('audios', 'Choose Audio', null);
+					break;
+				case 4: // Open PDF
+					showAssetChooser('pdf', 'Choose PDF', null);
+					break;
+				case 5: // Open 3D Scene
+					show3DSceneChooser();
+					break;
+				case 6: // Open URL
+					showURLInput();
+					break;
+				case 7: // Execute JavaScript
+					showJSInput();
+					break;
+				default:
+					alert('Action type not implemented yet');
+					pendingActionType = null;
+			}
+		}
+        
+        function showAssetChooser(assetType, title, callback) {
+			// Tentukan ekstensi yang diizinkan
+			let extensions = [];
+			if (assetType === 'images' || assetType === 'panoramas') {
+				extensions = ['jpg', 'jpeg', 'png', 'gif'];
+			} else if (assetType === 'videos') {
+				extensions = ['mp4', 'webm', 'ogg'];
+			} else if (assetType === 'audios') {
+				extensions = ['mp3', 'wav', 'ogg'];
+			} else if (assetType === 'pdf') {
+				extensions = ['pdf'];
+			}
+			
+			// Tentukan direktori tujuan
+			let targetDir;
+			if (assetType === 'panoramas') {
+				targetDir = projectDir + '/panoramas/';
+			} else if (assetType === 'images') {
+				targetDir = projectDir + '/images/';
+			} else if (assetType === 'videos') {
+				targetDir = projectDir + '/videos/';
+			} else if (assetType === 'audios') {
+				targetDir = projectDir + '/audios/';
+			} else if (assetType === 'pdf') {
+				targetDir = projectDir + '/pdf/';
+			}
+			
+			// Baca file dari direktori
+			if (!fs.existsSync(targetDir)) {
+				fse.ensureDirSync(targetDir);
+			}
+			
+			let itemsHTML = '';
+			const files = fs.readdirSync(targetDir);
+			
+			files.forEach(file => {
+				const ext = file.split('.').pop().toLowerCase();
+				if (extensions.includes(ext)) {
+					let icon = '';
+					if (assetType === 'panoramas' || assetType === 'images') {
+						icon = `<img src="file://${targetDir}${file}" style="height: 60px; max-width: 80px; object-fit: cover;">`;
+					} else if (assetType === 'videos') {
+						icon = '<i class="fa fa-film" style="font-size: 40px;"></i>';
+					} else if (assetType === 'audios') {
+						icon = '<i class="fa fa-music" style="font-size: 40px;"></i>';
+					} else if (assetType === 'pdf') {
+						icon = '<i class="fa fa-file-pdf-o" style="font-size: 40px;"></i>';
+					}
+					
+					itemsHTML += `
+						<div onclick="selectAssetFile('${assetType}', '${file}')" 
+							 style="display: inline-block; width: 120px; margin: 5px; padding: 10px; 
+									background-color: #2c3643; text-align: center; cursor: pointer; 
+									border: 1px solid #eba576; vertical-align: top;">
+							<div style="height: 60px; display: flex; align-items: center; justify-content: center;">
+								${icon}
+							</div>
+							<div style="font-size: 11px; margin-top: 5px; word-break: break-all;">
+								${file.length > 15 ? file.substr(0, 12) + '...' : file}
+							</div>
+						</div>
+					`;
+				}
+			});
+			
+			if (itemsHTML === '') {
+				itemsHTML = '<p style="color: #888; text-align: center; padding: 20px;">No files found in ' + assetType + ' folder.</p>';
+			}
+			
+			// Hapus dialog sebelumnya jika ada
+			const oldDialog = document.getElementById('custom-dialog');
+			if (oldDialog) oldDialog.remove();
+			
+			// Tampilkan dialog
+			const dialogHTML = `
+				<div id="custom-dialog" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
+					  background-color: rgba(0,0,0,0.7); display: flex; align-items: center; 
+					  justify-content: center; z-index: 1000;">
+					<div style="background-color: #232c37; border: 2px solid #eba576; width: 600px; 
+						  max-width: 90vw; max-height: 80vh; overflow-y: auto; padding: 20px;">
+						<h3 style="margin-top: 0; color: #eba576;">${title}</h3>
+						<div style="max-height: 400px; overflow-y: auto; padding: 10px; background-color: #1e262f;">
+							${itemsHTML}
+						</div>
+						<div style="text-align: right; margin-top: 20px;">
+							<button class="btn" onclick="document.getElementById('custom-dialog').remove();">
+								<i class="fa fa-times"></i> Cancel
+							</button>
+						</div>
+					</div>
+				</div>
+			`;
+			
+			// Store callback temporarily
+			window.pendingAssetCallback = callback;
+			window.pendingAssetType = assetType;
+			
+			document.body.insertAdjacentHTML('beforeend', dialogHTML);
+		}
+        
+        function selectAssetFile(assetType, filename) {
+            // If this is a callback (for texture selection)
+            if (window.pendingAssetCallback) {
+                window.pendingAssetCallback(filename);
+                window.pendingAssetCallback = null;
+                document.getElementById('custom-dialog').remove();
+                return;
             }
-        }
-        
-        function showPanoramaChooser() {
-            // Close the action dialog first
-            closeActionDialog();
             
-            // Use the main app's item chooser via IPC
-            const dialogHTML = `
-                <div class="action-dialog" style="display: block;">
-                    <h3 style="margin-top: 0;">Choose Panorama</h3>
-                    <p>Enter panorama filename:</p>
-                    <input type="text" id="panorama-name" placeholder="panorama.jpg" style="width: 100%; padding: 8px; margin: 10px 0;">
-                    <div style="text-align: right;">
-                        <button class="btn" onclick="document.getElementById('custom-dialog').remove()">Cancel</button>
-                        <button class="btn btn-green" onclick="addPanoramaAction()">Add Action</button>
-                    </div>
-                </div>
-            `;
-            
-            const dialogDiv = document.createElement('div');
-            dialogDiv.id = 'custom-dialog';
-            dialogDiv.innerHTML = dialogHTML;
-            document.body.appendChild(dialogDiv);
-            
-            // Focus the input
-            setTimeout(() => document.getElementById('panorama-name').focus(), 100);
-        }
-        
-        function addPanoramaAction() {
-            const panoName = document.getElementById('panorama-name').value.trim();
-            if (panoName) {
-                addActionToSelectedObject(0, panoName);
-            }
-            document.getElementById('custom-dialog').remove();
-        }
-        
-        function showAssetChooser(assetType, title) {
-            // Close the action dialog first
-            closeActionDialog();
-            
-            // Create a simple dialog with input for asset name
-            const dialogHTML = `
-                <div class="action-dialog" style="display: block;">
-                    <h3 style="margin-top: 0;">${title}</h3>
-                    <p>Enter ${assetType} filename:</p>
-                    <input type="text" id="asset-name" placeholder="filename.${assetType === 'images' ? 'jpg' : assetType === 'videos' ? 'mp4' : assetType === 'audios' ? 'mp3' : 'pdf'}" style="width: 100%; padding: 8px; margin: 10px 0;">
-                    <div style="text-align: right;">
-                        <button class="btn" onclick="document.getElementById('custom-dialog').remove()">Cancel</button>
-                        <button class="btn btn-green" onclick="addAssetAction('${assetType}')">Add Action</button>
-                    </div>
-                </div>
-            `;
-            
-            const dialogDiv = document.createElement('div');
-            dialogDiv.id = 'custom-dialog';
-            dialogDiv.innerHTML = dialogHTML;
-            document.body.appendChild(dialogDiv);
-            
-            // Focus the input
-            setTimeout(() => document.getElementById('asset-name').focus(), 100);
-        }
-        
-        function addAssetAction(assetType) {
-            const assetName = document.getElementById('asset-name').value.trim();
-            if (assetName) {
-                let targetPath = `${assetType}/${assetName}`;
-                if (assetType === 'images') addActionToSelectedObject(1, targetPath);
-                else if (assetType === 'videos') addActionToSelectedObject(2, targetPath);
-                else if (assetType === 'audios') addActionToSelectedObject(3, targetPath);
-                else if (assetType === 'pdf') addActionToSelectedObject(4, targetPath);
-            }
-            document.getElementById('custom-dialog').remove();
+            // Otherwise, this is for action creation
+            if (pendingActionType === undefined || pendingActionType === null) {
+				console.error("No action type selected");
+				alert("Please select an action type first");
+				document.getElementById('custom-dialog')?.remove();
+				pendingActionType = null;
+				return;
+			}
+			
+			// Untuk Open Panorama (type 0), simpan hanya nama file, tanpa folder
+			let targetPath;
+			if (pendingActionType === 0) {
+				// Untuk panorama, simpan hanya nama file
+				targetPath = filename;
+			} else {
+				// Untuk asset lain, simpan dengan folder
+				targetPath = `${assetType}/${filename}`;
+			}
+			
+			// Validasi: untuk Open Panorama (type 0), harus dari folder panoramas
+			if (pendingActionType === 0 && assetType !== 'panoramas') {
+				alert("For Open Panorama action, please select a file from the panoramas folder");
+				return;
+			}
+			
+			// Validasi untuk tipe lain
+			if (pendingActionType === 1 && assetType !== 'images') {
+				alert("For Show Image action, please select a file from the images folder");
+				return;
+			}
+			
+			if (pendingActionType === 2 && assetType !== 'videos') {
+				alert("For Play Video action, please select a file from the videos folder");
+				return;
+			}
+			
+			if (pendingActionType === 3 && assetType !== 'audios') {
+				alert("For Play Audio action, please select a file from the audios folder");
+				return;
+			}
+			
+			if (pendingActionType === 4 && assetType !== 'pdf') {
+				alert("For Open PDF action, please select a file from the pdf folder");
+				return;
+			}
+			
+			// Jika semua validasi lolos, tambahkan action
+			addActionToSelectedObject(pendingActionType, targetPath);
+			
+			// Hapus dialog dan reset pendingActionType
+			document.getElementById('custom-dialog').remove();
+			pendingActionType = null;
         }
         
         function showURLInput() {
-            closeActionDialog();
-            
             const dialogHTML = `
                 <div class="action-dialog" style="display: block;">
-                    <h3 style="margin-top: 0;">Open URL</h3>
+                    <h3 style="margin-top: 0; color: #eba576;">Open URL</h3>
                     <p>Enter URL:</p>
                     <input type="text" id="url-input" placeholder="https://example.com" style="width: 100%; padding: 8px; margin: 10px 0;">
                     <div style="text-align: right;">
@@ -1405,11 +2287,9 @@
         }
         
         function showJSInput() {
-            closeActionDialog();
-            
             const dialogHTML = `
                 <div class="action-dialog" style="display: block;">
-                    <h3 style="margin-top: 0;">JavaScript Code</h3>
+                    <h3 style="margin-top: 0; color: #eba576;">JavaScript Code</h3>
                     <p>Enter JavaScript code:</p>
                     <textarea id="js-input" rows="5" style="width: 100%; padding: 8px; margin: 10px 0; background: #1e262f; color: white; border: 1px solid #3d4855;"></textarea>
                     <div style="text-align: right;">
@@ -1436,21 +2316,33 @@
         }
         
         function addActionToSelectedObject(type, target) {
-            if (!selectedObject) return;
-            
-            if (!selectedObject.userData.actions) {
-                selectedObject.userData.actions = [];
-            }
-            
-            selectedObject.userData.actions.push({
-                type: type,
-                target: target
-            });
-            
-            updateActionsList();
-            updateObjectDataFromMesh(selectedObject);
-            updateStatus('Action added');
-        }
+			if (!selectedObject) {
+				alert("No object selected");
+				pendingActionType = null;
+				return;
+			}
+			
+			// Inisialisasi array actions jika belum ada
+			if (!selectedObject.userData.actions) {
+				selectedObject.userData.actions = [];
+			}
+			
+			// Tambahkan action baru
+			selectedObject.userData.actions.push({
+				type: type,
+				target: target
+			});
+			
+			console.log("Action added:", {
+				type: type,
+				target: target,
+				actions: selectedObject.userData.actions
+			});
+			
+			updateActionsList();
+			updateObjectDataFromMesh(selectedObject);
+			updateStatus('Action added');
+		}
         
         function onKeyDown(event) {
             if (event.ctrlKey || event.metaKey) {
@@ -1469,10 +2361,9 @@
             
             // Mode shortcuts
             switch(event.key) {
-                case 'q': setMode('select'); break;
-                case 'w': setMode('move'); break;
-                case 'e': setMode('rotate'); break;
-                case 'r': setMode('scale'); break;
+                case 'q': setMode('move'); break;
+                case 'w': setMode('rotate'); break;
+                case 'e': setMode('scale'); break;
                 case 'Delete':
                     if (selectedObject) deleteSelectedObject();
                     break;

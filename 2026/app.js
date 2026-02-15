@@ -21,19 +21,344 @@ if(localStorage.getItem("wtmdata") === null){
 }
 
 
-function saveWtmdata(){
-	localStorage.setItem("wtmdata", JSON.stringify(wtmdata));
+function saveWtmdata() {
+    try {
+        // Validasi sebelum save
+        if (!wtmdata || !Array.isArray(wtmdata.projects)) {
+            wtmdata = { projects: [] };
+        }
+        
+        // Backup ke localStorage dengan validasi
+        const jsonStr = JSON.stringify(wtmdata);
+        // Test parse dulu
+        JSON.parse(jsonStr);
+        localStorage.setItem("wtmdata", jsonStr);
+    } catch (err) {
+        console.error('Error saving wtmdata:', err);
+        showAlert('Save Error', 'Failed to save application data.');
+    }
 }
 
 
-function loadWtmdata(){
-	wtmdata = JSON.parse(localStorage.getItem("wtmdata"));
+
+// Auto backup setiap 5 menit untuk project yang sedang diedit
+let autoBackupInterval;
+
+function startAutoBackup() {
+    if (autoBackupInterval) clearInterval(autoBackupInterval);
+    
+    autoBackupInterval = setInterval(() => {
+        if (currentprojectindex !== undefined && currentprojectdata) {
+            console.log('Auto-backup triggered');
+            backupWtmFile(wtmdata.projects[currentprojectindex].projectdir);
+        }
+    }, 5 * 60 * 1000); // 5 menit
+}
+
+function stopAutoBackup() {
+    if (autoBackupInterval) {
+        clearInterval(autoBackupInterval);
+        autoBackupInterval = null;
+    }
+}
+
+// Mulai auto backup saat app load
+startAutoBackup();
+
+
+function recoverProjectFromBackup() {
+    if (!currentprojectindex) {
+        showAlert('No Project', 'Please open a project first.');
+        return;
+    }
+    
+    const projectDir = wtmdata.projects[currentprojectindex].projectdir;
+    const backupDir = path.join(projectDir, 'backups');
+    
+    if (!fs.existsSync(backupDir)) {
+        showAlert('No Backups', 'No backups found for this project.');
+        return;
+    }
+    
+    const backups = fs.readdirSync(backupDir)
+        .filter(f => f.endsWith('.wtm.backup'))
+        .sort()
+        .reverse();
+    
+    if (backups.length === 0) {
+        showAlert('No Backups', 'No backups found for this project.');
+        return;
+    }
+    
+    let backupList = '<h3>Available Backups:</h3>';
+    backups.forEach((backup, index) => {
+        const stats = fs.statSync(path.join(backupDir, backup));
+        const date = new Date(stats.mtime).toLocaleString();
+        backupList += `
+            <div style="margin: 10px 0; padding: 10px; background-color: #3d4855;">
+                <div><strong>${backup}</strong></div>
+                <div>Date: ${date}</div>
+                <button onclick="restoreBackup(${index})" class="greenbutton" style="margin-top: 5px;">
+                    <i class="fa fa-undo"></i> Restore
+                </button>
+            </div>
+        `;
+    });
+    
+    showAlert('Recover Project', backupList + '<button onclick="hideDim()">Close</button>');
+}
+
+function restoreBackup(backupIndex) {
+    const projectDir = wtmdata.projects[currentprojectindex].projectdir;
+    const backupDir = path.join(projectDir, 'backups');
+    
+    const backups = fs.readdirSync(backupDir)
+        .filter(f => f.endsWith('.wtm.backup'))
+        .sort()
+        .reverse();
+    
+    const backupPath = path.join(backupDir, backups[backupIndex]);
+    const wtmPath = path.join(projectDir, 'WTMProject.wtm');
+    
+    try {
+        // Backup current file first
+        if (fs.existsSync(wtmPath)) {
+            const corruptBackup = wtmPath + '.corrupt.' + Date.now();
+            fs.copyFileSync(wtmPath, corruptBackup);
+        }
+        
+        // Restore backup
+        fs.copyFileSync(backupPath, wtmPath);
+        
+        // Reload project
+        currentprojectdata = safeLoadWtmFile(projectDir);
+        showeditorc("panoramas");
+        hideDim();
+        
+        showAlert('Success', 'Project restored from backup.');
+    } catch (err) {
+        console.error('Error restoring backup:', err);
+        showAlert('Error', 'Failed to restore backup.');
+    }
+}
+
+// Shortcut untuk recovery (Ctrl+Shift+R)
+$(window).keydown(function(e) {
+    if (e.ctrlKey && e.shiftKey && e.which == 82) { // R
+        recoverProjectFromBackup();
+        e.preventDefault();
+    }
+});
+
+
+function loadWtmdata() {
+    try {
+        const stored = localStorage.getItem("wtmdata");
+        if (stored) {
+            const parsed = JSON.parse(stored);
+            // Validasi struktur
+            if (parsed && Array.isArray(parsed.projects)) {
+                wtmdata = parsed;
+            } else {
+                throw new Error('Invalid localStorage data');
+            }
+        } else {
+            wtmdata = { projects: [] };
+            saveWtmdata();
+        }
+    } catch (err) {
+        console.error('Error loading wtmdata, resetting:', err);
+        wtmdata = { projects: [] };
+        saveWtmdata();
+        showAlert('Data Reset', 'Application data was corrupted and has been reset.');
+    }
 }
 
 
 function reloadApp(){
 	location.reload();
 }
+
+
+
+
+// Fungsi untuk backup file WTM
+function backupWtmFile(projectDir) {
+    try {
+        const wtmPath = path.join(projectDir, 'WTMProject.wtm');
+        const backupDir = path.join(projectDir, 'backups');
+        
+        // Buat folder backup jika belum ada
+        if (!fs.existsSync(backupDir)) {
+            fs.mkdirSync(backupDir);
+        }
+        
+        // Cek apakah file WTM ada
+        if (fs.existsSync(wtmPath)) {
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            const backupPath = path.join(backupDir, `WTMProject_${timestamp}.wtm.backup`);
+            
+            // Copy file ke backup
+            fs.copyFileSync(wtmPath, backupPath);
+            
+            // Hapus backup lama (misal > 10 backup)
+            cleanupOldBackups(backupDir, 10);
+            
+            console.log(`Backup created: ${backupPath}`);
+        }
+    } catch (err) {
+        console.error('Error creating backup:', err);
+    }
+}
+
+// Hapus backup lama
+function cleanupOldBackups(backupDir, maxBackups) {
+    try {
+        const files = fs.readdirSync(backupDir)
+            .filter(f => f.endsWith('.wtm.backup'))
+            .map(f => ({
+                name: f,
+                path: path.join(backupDir, f),
+                time: fs.statSync(path.join(backupDir, f)).mtime.getTime()
+            }))
+            .sort((a, b) => b.time - a.time); // Sort by newest first
+        
+        // Hapus backup yang melebihi maxBackups
+        if (files.length > maxBackups) {
+            for (let i = maxBackups; i < files.length; i++) {
+                fs.unlinkSync(files[i].path);
+                console.log(`Removed old backup: ${files[i].name}`);
+            }
+        }
+    } catch (err) {
+        console.error('Error cleaning up backups:', err);
+    }
+}
+
+// Validasi data sebelum menulis
+function isValidProjectData(data) {
+    // Cek apakah data adalah object valid
+    if (!data || typeof data !== 'object') return false;
+    
+    // Cek properti minimal yang harus ada
+    if (!data.title) data.title = 'Untitled Project';
+    if (!Array.isArray(data.panoramas)) return false;
+    if (!data.settings || typeof data.settings !== 'object') return false;
+    
+    return true;
+}
+
+// Fungsi save dengan backup dan validasi
+function safeSaveWtmFile(projectDir, data) {
+    try {
+        const wtmPath = path.join(projectDir, 'WTMProject.wtm');
+        
+        // Validasi data
+        if (!isValidProjectData(data)) {
+            console.error('Invalid project data, not saving');
+            return false;
+        }
+        
+        // Backup dulu
+        backupWtmFile(projectDir);
+        
+        // Tulis ke file temporary dulu
+        const tempPath = wtmPath + '.tmp';
+        fs.writeFileSync(tempPath, JSON.stringify(data, null, 2));
+        
+        // Validasi file temporary bisa dibaca
+        const tempData = fs.readFileSync(tempPath, 'utf8');
+        JSON.parse(tempData); // Throw error jika invalid
+        
+        // Jika valid, rename temp file ke file asli
+        fs.renameSync(tempPath, wtmPath);
+        
+        console.log('Project saved safely');
+        return true;
+    } catch (err) {
+        console.error('Error saving project:', err);
+        showAlert('Save Error', 'Failed to save project. Your project has been backed up.');
+        return false;
+    }
+}
+
+// Fungsi load dengan backup otomatis jika korup
+function safeLoadWtmFile(projectDir) {
+    try {
+        const wtmPath = path.join(projectDir, 'WTMProject.wtm');
+        
+        if (!fs.existsSync(wtmPath)) {
+            return createNewProjectData();
+        }
+        
+        const data = fs.readFileSync(wtmPath, 'utf8');
+        
+        // Coba parse JSON
+        try {
+            const parsed = JSON.parse(data);
+            
+            // Validasi struktur
+            if (!isValidProjectData(parsed)) {
+                throw new Error('Invalid project structure');
+            }
+            
+            return parsed;
+        } catch (parseErr) {
+            console.error('Project file corrupted, attempting to recover...');
+            
+            // Coba cari backup terbaru
+            const backupDir = path.join(projectDir, 'backups');
+            if (fs.existsSync(backupDir)) {
+                const backups = fs.readdirSync(backupDir)
+                    .filter(f => f.endsWith('.wtm.backup'))
+                    .sort()
+                    .reverse();
+                
+                if (backups.length > 0) {
+                    const latestBackup = path.join(backupDir, backups[0]);
+                    console.log(`Attempting to recover from: ${latestBackup}`);
+                    
+                    const backupData = fs.readFileSync(latestBackup, 'utf8');
+                    const recovered = JSON.parse(backupData);
+                    
+                    if (isValidProjectData(recovered)) {
+                        // Copy backup ke file utama
+                        fs.copyFileSync(latestBackup, wtmPath);
+                        showAlert('Project Recovered', 'Your project was corrupted but has been recovered from backup.');
+                        return recovered;
+                    }
+                }
+            }
+            
+            // Jika tidak ada backup, buat project baru
+            showAlert('Project Corrupted', 'Your project file was corrupted. A new project has been created.');
+            return createNewProjectData();
+        }
+    } catch (err) {
+        console.error('Fatal error loading project:', err);
+        return createNewProjectData();
+    }
+}
+
+// Buat data project baru
+function createNewProjectData() {
+    return {
+        title: 'New Project',
+        panoramas: [],
+        settings: {
+            firstpanorama: '',
+            loadingtext: 'Loading...',
+            description: '',
+            controls: 0,
+            panolistmenu: 0
+        },
+        tourmap: '',
+        threedeescenes: []
+    };
+}
+
+
+
 
 
 function loadRecentProjects(){
@@ -130,20 +455,27 @@ loadRecentProjects();
 
 
 function previewProject(idx){
-	
-	generateHTMLPanoramas();
-	showDim("Building...");
-	setTimeout(function(){
-		var ppath = wtmdata.projects[idx].projectdir + "/index.html";
-		var newwin = new BrowserWindow({ width: 1280, height : 720, title : "Project Preview", icon: "icon.ico", });
-		newwin.loadFile(ppath);
-		newwin.removeMenu();
-		//newwin.webContents.openDevTools();
-		
-		hideDim();
-		
-		
-	}, 2000);
+    generateHTMLPanoramas();
+    showDim("Building...");
+    setTimeout(function(){
+        var ppath = wtmdata.projects[idx].projectdir + "/index.html";
+        
+        // Cek apakah pakai electronAPI atau remote
+        if (window.electronAPI) {
+            window.electronAPI.previewProject(ppath);
+        } else {
+            var newwin = new (require('electron').remote.BrowserWindow)({ 
+                width: 1280, 
+                height: 720, 
+                title: "Project Preview", 
+                icon: "icon.ico" 
+            });
+            newwin.loadFile(ppath);
+            newwin.removeMenu();
+        }
+        
+        hideDim();
+    }, 2000);
 }
 
 
@@ -170,6 +502,10 @@ function generatePanoramas(arr) {
 						if (actiontype == 0) {
 							// Open Panorama
 							var targetpanorama = cactions[y].target;
+							// Jika target mengandung slash, ambil bagian terakhir (nama file)
+							if (targetpanorama.indexOf('/') > -1) {
+								targetpanorama = targetpanorama.split('/').pop();
+							}
 							if (targetpanorama.indexOf('.jpg') > -1 || targetpanorama.indexOf('.jpeg') > -1 || targetpanorama.indexOf('.png') > -1) {
 								pdata += `		switchPanorama('${targetpanorama}');\n`;
 							} else {
@@ -430,23 +766,32 @@ var currentprojectdata;
 var tempstring; 
 var tempTimeout;
 function editproject(idx){
-	currentprojectindex = idx;
-	showpage("projecteditor");
-	$("#currentprojecttitle").val(wtmdata.projects[idx].projectname);
-	if(wtmdata.projects[idx].projectdir.indexOf(" ") > 0){
-		showAlert("Whitespace Warning", "Your project directory contains whitespace(s) that will cause some problem. Please remove empty spaces and reload the app.");
-	}
-	$("#currentprojectdir").html("<i class='fa fa-folder' style='width: 30px;'></i>" + wtmdata.projects[idx].projectdir).attr({ "onclick" : "showInExplorer(" + idx + ")" });
-	$("#currentprojectrunbutton").attr({ "onclick" : "previewProject("+idx+")" });
-	fs.readFile(wtmdata.projects[idx].projectdir + "/WTMProject.wtm", 'utf8', function (err, data) {
-		if(err){
-			showAlert("Project Corrupted", "Sorry this project can not be opened.");
-			showpage("projects");
-			return;
-		}
-		currentprojectdata = JSON.parse(data);
-		showeditorc("panoramas");
-	});
+    currentprojectindex = idx;
+    showpage("projecteditor");
+    $("#currentprojecttitle").val(wtmdata.projects[idx].projectname);
+    
+    $("#currentprojectdir").html("<i class='fa fa-folder' style='width: 30px;'></i>" + wtmdata.projects[idx].projectdir).attr({ "onclick" : "showInExplorer(" + idx + ")" });
+    
+    // CARA 1: Hapus dulu event lama, baru tambah
+    $("#currentprojectrunbutton").off('click').on('click', function() {
+        previewProject(idx);
+    });
+    
+    // Atau CARA 2: Pake data attribute
+    $("#currentprojectrunbutton").data('project-idx', idx).off('click').on('click', function() {
+        var projectIdx = $(this).data('project-idx');
+        previewProject(projectIdx);
+    });
+    
+    fs.readFile(wtmdata.projects[idx].projectdir + "/WTMProject.wtm", 'utf8', function (err, data) {
+        if(err){
+            showAlert("Project Corrupted", "Sorry this project can not be opened.");
+            showpage("projects");
+            return;
+        }
+        currentprojectdata = JSON.parse(data);
+        showeditorc("panoramas");
+    });
 }
 
 
@@ -807,9 +1152,14 @@ function hchoose(type, cid){
 	switch(type){
 		case 0 :
 			showItemChooser(cid, "Choose Destination Panorama", "panoramas", function(){
-				var res = isCidMatched(cid);							
-				currentprojectdata.panoramas[res.pano].hotspots[res.hot].actions.push({ type : 0, target : tempSourceFile });
-				console.log("Action added");
+				var res = isCidMatched(cid);
+				// Untuk panorama, simpan hanya nama file (ambil setelah slash terakhir)
+				var targetFile = tempSourceFile;
+				if (tempSourceFile.indexOf('/') > -1) {
+					targetFile = tempSourceFile.split('/').pop();
+				}
+				currentprojectdata.panoramas[res.pano].hotspots[res.hot].actions.push({ type : 0, target : targetFile });
+				console.log("Action added: Open Panorama - " + targetFile);
 				updateWtmFile();
 				showeditorc("hotspots");
 				hideDim();
@@ -819,7 +1169,7 @@ function hchoose(type, cid){
 			showItemChooser(cid, "Choose an Image", "images", function(){
 				var res = isCidMatched(cid);							
 				currentprojectdata.panoramas[res.pano].hotspots[res.hot].actions.push({ type : 1, target : tempSourceFile });
-				console.log("Action added");
+				console.log("Action added: Show Image - " + tempSourceFile);
 				updateWtmFile();
 				showeditorc("hotspots");
 				hideDim();
@@ -829,7 +1179,7 @@ function hchoose(type, cid){
 			showItemChooser(cid, "Choose a Video", "videos", function(){
 				var res = isCidMatched(cid);							
 				currentprojectdata.panoramas[res.pano].hotspots[res.hot].actions.push({ type : 2, target : tempSourceFile });
-				console.log("Action added");
+				console.log("Action added: Play Video - " + tempSourceFile);
 				updateWtmFile();
 				showeditorc("hotspots");
 				hideDim();
@@ -839,7 +1189,7 @@ function hchoose(type, cid){
 			showItemChooser(cid, "Choose an Audio", "audios", function(){
 				var res = isCidMatched(cid);							
 				currentprojectdata.panoramas[res.pano].hotspots[res.hot].actions.push({ type : 3, target : tempSourceFile });
-				console.log("Action added");
+				console.log("Action added: Play Audio - " + tempSourceFile);
 				updateWtmFile();
 				showeditorc("hotspots");
 				hideDim();
@@ -849,7 +1199,7 @@ function hchoose(type, cid){
 			showItemChooser(cid, "Choose a PDF", "pdf", function(){
 				var res = isCidMatched(cid);							
 				currentprojectdata.panoramas[res.pano].hotspots[res.hot].actions.push({ type : 4, target : tempSourceFile });
-				console.log("Action added");
+				console.log("Action added: Open PDF - " + tempSourceFile);
 				updateWtmFile();
 				showeditorc("hotspots");
 				hideDim();
@@ -859,7 +1209,7 @@ function hchoose(type, cid){
 			show3DSceneChooser(cid, "Choose 3D Scene", function(){
 				var res = isCidMatched(cid);							
 				currentprojectdata.panoramas[res.pano].hotspots[res.hot].actions.push({ type : 5, target : tempSourceFile });
-				console.log("3D Scene action added");
+				console.log("3D Scene action added: " + tempSourceFile);
 				updateWtmFile();
 				showeditorc("hotspots");
 				hideDim();
@@ -1770,9 +2120,11 @@ function foundduplicatepanofile(filename){
 
 
 //Update the WTM File of current project
-function updateWtmFile(){
-	fs.writeFile(wtmdata.projects[currentprojectindex].projectdir + "/WTMProject.wtm", JSON.stringify(currentprojectdata), function (err,data){});
-	//console.log("WTM File Updated.");
+function updateWtmFile() {
+    if (currentprojectindex !== undefined && wtmdata.projects[currentprojectindex]) {
+        const projectDir = wtmdata.projects[currentprojectindex].projectdir;
+        safeSaveWtmFile(projectDir, currentprojectdata);
+    }
 }
 
 
@@ -2877,7 +3229,7 @@ function open3DSceneVisualEditor(sceneIndex) {
     // Load editor HTML
     editorWindow.loadFile(editorPath);
     editorWindow.removeMenu();
-    // editorWindow.webContents.openDevTools(); // Uncomment untuk debugging
+    editorWindow.webContents.openDevTools(); // Uncomment untuk debugging
     
     // Listen untuk ketika editor ditutup
     editorWindow.on('closed', function() {
